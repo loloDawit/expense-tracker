@@ -1,12 +1,7 @@
-import { Href } from 'expo-router';
-import { Firestore, Timestamp } from 'firebase/firestore';
+import { Timestamp } from 'firebase/firestore';
 import { Icon } from 'phosphor-react-native';
 import React, { ReactNode } from 'react';
 import {
-  ActivityIndicator,
-  ActivityIndicatorProps,
-  ImageStyle,
-  PressableProps,
   TextInput,
   TextInputProps,
   TextProps,
@@ -109,7 +104,7 @@ export interface InputProps extends TextInputProps {
   inputStyle?: TextStyle;
   inputRef?: React.RefObject<TextInput>;
   //   label?: string;
-  //   error?: string;
+  error?: string;
 }
 
 export interface CustomButtonProps extends TouchableOpacityProps {
@@ -131,8 +126,8 @@ export type ImageUploadProps = {
 export type UserType = {
   uid?: string;
   email?: string | null;
-  name: string | null;
-  image?: any;
+  displayName?: string | null;
+  photoURL?: string | null;
 } | null;
 
 export type UserDataType = {
@@ -142,17 +137,18 @@ export type UserDataType = {
 
 export type AuthContextType = {
   user: UserType;
-  setUser: Function;
+  isLoading: boolean;
   login: (
     email: string,
     password: string,
   ) => Promise<{ success: boolean; msg?: string }>;
-  register: (
+  signup: (
+    name: string,
     email: string,
     password: string,
-    name: string,
   ) => Promise<{ success: boolean; msg?: string }>;
-  updateUserData: (userId: string) => Promise<void>;
+  logout: () => Promise<void>;
+  updateUserData: (data: Partial<UserType>) => void;
 };
 
 export type ResponseType = {
