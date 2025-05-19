@@ -69,7 +69,7 @@ const Welcome = () => {
             style={styles.buttonContainer}
           >
             <Button onPress={handleGetStarted}>
-              <Typo size={22} color={colors.neutral900} fontWeight={'600'}>
+              <Typo size={16} color={colors.neutral900} fontWeight={'600'}>
                 Get Started
               </Typo>
             </Button>
