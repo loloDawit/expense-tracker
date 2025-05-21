@@ -1,9 +1,11 @@
+import { useAuth } from '@/contexts/AuthContext';
 import { LoginFormData, loginSchema } from '@/schemas/loginSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Alert } from 'react-native';
 
 export const useLoginForm = () => {
+  const { login } = useAuth();
   const form = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -14,7 +16,16 @@ export const useLoginForm = () => {
 
   const handleSubmit = form.handleSubmit(async (data) => {
     try {
-      console.log('Logging in with', data);
+      // Call your login function here
+      const response = await login(data.email, data.password);
+      if (response.success) {
+        // Handle successful login, e.g., navigate to the home screen
+        Alert.alert('Login Successful', 'Welcome back!');
+        return response;
+      } else {
+        // Handle login error
+        Alert.alert('Login Failed', response.msg);
+      }
     } catch (err) {
       Alert.alert('Login Failed', 'Something went wrong.');
     }
