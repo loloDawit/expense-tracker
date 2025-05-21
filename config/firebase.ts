@@ -1,5 +1,6 @@
 import { FirebaseApp, initializeApp } from 'firebase/app';
 
+import logger from '@/utils/logger';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import { Auth, getReactNativePersistence, initializeAuth } from 'firebase/auth';
@@ -20,18 +21,18 @@ let firestore: Firestore;
 
 try {
   app = initializeApp(firebaseConfig);
-  console.log('🔥 Firebase App initialized');
+  logger.info('🔥 Firebase App initialized successfully');
 
   // Initialize Firebase Auth
   auth = initializeAuth(app, {
     persistence: getReactNativePersistence(AsyncStorage),
   });
-  console.log('🔥 Firebase Auth initialized successfully');
+  logger.info('🔥 Firebase Auth initialized successfully');
 
   firestore = getFirestore(app);
-  console.log('🔥 Firestore initialized successfully');
+  logger.info('🔥 Firestore initialized successfully');
 } catch (error) {
-  console.error('❌ Error initializing Firebase:', error);
+  logger.error('Error initializing Firebase:', error);
 }
 
 export { app, auth, firestore };
