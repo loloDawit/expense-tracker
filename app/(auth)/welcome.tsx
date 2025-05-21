@@ -29,7 +29,7 @@ const Welcome = () => {
           <Animated.Image
             entering={FadeIn.duration(1000)}
             style={styles.WelcomeImage}
-            source={require('@/assets/images/welcome.png')}
+            source={require('@/assets/images/welcome2.png')}
             resizeMode="contain"
           />
         </View>

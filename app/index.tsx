@@ -17,7 +17,7 @@ const Index = () => {
     <View style={styles.container}>
       <Image
         style={styles.logo}
-        source={require('@/assets/images/splashImage.png')}
+        source={require('@/assets/images/splash2.png')}
         resizeMode="contain"
       />
     </View>

@@ -1,9 +1,11 @@
+import { useAuth } from '@/contexts/AuthContext';
 import { SignupFormData, signupSchema } from '@/schemas/signupSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Alert } from 'react-native';
 
 export const useSignupForm = () => {
+  const { signup } = useAuth();
   const form = useForm<SignupFormData>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -16,7 +18,13 @@ export const useSignupForm = () => {
 
   const handleSubmit = form.handleSubmit(async (data) => {
     try {
-      console.log('Signing up with', data);
+      const response = await signup(data.username, data.email, data.password);
+      if (response.success) {
+        Alert.alert('Signup Successful', 'Welcome aboard!');
+      } else {
+        // Handle signup error
+        Alert.alert('Signup Failed', response.msg);
+      }
     } catch (err) {
       Alert.alert('Signup Failed', 'Something went wrong.');
     }
