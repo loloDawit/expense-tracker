@@ -4,7 +4,7 @@ import { verticalScale } from '@/utils/styling';
 import React from 'react';
 import { StyleSheet, Text, TextStyle } from 'react-native';
 
-const Typo = ({
+const Typography = ({
   size,
   color = colors.text,
   fontWeight = '400',
@@ -24,6 +24,6 @@ const Typo = ({
   );
 };
 
-export default Typo;
+export default Typography;
 
 const styles = StyleSheet.create({});
