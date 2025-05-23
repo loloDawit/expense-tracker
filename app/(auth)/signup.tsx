@@ -2,7 +2,7 @@ import BackButton from '@/components/BackButton';
 import Button from '@/components/Button';
 import FormInput from '@/components/FormInput';
 import ScreenWrapper from '@/components/ScreenWrapper';
-import Typo from '@/components/Typo';
+import Typography from '@/components/Typography';
 import { colors, spacingX, spacingY } from '@/constants/theme';
 import { useSignupForm } from '@/hooks/useSignupForm';
 import { verticalScale } from '@/utils/styling';
@@ -25,18 +25,18 @@ const Signup = () => {
       <View style={styles.container}>
         <BackButton />
         <View style={{ gap: 5, marginTop: spacingY._20 }}>
-          <Typo size={30} fontWeight={'800'}>
+          <Typography size={30} fontWeight={'800'}>
             Let&apos;s
-          </Typo>
-          <Typo size={30} fontWeight={'800'}>
+          </Typography>
+          <Typography size={30} fontWeight={'800'}>
             Get Started!
-          </Typo>
+          </Typography>
         </View>
         {/* From  */}
         <View style={styles.form}>
-          <Typo size={16} color={colors.textLight}>
+          <Typography size={16} color={colors.textLight}>
             Create an account
-          </Typo>
+          </Typography>
           <Controller
             control={control}
             name="username"
@@ -127,18 +127,18 @@ const Signup = () => {
               height: verticalScale(52),
             }}
           >
-            <Typo size={16} color={colors.white}>
+            <Typography size={16} color={colors.white}>
               Sign Up
-            </Typo>
+            </Typography>
           </Button>
         </View>
         {/* footer */}
         <View style={styles.footer}>
-          <Typo size={15}>Already have an account?</Typo>
+          <Typography size={15}>Already have an account?</Typography>
           <Pressable onPress={() => router.navigate('/(auth)/login')}>
-            <Typo size={15} color={colors.primary} fontWeight={'600'}>
+            <Typography size={15} color={colors.primary} fontWeight={'600'}>
               Login
-            </Typo>
+            </Typography>
           </Pressable>
         </View>
       </View>

@@ -3,7 +3,7 @@ import { InputProps } from '@/types';
 import { verticalScale } from '@/utils/styling';
 import React from 'react';
 import { StyleSheet, TextInput, View } from 'react-native';
-import Typo from './Typo';
+import Typography from './Typography';
 
 const FormInput = (props: InputProps) => {
   return (
@@ -21,9 +21,9 @@ const FormInput = (props: InputProps) => {
 
       {/* Error message below input */}
       {props.error && (
-        <Typo size={12} color="red" style={styles.errorText}>
+        <Typography size={12} color="red" style={styles.errorText}>
           {props.error}
-        </Typo>
+        </Typography>
       )}
     </View>
   );

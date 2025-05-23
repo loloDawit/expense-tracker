@@ -1,5 +1,5 @@
 import Button from '@/components/Button';
-import Typo from '@/components/Typo';
+import Typography from '@/components/Typography';
 import { colors } from '@/constants/theme';
 import { useAuth } from '@/contexts/AuthContext';
 import React from 'react';
@@ -21,9 +21,9 @@ const Home = () => {
           marginRight: 20,
         }}
       >
-        <Typo size={16} color={colors.white}>
+        <Typography size={16} color={colors.white}>
           Logout
-        </Typo>
+        </Typography>
       </Button>
     </View>
   );

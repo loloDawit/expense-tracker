@@ -1,8 +1,9 @@
 import Button from '@/components/Button';
 import ScreenWrapper from '@/components/ScreenWrapper';
-import Typo from '@/components/Typo';
+import Typography from '@/components/Typography';
 import { colors, spacingX, spacingY } from '@/constants/theme';
 import { verticalScale } from '@/utils/styling';
+import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -13,7 +14,9 @@ const Welcome = () => {
   const handleLogin = () => {
     router.push('/(auth)/login');
   };
+
   const handleGetStarted = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     router.push('/(auth)/signup');
   };
 
@@ -23,7 +26,7 @@ const Welcome = () => {
         {/*Login with image */}
         <View>
           <TouchableOpacity onPress={handleLogin} style={styles.loginButton}>
-            <Typo fontWeight={'500'}>Sign in</Typo>
+            <Typography fontWeight={'500'}>Sign In</Typography>
           </TouchableOpacity>
 
           <Animated.Image
@@ -40,12 +43,12 @@ const Welcome = () => {
             entering={FadeInDown.duration(1000).springify().damping(12)}
             style={{ alignItems: 'center' }}
           >
-            <Typo size={30} fontWeight={'800'}>
+            <Typography size={30} fontWeight={'800'}>
               Always take control
-            </Typo>
-            <Typo size={30} fontWeight={'800'}>
+            </Typography>
+            <Typography size={30} fontWeight={'800'}>
               of your finances
-            </Typo>
+            </Typography>
           </Animated.View>
           <Animated.View
             entering={FadeInDown.duration(1000)
@@ -54,12 +57,12 @@ const Welcome = () => {
               .damping(12)}
             style={{ alignItems: 'center', gap: 2 }}
           >
-            <Typo size={17} color={colors.textLight}>
-              Finances must be arranged to set a better
-            </Typo>
-            <Typo size={17} color={colors.textLight}>
-              lifestyle in the future
-            </Typo>
+            <Typography size={17} color={colors.textLight}>
+              Organize your finances today for a better
+            </Typography>
+            <Typography size={17} color={colors.textLight}>
+              lifestyle tomorrow.
+            </Typography>
           </Animated.View>
           <Animated.View
             entering={FadeInDown.duration(1000)
@@ -69,9 +72,13 @@ const Welcome = () => {
             style={styles.buttonContainer}
           >
             <Button onPress={handleGetStarted}>
-              <Typo size={16} color={colors.neutral900} fontWeight={'600'}>
+              <Typography
+                size={16}
+                color={colors.neutral900}
+                fontWeight={'600'}
+              >
                 Get Started
-              </Typo>
+              </Typography>
             </Button>
           </Animated.View>
         </Animated.View>
