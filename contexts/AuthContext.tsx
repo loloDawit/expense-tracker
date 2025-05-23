@@ -31,28 +31,25 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
   // Initialize Firebase auth state and redirect accordingly
   useEffect(() => {
+    logger.info('🔐 AuthProvider mounted');
     let isMounted = true;
 
     const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
       if (!isMounted) return;
 
       if (firebaseUser) {
-        const { uid, email, displayName, photoURL } = firebaseUser;
+        logger.info('✅ Signed in:', firebaseUser.email || firebaseUser.uid);
         setUser({
-          uid,
-          email: email ?? '',
-          displayName: displayName ?? '',
-          photoURL: photoURL ?? null,
+          uid: firebaseUser.uid,
+          email: firebaseUser.email ?? '',
+          displayName: firebaseUser.displayName ?? '',
+          photoURL: firebaseUser.photoURL ?? null,
         });
-
-        if (pathname.startsWith('/(auth)')) {
-          router.replace('/(tabs)');
-        }
+        router.replace('/(tabs)');
       } else {
+        logger.info('🚪 User signed out or session expired');
         setUser(null);
-        if (!pathname.startsWith('/(auth)')) {
-          router.replace('/(auth)/welcome');
-        }
+        router.replace('/(auth)/welcome');
       }
 
       setIsLoading(false);
@@ -60,6 +57,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
 
     return () => {
       isMounted = false;
+      logger.info('👋 AuthProvider unmounted');
       unsubscribe();
     };
   }, []);
