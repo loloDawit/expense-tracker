@@ -1,7 +1,7 @@
 import Button from '@/components/Button';
 import ScreenWrapper from '@/components/ScreenWrapper';
 import Typography from '@/components/Typography';
-import { colors, spacingX, spacingY } from '@/constants/theme';
+import { theme } from '@/constants/theme';
 import { verticalScale } from '@/utils/styling';
 import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
@@ -57,10 +57,10 @@ const Welcome = () => {
               .damping(12)}
             style={{ alignItems: 'center', gap: 2 }}
           >
-            <Typography size={17} color={colors.textLight}>
+            <Typography size={17} color={theme.colors.textLight}>
               Organize your finances today for a better
             </Typography>
-            <Typography size={17} color={colors.textLight}>
+            <Typography size={17} color={theme.colors.textLight}>
               lifestyle tomorrow.
             </Typography>
           </Animated.View>
@@ -74,7 +74,7 @@ const Welcome = () => {
             <Button onPress={handleGetStarted}>
               <Typography
                 size={16}
-                color={colors.neutral900}
+                color={theme.colors.neutral900}
                 fontWeight={'600'}
               >
                 Get Started
@@ -93,7 +93,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'space-between',
-    paddingTop: spacingY._7,
+    paddingTop: theme.spacing.y._7,
   },
   WelcomeImage: {
     width: '100%',
@@ -103,14 +103,14 @@ const styles = StyleSheet.create({
   },
   loginButton: {
     alignSelf: 'flex-end',
-    marginRight: spacingX._20,
+    marginRight: theme.spacing.x._20,
   },
   footer: {
-    backgroundColor: colors.neutral900,
+    backgroundColor: theme.colors.neutral900,
     alignItems: 'center',
     paddingTop: verticalScale(30),
     paddingBottom: verticalScale(45),
-    gap: spacingY._20,
+    gap: theme.spacing.y._20,
     shadowColor: 'white',
     shadowOffset: {
       width: 0,
@@ -122,6 +122,6 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: '100%',
-    paddingHorizontal: spacingX._25,
+    paddingHorizontal: theme.spacing.x._25,
   },
 });
