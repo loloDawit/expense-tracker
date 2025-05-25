@@ -1,15 +1,16 @@
 import Button from '@/components/Button';
+import ScreenWrapper from '@/components/ScreenWrapper';
 import Typography from '@/components/Typography';
 import { colors } from '@/constants/theme';
 import { useAuth } from '@/contexts/AuthContext';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 const Home = () => {
   const { logout } = useAuth();
   return (
-    <View>
-      <Text>Home</Text>
+    <ScreenWrapper>
+      <Typography>Home</Typography>
       <Button
         onPress={async () => {
           await logout();
@@ -25,7 +26,7 @@ const Home = () => {
           Logout
         </Typography>
       </Button>
-    </View>
+    </ScreenWrapper>
   );
 };
 
