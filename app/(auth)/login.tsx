@@ -3,7 +3,7 @@ import Button from '@/components/Button';
 import FormInput from '@/components/FormInput';
 import ScreenWrapper from '@/components/ScreenWrapper';
 import Typography from '@/components/Typography';
-import { colors, spacingX, spacingY } from '@/constants/theme';
+import { theme } from '@/constants/theme';
 import { useLoginForm } from '@/hooks/useLoginForm';
 import { verticalScale } from '@/utils/styling';
 import { useRouter } from 'expo-router';
@@ -24,7 +24,7 @@ const Login = () => {
     <ScreenWrapper>
       <View style={styles.container}>
         <BackButton />
-        <View style={{ gap: 5, marginTop: spacingY._20 }}>
+        <View style={{ gap: 5, marginTop: theme.spacing.y._20 }}>
           <Typography size={30} fontWeight={'800'}>
             Hey,
           </Typography>
@@ -34,7 +34,7 @@ const Login = () => {
         </View>
         {/* From  */}
         <View style={styles.form}>
-          <Typography size={16} color={colors.textLight}>
+          <Typography size={16} color={theme.colors.textLight}>
             Login to your account
           </Typography>
           <Controller
@@ -48,7 +48,7 @@ const Login = () => {
                 icon={
                   <Icons.At
                     size={verticalScale(26)}
-                    color={colors.neutral300}
+                    color={theme.colors.neutral300}
                     weight="fill"
                   />
                 }
@@ -69,7 +69,7 @@ const Login = () => {
                 icon={
                   <Icons.Lock
                     size={verticalScale(26)}
-                    color={colors.neutral300}
+                    color={theme.colors.neutral300}
                     weight="fill"
                   />
                 }
@@ -80,7 +80,7 @@ const Login = () => {
           {/* todo: add forgot password functionality */}
           <Typography
             size={14}
-            color={colors.text}
+            color={theme.colors.text}
             style={styles.forgotPassword}
           >
             Forgot Password?
@@ -89,12 +89,12 @@ const Login = () => {
             loading={isSubmitting}
             onPress={handleSubmit}
             style={{
-              backgroundColor: colors.primary,
+              backgroundColor: theme.colors.primary,
               borderRadius: 17,
               height: verticalScale(52),
             }}
           >
-            <Typography size={16} color={colors.white}>
+            <Typography size={16} color={theme.colors.white}>
               Login
             </Typography>
           </Button>
@@ -103,7 +103,11 @@ const Login = () => {
         <View style={styles.footer}>
           <Typography size={15}>Don’t have an account?</Typography>
           <Pressable onPress={() => router.navigate('/(auth)/signup')}>
-            <Typography size={15} color={colors.primary} fontWeight={'600'}>
+            <Typography
+              size={15}
+              color={theme.colors.primary}
+              fontWeight={'600'}
+            >
               Sign Up
             </Typography>
           </Pressable>
@@ -118,22 +122,22 @@ export default Login;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    gap: spacingY._30,
-    paddingHorizontal: spacingX._20,
+    gap: theme.spacing.y._30,
+    paddingHorizontal: theme.spacing.x._20,
   },
   WelcomeText: {
     fontSize: verticalScale(20),
     fontWeight: 'bold',
-    color: colors.text,
+    color: theme.colors.text,
   },
   form: {
-    gap: spacingY._20,
+    gap: theme.spacing.y._20,
   },
   forgotPassword: {
     alignSelf: 'flex-end',
     textAlign: 'right',
     fontWeight: '500',
-    color: colors.text,
+    color: theme.colors.text,
   },
   footer: {
     flexDirection: 'row',
@@ -143,7 +147,7 @@ const styles = StyleSheet.create({
   },
   footerText: {
     fontSize: verticalScale(15),
-    color: colors.text,
+    color: theme.colors.text,
     textAlign: 'center',
   },
 });
