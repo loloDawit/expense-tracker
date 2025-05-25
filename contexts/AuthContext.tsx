@@ -2,14 +2,15 @@ import { auth, firestore } from '@/config/firebase';
 import { AuthContextType, UserType } from '@/types';
 import { getFirebaseAuthErrorMessage } from '@/utils/firebaseError';
 import logger from '@/utils/logger';
-import { usePathname, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import {
   createUserWithEmailAndPassword,
   onAuthStateChanged,
+  sendEmailVerification,
   signInWithEmailAndPassword,
   signOut,
 } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, getDoc, setDoc } from 'firebase/firestore';
 import {
   createContext,
   ReactNode,
@@ -27,7 +28,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
   const [isLoading, setIsLoading] = useState(true);
 
   const router = useRouter();
-  const pathname = usePathname();
 
   // Initialize Firebase auth state and redirect accordingly
   useEffect(() => {
@@ -38,14 +38,32 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       if (!isMounted) return;
 
       if (firebaseUser) {
-        logger.info('✅ Signed in:', firebaseUser.email || firebaseUser.uid);
-        setUser({
-          uid: firebaseUser.uid,
-          email: firebaseUser.email ?? '',
-          displayName: firebaseUser.displayName ?? '',
-          photoURL: firebaseUser.photoURL ?? null,
-        });
-        router.replace('/(tabs)');
+        logger.info('✅ Signed in:', firebaseUser);
+        if (firebaseUser.emailVerified) {
+          logger.info('✅ Email verified:', firebaseUser.email);
+
+          setUser({
+            uid: firebaseUser.uid,
+            email: firebaseUser.email ?? '',
+            displayName: firebaseUser.displayName ?? '',
+            photoURL: firebaseUser.photoURL
+              ? { uri: firebaseUser.photoURL }
+              : undefined,
+          });
+          updateUserData({
+            uid: firebaseUser.uid,
+            email: firebaseUser.email ?? '',
+            displayName: firebaseUser.displayName ?? '',
+            photoURL: firebaseUser.photoURL
+              ? { uri: firebaseUser.photoURL }
+              : undefined,
+          });
+          router.replace('/(tabs)/home');
+        } else {
+          logger.warn('❗ Email not verified');
+          setUser(null);
+          router.replace('/(auth)/verify-email');
+        }
       } else {
         logger.info('🚪 User signed out or session expired');
         setUser(null);
@@ -87,7 +105,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         uid,
         email: userEmail ?? '',
         displayName: displayName ?? '',
-        photoURL: photoURL ?? null,
+        photoURL: photoURL ? { uri: photoURL } : undefined,
       });
       return { success: true };
     } catch (error: any) {
@@ -122,11 +140,17 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       const res = await createUserWithEmailAndPassword(auth, email, password);
       const { uid } = res.user;
 
+      // send email verification
+      await sendEmailVerification(res.user, {
+        url: 'https://expense-tracker-app-68fed.web.app/verify',
+      });
+      logger.info('Email verification sent to:', email);
+
       const newUser: UserType = {
         uid,
         email,
         displayName: name,
-        photoURL: null,
+        photoURL: undefined,
       };
 
       await setDoc(doc(firestore, 'users', uid), newUser);
@@ -163,13 +187,39 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
    * @example
    * await updateUserData({ displayName: 'Updated Name' });
    */
-  const updateUserData = async (data: Partial<UserType>): Promise<void> => {
+  const updateUserData = async (user: Partial<UserType>): Promise<void> => {
     if (!user?.uid) return;
 
     const userRef = doc(firestore, 'users', user.uid);
+    const docSnapshot = await getDoc(userRef);
+
     try {
-      await setDoc(userRef, data, { merge: true });
-      setUser((prev) => ({ ...prev!, ...data }));
+      if (!docSnapshot.exists()) {
+        logger.warn('User document does not exist, creating a new one');
+        console.log('Creating new user document:', user);
+        await setDoc(
+          userRef,
+          {
+            uid: user.uid,
+            displayName: user.displayName,
+            email: user.email,
+            photoURL: user.photoURL ? { uri: user.photoURL } : null,
+          },
+          { merge: true },
+        );
+        return;
+      }
+      const data = docSnapshot.data() ?? {};
+      console.log({ data });
+
+      const userData: UserType = {
+        uid: data.uid ?? '',
+        email: data.email ?? '',
+        displayName: data.displayName ?? '',
+        photoURL: data.photoURL ?? null,
+      };
+
+      setUser((prev) => ({ ...prev!, ...userData }));
     } catch (error) {
       logger.error('updateUserData error:', error);
     }
