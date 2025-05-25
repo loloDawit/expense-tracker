@@ -24,6 +24,7 @@ export type accountOptionType = {
   icon: React.ReactNode;
   bgColor: string;
   routeName?: any;
+  details?: boolean;
 };
 
 export type TypoProps = {
@@ -111,6 +112,7 @@ export interface CustomButtonProps extends TouchableOpacityProps {
   style?: ViewStyle;
   onPress?: () => void;
   loading?: boolean;
+  disabled?: boolean;
   children: React.ReactNode;
 }
 
@@ -127,16 +129,11 @@ export type UserType = {
   uid?: string;
   email?: string | null;
   displayName?: string | null;
-  photoURL?: string | null;
-} | null;
-
-export type UserDataType = {
-  name: string;
-  image?: any;
+  photoURL?: string | { uri: string };
 };
 
 export type AuthContextType = {
-  user: UserType;
+  user: UserType | null;
   isLoading: boolean;
   login: (
     email: string,
