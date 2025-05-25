@@ -1,5 +1,7 @@
+// src/constants/theme.ts
 import { scale, verticalScale } from '@/utils/styling';
 
+// COLORS
 export const colors = {
   primary: '#a3e635',
   primaryLight: '#0ea5e9',
@@ -24,7 +26,8 @@ export const colors = {
   neutral900: '#171717',
 };
 
-export const spacingX = {
+// SPACING
+const baseX = {
   _3: scale(3),
   _5: scale(5),
   _7: scale(7),
@@ -38,7 +41,7 @@ export const spacingX = {
   _40: scale(40),
 };
 
-export const spacingY = {
+const baseY = {
   _5: verticalScale(5),
   _7: verticalScale(7),
   _10: verticalScale(10),
@@ -54,13 +57,77 @@ export const spacingY = {
   _60: verticalScale(60),
 };
 
+export const spacing = {
+  x: baseX,
+  y: baseY,
+  default: baseY._10,
+  lg: baseY._20,
+};
+
+// RADIUS
 export const radius = {
-  _3: verticalScale(3),
-  _6: verticalScale(6),
-  _10: verticalScale(10),
-  _12: verticalScale(12),
-  _15: verticalScale(15),
-  _17: verticalScale(17),
-  _20: verticalScale(20),
-  _30: verticalScale(30),
+  sm: verticalScale(3),
+  md: verticalScale(10),
+  lg: verticalScale(20),
+  pill: 9999,
+};
+
+// FONT SIZES
+export const fontSize = {
+  xs: scale(10),
+  sm: scale(12),
+  base: scale(14),
+  md: scale(16),
+  lg: scale(18),
+  xl: scale(20),
+  '2xl': scale(24),
+  '3xl': scale(30),
+};
+
+// FONT WEIGHTS
+export const fontWeight = {
+  light: '300',
+  normal: '400',
+  medium: '500',
+  bold: '700',
+  black: '900',
+} as const;
+
+// SHADOWS
+export const shadow = {
+  base: {
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  lg: {
+    shadowColor: colors.black,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+};
+
+// Z-INDEX
+export const zIndex = {
+  behind: -1,
+  base: 0,
+  dropdown: 10,
+  modal: 100,
+  toast: 1000,
+  overlay: 9999,
+};
+
+// THEME EXPORT
+export const theme = {
+  colors,
+  spacing,
+  radius,
+  fontSize,
+  fontWeight,
+  shadow,
+  zIndex,
 };
