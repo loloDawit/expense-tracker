@@ -2,7 +2,7 @@ import { FirebaseApp, initializeApp } from 'firebase/app';
 
 import logger from '@/utils/logger';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as Sentry from '@sentry/react-native'; // ✅ correct SDK
+import * as Sentry from '@sentry/react-native';
 import Constants from 'expo-constants';
 import { Auth, getReactNativePersistence, initializeAuth } from 'firebase/auth';
 import { Firestore, getFirestore } from 'firebase/firestore';
@@ -13,7 +13,7 @@ if (!firebaseConfig?.apiKey) {
   const configError = new Error(
     '❌ Firebase config is missing or incomplete. Check app.config.js and .env.',
   );
-  Sentry.captureException(configError); // ✅ Send to Sentry
+  Sentry.captureException(configError);
   throw configError;
 }
 
@@ -34,8 +34,8 @@ try {
   logger.info('🔥 Firestore initialized successfully');
 } catch (error) {
   logger.error('Error initializing Firebase:', error);
-  Sentry.captureException(error); // ✅ proper method
-  throw error; // Still crash app
+  Sentry.captureException(error);
+  throw error;
 }
 
 export { app, auth, firestore };
