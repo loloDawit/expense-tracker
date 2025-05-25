@@ -1,4 +1,4 @@
-import { colors, radius, spacingX } from '@/constants/theme';
+import { theme } from '@/constants/theme';
 import { InputProps } from '@/types';
 import { verticalScale } from '@/utils/styling';
 import React from 'react';
@@ -13,7 +13,7 @@ const FormInput = (props: InputProps) => {
         {props.icon && props.icon}
         <TextInput
           style={[styles.input, props.inputStyle]}
-          placeholderTextColor={colors.neutral400}
+          placeholderTextColor={theme.colors.neutral400}
           ref={props.inputRef}
           {...props}
         />
@@ -35,19 +35,19 @@ const styles = StyleSheet.create({
   inputWrapper: {
     flexDirection: 'row',
     height: verticalScale(55),
-    borderRadius: radius._17,
+    borderRadius: theme.radius.sm,
     borderCurve: 'continuous',
-    borderColor: colors.neutral300,
+    borderColor: theme.colors.neutral300,
     borderWidth: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingHorizontal: spacingX._15,
-    gap: spacingX._10,
+    paddingHorizontal: theme.spacing.y._15,
+    gap: theme.spacing.x._10,
   },
   input: {
     flex: 1,
     fontSize: verticalScale(14),
-    color: colors.white,
+    color: theme.colors.white,
   },
   errorText: {
     marginTop: 4,
