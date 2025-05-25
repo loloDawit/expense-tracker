@@ -1,4 +1,4 @@
-import { colors } from '@/constants/theme';
+import { theme } from '@/constants/theme';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
@@ -31,7 +31,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.neutral900,
+    backgroundColor: theme.colors.neutral900,
   },
   logo: {
     height: '20%',
