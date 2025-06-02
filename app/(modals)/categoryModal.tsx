@@ -63,7 +63,7 @@ const CategoryModal = () => {
             icon: item.icon,
             bgColor: item.bgColor,
             type: item.type,
-          }))
+          })),
         );
       }
     };
@@ -85,10 +85,7 @@ const CategoryModal = () => {
 
     const res = await createOrUpdateCategory(user.uid, newCategory);
     if (res.success && res.data) {
-      setCategories((prev) => [
-        ...prev,
-        { ...newCategory, id: res.data.id }
-      ]);
+      setCategories((prev) => [...prev, { ...newCategory, id: res.data.id }]);
       setNewLabel('');
       setNewIcon('Tag');
       setNewColor('#4B5563');
@@ -124,7 +121,10 @@ const CategoryModal = () => {
                 ? Icons[item.icon]
                 : Icons.Tag;
             return (
-              <View key={item.id} style={styles.row}>
+              <View
+                key={item.id || `${item.label}-${item.icon}`}
+                style={styles.row}
+              >
                 <View
                   style={[
                     styles.iconWrapper,

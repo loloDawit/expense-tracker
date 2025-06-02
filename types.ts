@@ -77,10 +77,12 @@ export type TransactionType = {
 };
 
 export type CategoryType = {
+  id: string; // Unique identifier for the category
   label: string;
   value: string;
-  icon: Icon;
+  icon: keyof typeof import('phosphor-react-native');
   bgColor: string;
+  type: 'income' | 'expense'; // Type of category, either income or expense
 };
 export type ExpenseCategoriesType = {
   [key: string]: CategoryType;
