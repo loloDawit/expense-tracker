@@ -1,9 +1,10 @@
 import 'dotenv/config';
+const IS_DEV = process.env.APP_VARIANT === 'development';
 
 export default {
   expo: {
-    name: 'expense-tracker-app',
-    slug: 'expense-tracker',
+    name: IS_DEV ? 'Expense Tracker Dev' : 'Expense Tracker',
+    slug: IS_DEV ? 'expense-tracker-dev' : 'expense-tracker',
     scheme: 'expense-tracker-app',
     version: '1.0.0',
     updates: {

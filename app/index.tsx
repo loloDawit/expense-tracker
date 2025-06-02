@@ -6,11 +6,10 @@ import { Image, StyleSheet, View } from 'react-native';
 const Index = () => {
   const router = useRouter();
   React.useEffect(() => {
-    const timer = setTimeout(() => {
-      router.push('/(auth)/welcome');
-    }, 2000);
-
-    return () => clearTimeout(timer);
+    // const timer = setTimeout(() => {
+    //   router.push('/(auth)/welcome');
+    // }, 5000);
+    // return () => clearTimeout(timer);
   }, []);
 
   return (

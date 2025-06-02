@@ -149,8 +149,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       const newUser: UserType = {
         uid,
         email,
-        displayName: name,
-        photoURL: undefined,
+        displayName: name
       };
 
       await setDoc(doc(firestore, 'users', uid), newUser);

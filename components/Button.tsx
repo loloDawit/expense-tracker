@@ -19,7 +19,7 @@ const Button = ({
   if (loading) {
     return (
       <View style={[styles.button, style, { backgroundColor }]}>
-        <Loading />
+        <Loading color={theme.colors.black} />
       </View>
     );
   }

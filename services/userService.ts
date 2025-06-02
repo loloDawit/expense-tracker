@@ -1,7 +1,7 @@
 import { firestore } from '@/config/firebase';
 import { ResponseType, UserType } from '@/types';
 import { doc, updateDoc } from 'firebase/firestore';
-import { uploadFileToCloudinary } from './imageServices';
+import { getCloudinaryPath, uploadFileToCloudinary } from './imageServices';
 
 export const updateUser = async (
   uid: string,
@@ -14,7 +14,7 @@ export const updateUser = async (
       typeof updatedData.photoURL !== 'string' &&
       'uri' in updatedData.photoURL;
 
-    const folderPath = `expense-tracker-app/users/${uid}`;
+    const folderPath = getCloudinaryPath('profile', uid);
 
     if (isLocalImage) {
       const uploadResult = await uploadFileToCloudinary(
