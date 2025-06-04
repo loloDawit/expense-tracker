@@ -2,33 +2,43 @@ import { theme } from '@/constants/theme';
 import { scale, verticalScale } from '@/utils/styling';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import * as Icons from 'phosphor-react-native';
-import { Platform, StyleSheet, TouchableOpacity, View } from 'react-native';
+import React from 'react';
+import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+
+type TabNames = 'home' | 'statistics' | 'wallet' | 'settings';
 
 const CustomTabs = ({ state, descriptors, navigation }: BottomTabBarProps) => {
-  const tabbarIcons: any = {
-    home: (isFocused: boolean) => (
+  const displayLabels: Record<TabNames, string> = {
+    home: 'Home',
+    statistics: 'Stats',
+    wallet: 'Income',
+    settings: 'Settings',
+  };
+
+  const tabbarIcons: Record<TabNames, (isFocused: boolean) => JSX.Element> = {
+    home: (isFocused) => (
       <Icons.House
         size={verticalScale(30)}
         weight={isFocused ? 'fill' : 'regular'}
         color={isFocused ? theme.colors.primary : theme.colors.neutral400}
       />
     ),
-    statistics: (isFocused: boolean) => (
+    statistics: (isFocused) => (
       <Icons.ChartBar
         size={verticalScale(30)}
         weight={isFocused ? 'fill' : 'regular'}
         color={isFocused ? theme.colors.primary : theme.colors.neutral400}
       />
     ),
-    wallet: (isFocused: boolean) => (
+    wallet: (isFocused) => (
       <Icons.Wallet
         size={verticalScale(30)}
         weight={isFocused ? 'fill' : 'regular'}
         color={isFocused ? theme.colors.primary : theme.colors.neutral400}
       />
     ),
-    profile: (isFocused: boolean) => (
-      <Icons.User
+    settings: (isFocused) => (
+      <Icons.Gear
         size={verticalScale(30)}
         weight={isFocused ? 'fill' : 'regular'}
         color={isFocused ? theme.colors.primary : theme.colors.neutral400}
@@ -37,11 +47,11 @@ const CustomTabs = ({ state, descriptors, navigation }: BottomTabBarProps) => {
   };
 
   return (
-    <View style={styles.tabbar}>
+    <View style={[styles.tabbar, { paddingBottom: 10 }]}>
       {state.routes.map((route, index) => {
-        const { options } = descriptors[route.key];
-
         const isFocused = state.index === index;
+        const { options } = descriptors[route.key];
+        const name = route.name as TabNames;
 
         const onPress = () => {
           const event = navigation.emit({
@@ -63,8 +73,8 @@ const CustomTabs = ({ state, descriptors, navigation }: BottomTabBarProps) => {
         };
 
         return (
-          <TouchableOpacity
-            key={route.name}
+          <Pressable
+            key={route.key}
             accessibilityRole="button"
             accessibilityState={isFocused ? { selected: true } : {}}
             accessibilityLabel={options.tabBarAccessibilityLabel}
@@ -72,8 +82,20 @@ const CustomTabs = ({ state, descriptors, navigation }: BottomTabBarProps) => {
             onLongPress={onLongPress}
             style={styles.tabbarItem}
           >
-            {tabbarIcons[route.name] && tabbarIcons[route.name](isFocused)}
-          </TouchableOpacity>
+            {tabbarIcons[name](isFocused)}
+            <Text
+              style={[
+                styles.label,
+                {
+                  color: isFocused
+                    ? theme.colors.primary
+                    : theme.colors.neutral400,
+                },
+              ]}
+            >
+              {displayLabels[name]}
+            </Text>
+          </Pressable>
         );
       })}
     </View>
@@ -86,7 +108,7 @@ const styles = StyleSheet.create({
   tabbar: {
     flexDirection: 'row',
     width: '100%',
-    height: Platform.OS == 'ios' ? verticalScale(73) : verticalScale(55),
+    height: Platform.OS === 'ios' ? verticalScale(73) : verticalScale(60),
     paddingHorizontal: scale(10),
     backgroundColor: theme.colors.neutral800,
     justifyContent: 'space-around',
@@ -102,9 +124,12 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
   },
   tabbarItem: {
-    marginBottom:
-      Platform.OS == 'ios' ? theme.spacing.y._10 : theme.spacing.y._5,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  label: {
+    marginTop: verticalScale(2),
+    fontSize: scale(12),
+    fontWeight: '500',
   },
 });
