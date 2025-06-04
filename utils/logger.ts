@@ -1,42 +1,27 @@
-type LogLevel = 'info' | 'warn' | 'error' | 'debug';
+const isProd = process.env.NODE_ENV === 'production';
 
-const logPrefix = {
-  info: 'ℹ️ [INFO]',
-  warn: '⚠️ [WARN]',
-  error: '🔴 [ERROR]',
-  debug: '🐛 [DEBUG]',
-};
-
-const logFunctionMap = {
-  info: console.info,
-  warn: console.warn,
-  error: console.error,
-  debug: console.debug,
-};
+// You can route logs to Sentry or a remote store in production
+function logToConsole(type: 'log' | 'warn' | 'error' | 'info', ...args: any[]) {
+  if (!isProd || type === 'error') {
+    // Show everything in dev, but only errors in prod
+    console[type](...args);
+  }
+}
 
 const logger = {
-  info: (message: string, ...args: unknown[]) => {
-    console.info(logPrefix.info, message, ...args);
+  info: (...args: any[]) => logToConsole('info', 'ℹ️ [INFO]', ...args),
+  warn: (...args: any[]) => logToConsole('warn', '⚠️ [WARN]', ...args),
+  error: (...args: any[]) => logToConsole('error', '🔥 [ERROR]', ...args),
+  debug: (...args: any[]) => {
+    if (!isProd) logToConsole('log', '🐛 [DEBUG]', ...args);
   },
-  warn: (message: string, ...args: unknown[]) => {
-    console.warn(logPrefix.warn, message, ...args);
-  },
-  error: (message: string, ...args: unknown[]) => {
-    console.error(logPrefix.error, message, ...args);
-  },
-  debug: (message: string, ...args: unknown[]) => {
-    if (__DEV__) {
-      console.debug(logPrefix.debug, message, ...args);
+
+  // Optional: integrate Sentry
+  remote: (error: unknown, context?: Record<string, any>) => {
+    // Add integration here (Sentry, Firebase, etc.)
+    if (isProd) {
+      // e.g., Sentry.captureException(error, { extra: context });
     }
-  },
-
-  log: (level: LogLevel, message: string, ...args: unknown[]) => {
-    if (level === 'debug' && !__DEV__) return;
-
-    const prefix = logPrefix[level];
-    const fn = logFunctionMap[level] || console.log;
-
-    fn(prefix, message, ...args);
   },
 };
 

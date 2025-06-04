@@ -24,6 +24,7 @@ export type accountOptionType = {
   icon: React.ReactNode;
   bgColor: string;
   routeName?: any;
+  details?: boolean;
 };
 
 export type TypoProps = {
@@ -65,7 +66,7 @@ export type BackButtonProps = {
 
 export type TransactionType = {
   id?: string;
-  type: string;
+  type: 'income' | 'expense';
   amount: number;
   category?: string;
   date: Date | Timestamp | string;
@@ -76,10 +77,12 @@ export type TransactionType = {
 };
 
 export type CategoryType = {
+  id: string; // Unique identifier for the category
   label: string;
   value: string;
-  icon: Icon;
+  icon: keyof typeof import('phosphor-react-native');
   bgColor: string;
+  type: 'income' | 'expense'; // Type of category, either income or expense
 };
 export type ExpenseCategoriesType = {
   [key: string]: CategoryType;
@@ -111,6 +114,7 @@ export interface CustomButtonProps extends TouchableOpacityProps {
   style?: ViewStyle;
   onPress?: () => void;
   loading?: boolean;
+  disabled?: boolean;
   children: React.ReactNode;
 }
 
@@ -127,16 +131,11 @@ export type UserType = {
   uid?: string;
   email?: string | null;
   displayName?: string | null;
-  photoURL?: string | null;
-} | null;
-
-export type UserDataType = {
-  name: string;
-  image?: any;
+  photoURL?: string | { uri: string };
 };
 
 export type AuthContextType = {
-  user: UserType;
+  user: UserType | null;
   isLoading: boolean;
   login: (
     email: string,

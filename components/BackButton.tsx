@@ -1,13 +1,15 @@
-import { colors, radius } from '@/constants/theme';
+import { theme } from '@/constants/theme';
 import { BackButtonProps } from '@/types';
 import { verticalScale } from '@/utils/styling';
 import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 import { CaretLeft } from 'phosphor-react-native';
 import React from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 
 const BackButton = ({ style, iconSize = 26 }: BackButtonProps) => {
   const navigation = useNavigation();
+  const router = useRouter();
   return (
     <TouchableOpacity
       onPress={() => {
@@ -16,13 +18,14 @@ const BackButton = ({ style, iconSize = 26 }: BackButtonProps) => {
         } else {
           // fallback: maybe navigate home or show toast
           console.warn('No back history available');
+          router.push('/(auth)/welcome');
         }
       }}
       style={[styles.button, style]}
     >
       <CaretLeft
         size={verticalScale(iconSize)}
-        color={colors.white}
+        color={theme.colors.white}
         weight="bold"
       />
     </TouchableOpacity>
@@ -33,8 +36,8 @@ export default BackButton;
 
 const styles = StyleSheet.create({
   button: {
-    backgroundColor: colors.neutral600,
-    borderRadius: radius._12,
+    backgroundColor: theme.colors.neutral600,
+    borderRadius: theme.radius.sm,
     borderCurve: 'continuous',
     alignSelf: 'flex-start',
     padding: 5,

@@ -1,4 +1,4 @@
-import { colors } from '@/constants/theme';
+import { theme } from '@/constants/theme';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
@@ -6,11 +6,10 @@ import { Image, StyleSheet, View } from 'react-native';
 const Index = () => {
   const router = useRouter();
   React.useEffect(() => {
-    const timer = setTimeout(() => {
-      router.push('/(auth)/welcome');
-    }, 2000);
-
-    return () => clearTimeout(timer);
+    // const timer = setTimeout(() => {
+    //   router.push('/(auth)/welcome');
+    // }, 5000);
+    // return () => clearTimeout(timer);
   }, []);
 
   return (
@@ -31,7 +30,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: colors.neutral900,
+    backgroundColor: theme.colors.neutral900,
   },
   logo: {
     height: '20%',
