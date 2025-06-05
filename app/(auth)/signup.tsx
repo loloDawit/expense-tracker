@@ -142,7 +142,7 @@ const Signup = () => {
         <View style={styles.footer}>
           <Typography size={15}>Already have an account?</Typography>
           <Pressable onPress={() => router.navigate('/(auth)/login')}>
-            <Typography size={15} color={colors.primary} fontWeight={'600'}>
+            <Typography size={15} color={colors.primary}>
               Login
             </Typography>
           </Pressable>

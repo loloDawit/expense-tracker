@@ -78,7 +78,7 @@ const Welcome = () => {
             style={{ width: '100%', paddingHorizontal: spacing.x._25 }}
           >
             <Button onPress={handleGetStarted}>
-              <Typography size={16} color={colors.neutral900} fontWeight="600">
+              <Typography size={16} color={colors.white}>
                 Get Started
               </Typography>
             </Button>
