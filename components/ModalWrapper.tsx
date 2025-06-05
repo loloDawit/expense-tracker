@@ -1,18 +1,27 @@
-import { theme } from '@/constants/theme';
-import { ModalWrapperProps } from '@/types';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { Platform, StyleSheet, View } from 'react-native';
+import { Platform, View } from 'react-native';
 
-const isIos = Platform.OS == 'ios';
+import { useTheme } from '@/contexts/ThemeContext';
+import { ModalWrapperProps } from '@/types';
 
-const ModalWrapper = ({
-  style,
-  children,
-  bg = theme.colors.neutral800,
-}: ModalWrapperProps) => {
+const isIos = Platform.OS === 'ios';
+
+const ModalWrapper = ({ style, children, bg }: ModalWrapperProps) => {
+  const { colors, spacing } = useTheme();
+
   return (
-    <View style={[styles.container, { backgroundColor: bg }, style && style]}>
+    <View
+      style={[
+        {
+          backgroundColor: bg || colors.background,
+          paddingTop: isIos ? spacing.x._15 : 50,
+          paddingBottom: isIos ? spacing.y._20 : spacing.y._10,
+          flex: 1,
+        },
+        style,
+      ]}
+    >
       <StatusBar style="light" />
       {children}
     </View>
@@ -20,11 +29,3 @@ const ModalWrapper = ({
 };
 
 export default ModalWrapper;
-
-const styles = StyleSheet.create({
-  container: {
-    paddingTop: isIos ? theme.spacing.x._15 : 50,
-    paddingBottom: isIos ? theme.spacing.y._20 : theme.spacing.y._10,
-    flex: 1,
-  },
-});

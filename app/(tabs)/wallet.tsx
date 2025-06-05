@@ -5,8 +5,8 @@ import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import Loading from '@/components/Loading';
 import Typography from '@/components/Typography';
 import WalletListItem from '@/components/WalletListItem';
-import { theme } from '@/constants/theme';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import useFetchData from '@/hooks/useFetchData';
 import { WalletType } from '@/types';
 import { formatAmount } from '@/utils/helper';
@@ -15,6 +15,7 @@ import { useRouter } from 'expo-router';
 import { orderBy, where } from 'firebase/firestore';
 import * as Icons from 'phosphor-react-native';
 const Wallet = () => {
+  const { colors, fontSize, radius, spacing } = useTheme();
   const router = useRouter();
   const { user } = useAuth();
   const {
@@ -33,10 +34,10 @@ const Wallet = () => {
     }, 0);
 
   return (
-    <ScreenWrapper style={{ backgroundColor: theme.colors.black }}>
+    <ScreenWrapper style={{ backgroundColor: colors.black }}>
       <View style={styles.container}>
         {/* balance view */}
-        <View style={styles.balanceView}>
+        <View style={[styles.balanceView, { backgroundColor: colors.black }]}>
           <View style={{ alignItems: 'center' }}>
             <Typography
               size={45}
@@ -48,16 +49,27 @@ const Wallet = () => {
             >
               {formatAmount(getTotalBalance())}
             </Typography>
-            <Typography size={16} color={theme.colors.neutral300}>
+            <Typography size={16} color={colors.neutral300}>
               Total Income
             </Typography>
           </View>
         </View>
 
         {/* wallets */}
-        <View style={styles.wallets}>
+        <View
+          style={[
+            styles.wallets,
+            {
+              backgroundColor: colors.neutral900,
+              borderTopRightRadius: radius.md,
+              borderTopLeftRadius: radius.md,
+              padding: spacing.x._20,
+              paddingTop: spacing.x._25,
+            },
+          ]}
+        >
           {/* header */}
-          <View style={styles.flexRow}>
+          <View style={[styles.flexRow, { marginBottom: spacing.y._10 }]}>
             <Typography size={20} fontWeight={'500'}>
               Income Streams
             </Typography>
@@ -66,15 +78,15 @@ const Wallet = () => {
             >
               <Icons.PlusCircle
                 weight="fill"
-                color={theme.colors.primary}
+                color={colors.primary}
                 size={verticalScale(33)}
               />
             </TouchableOpacity>
           </View>
           <Typography
-            size={theme.fontSize.base}
+            size={fontSize.base}
             fontWeight="200"
-            color={theme.colors.neutral400}
+            color={colors.neutral400}
           >
             Track where your money is coming from
           </Typography>
@@ -85,7 +97,10 @@ const Wallet = () => {
             renderItem={({ item, index }) => (
               <WalletListItem item={item} router={router} index={index} />
             )}
-            contentContainerStyle={styles.listStyle}
+            contentContainerStyle={[
+              styles.listStyle,
+              { paddingVertical: spacing.y._25, paddingTop: spacing.y._15 },
+            ]}
             // keyExtractor={(item) => item.id}
           />
         </View>
@@ -103,7 +118,6 @@ const styles = StyleSheet.create({
   },
   balanceView: {
     height: verticalScale(160),
-    backgroundColor: theme.colors.black,
     justifyContent: 'center',
     alignItems: 'center',
   },
@@ -111,19 +125,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: theme.spacing.y._10,
   },
   wallets: {
     flex: 1,
-    backgroundColor: theme.colors.neutral900,
-    borderTopRightRadius: theme.radius.md,
-
-    borderTopLeftRadius: theme.radius.md,
-    padding: theme.spacing.x._20,
-    paddingTop: theme.spacing.x._25,
   },
-  listStyle: {
-    paddingVertical: theme.spacing.y._25,
-    paddingTop: theme.spacing.y._15,
-  },
+  listStyle: {},
 });

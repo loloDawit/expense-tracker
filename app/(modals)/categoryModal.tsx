@@ -13,7 +13,6 @@ import Header from '@/components/Header';
 import Input from '@/components/Input';
 import ModalWrapper from '@/components/ModalWrapper';
 import Typography from '@/components/Typography';
-import { theme } from '@/constants/theme';
 import { useAuth } from '@/contexts/AuthContext';
 import * as Icons from 'phosphor-react-native';
 
@@ -23,6 +22,7 @@ import {
   fetchUserCategories,
 } from '@/services/transactionService';
 
+import { useTheme } from '@/contexts/ThemeContext';
 import { CategoryType } from '@/types';
 import IconPickerModal from './iconPickerModal'; // 👈 make sure path matches
 
@@ -42,6 +42,7 @@ const colorOptions = [
 ];
 
 const CategoryModal = () => {
+  const { colors, spacing } = useTheme();
   const { user } = useAuth();
   const [categories, setCategories] = useState<CategoryType[]>([]);
   const [newLabel, setNewLabel] = useState('');
@@ -107,14 +108,18 @@ const CategoryModal = () => {
 
   return (
     <ModalWrapper>
-      <View style={styles.container}>
+      <View style={(styles.container, { paddingHorizontal: spacing.y._20 })}>
         <Header
           title="Expense Categories"
           leftIcon={<BackButton />}
-          style={{ marginBottom: theme.spacing.y._10 }}
+          style={{ marginBottom: spacing.y._10 }}
         />
 
-        <ScrollView contentContainerStyle={styles.form}>
+        <ScrollView
+          contentContainerStyle={
+            (styles.form, { gap: spacing.y._10, paddingBottom: spacing.y._20 })
+          }
+        >
           {categories.map((item) => {
             const IconComponent =
               typeof Icons[item.icon] === 'function'
@@ -123,36 +128,41 @@ const CategoryModal = () => {
             return (
               <View
                 key={item.id || `${item.label}-${item.icon}`}
-                style={styles.row}
+                style={(styles.row, { borderBottomColor: colors.neutral700 })}
               >
                 <View
                   style={[
                     styles.iconWrapper,
-                    { backgroundColor: item.bgColor },
+                    {
+                      backgroundColor: item.bgColor,
+                      marginRight: spacing.x._10,
+                    },
                   ]}
                 >
-                  <IconComponent size={20} color={theme.colors.white} />
+                  <IconComponent size={20} color={colors.white} />
                 </View>
-                <Typography style={styles.label}>{item.label}</Typography>
+                <Typography style={(styles.label, { color: colors.white })}>
+                  {item.label}
+                </Typography>
                 <View style={styles.actions}>
                   <TouchableOpacity>
-                    <Icons.PencilSimple
-                      size={18}
-                      color={theme.colors.primary}
-                    />
+                    <Icons.PencilSimple size={18} color={colors.primary} />
                   </TouchableOpacity>
                   <TouchableOpacity onPress={() => handleDelete(item.id!)}>
-                    <Icons.TrashSimple size={18} color={theme.colors.error} />
+                    <Icons.TrashSimple size={18} color={colors.error} />
                   </TouchableOpacity>
                 </View>
               </View>
             );
           })}
 
-          <View style={styles.addSection}>
-            <Typography color={theme.colors.neutral200}>
-              Add New Category
-            </Typography>
+          <View
+            style={
+              (styles.addSection,
+              { marginTop: spacing.y._20, gap: spacing.y._10 })
+            }
+          >
+            <Typography color={colors.neutral200}>Add New Category</Typography>
 
             <Input
               placeholder="Category Label"
@@ -164,13 +174,13 @@ const CategoryModal = () => {
               onPress={() => setShowIconPicker(true)}
               style={styles.selectRow}
             >
-              <Typography color={theme.colors.neutral300}>Icon</Typography>
+              <Typography color={colors.neutral300}>Icon</Typography>
               {(() => {
                 const IconComponent =
                   typeof Icons[newIcon] === 'function'
                     ? Icons[newIcon]
                     : Icons.Tag;
-                return <IconComponent size={20} color={theme.colors.primary} />;
+                return <IconComponent size={20} color={colors.primary} />;
               })()}
             </TouchableOpacity>
 
@@ -184,7 +194,7 @@ const CategoryModal = () => {
                     {
                       backgroundColor: color,
                       borderWidth: newColor === color ? 2 : 0,
-                      borderColor: theme.colors.white,
+                      borderColor: colors.white,
                     },
                   ]}
                 />
@@ -193,9 +203,9 @@ const CategoryModal = () => {
 
             <Button
               onPress={handleAddCategory}
-              style={{ marginTop: theme.spacing.y._10 }}
+              style={{ marginTop: spacing.y._10 }}
             >
-              <Typography color={theme.colors.black}>Add Category</Typography>
+              <Typography color={colors.black}>Add Category</Typography>
             </Button>
           </View>
         </ScrollView>
@@ -215,18 +225,12 @@ export default CategoryModal;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: theme.spacing.y._20,
   },
-  form: {
-    gap: theme.spacing.y._10,
-    paddingBottom: theme.spacing.y._20,
-  },
+  form: {},
   row: {
     flexDirection: 'row',
     alignItems: 'center',
     borderBottomWidth: 1,
-    borderBottomColor: theme.colors.neutral700,
-    paddingVertical: theme.spacing.y._10,
   },
   iconWrapper: {
     width: 32,
@@ -234,21 +238,16 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: theme.spacing.x._10,
   },
   label: {
     flex: 1,
     fontSize: 16,
-    color: theme.colors.white,
   },
   actions: {
     flexDirection: 'row',
     gap: 12,
   },
-  addSection: {
-    marginTop: theme.spacing.y._20,
-    gap: theme.spacing.y._10,
-  },
+  addSection: {},
   colorPicker: {
     flexDirection: 'row',
     flexWrap: 'wrap',

@@ -124,7 +124,6 @@ export const zIndex = {
 
 // THEME EXPORT
 export const theme = {
-  colors,
   spacing,
   radius,
   fontSize,

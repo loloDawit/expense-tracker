@@ -1,4 +1,4 @@
-import { theme } from '@/constants/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { WalletType } from '@/types';
 import { formatAmount } from '@/utils/helper';
 import { verticalScale } from '@/utils/styling';
@@ -19,6 +19,8 @@ const WalletListItem = ({
   index: number;
   router: Router;
 }) => {
+  const { colors } = useTheme();
+
   const handleOpen = () => {
     router.push({
       pathname: '/(modals)/walletModal',
@@ -29,6 +31,7 @@ const WalletListItem = ({
       },
     });
   };
+
   return (
     <Animated.View
       entering={FadeInDown.delay(index * 50)
@@ -36,7 +39,15 @@ const WalletListItem = ({
         .damping(13)}
     >
       <TouchableOpacity style={styles.container} onPress={handleOpen}>
-        <View style={styles.imageContainer}>
+        <View
+          style={[
+            styles.imageContainer,
+            {
+              borderColor: colors.neutral600,
+              borderRadius: 10,
+            },
+          ]}
+        >
           <Image
             style={{ flex: 1 }}
             source={item.image}
@@ -45,20 +56,23 @@ const WalletListItem = ({
           />
         </View>
 
-        <View style={styles.nameContainer}>
+        <View
+          style={[
+            styles.nameContainer,
+            { marginLeft: 10 }, // optional: theme.spacing.x._10
+          ]}
+        >
           <Typography size={16}>{item.name}</Typography>
-          <Typography size={14} color={theme.colors.neutral400}>
+          <Typography size={14} color={colors.neutral400}>
             {formatAmount(item?.amount || 0)}
           </Typography>
         </View>
 
-        {/* <TouchableOpacity> */}
         <Icons.CaretRight
           size={verticalScale(20)}
           weight="bold"
-          color={theme.colors.white}
+          color={colors.white}
         />
-        {/* </TouchableOpacity> */}
       </TouchableOpacity>
     </Animated.View>
   );
@@ -71,20 +85,15 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: verticalScale(17),
-    // padding: spacingX._15,
   },
   imageContainer: {
     height: verticalScale(45),
     width: verticalScale(45),
     borderWidth: 1,
-    borderColor: theme.colors.neutral600,
-    borderRadius: theme.radius.sm,
-    borderCurve: 'continuous',
     overflow: 'hidden',
   },
   nameContainer: {
     flex: 1,
     gap: 2,
-    marginLeft: theme.spacing.x._10,
   },
 });

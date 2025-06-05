@@ -3,7 +3,6 @@ import Button from '@/components/Button';
 import Header from '@/components/Header';
 import Input from '@/components/Input';
 import ModalWrapper from '@/components/ModalWrapper';
-import { theme } from '@/constants/theme';
 import { scale, verticalScale } from '@/utils/styling';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Icons from 'phosphor-react-native';
@@ -22,6 +21,7 @@ import ImageUpload from '@/components/ImageUpload';
 import Typography from '@/components/Typography';
 import { expenseCategories, transactionTypes } from '@/constants/data';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import useFetchData from '@/hooks/useFetchData';
 import {
   createOrUpdateTransaction,
@@ -34,6 +34,7 @@ import { orderBy, where } from 'firebase/firestore';
 import { Dropdown } from 'react-native-element-dropdown';
 
 const TransactionModal = () => {
+  const { colors, spacing, radius } = useTheme();
   const { user } = useAuth();
   const router = useRouter();
   type paramType = {
@@ -64,7 +65,7 @@ const TransactionModal = () => {
           'label' in cat &&
           'value' in cat &&
           'icon' in cat &&
-          'bgColor' in cat
+          'bgColor' in cat,
       );
 
       // Merge & remove duplicates based on `value`
@@ -83,8 +84,8 @@ const TransactionModal = () => {
             'label' in cat &&
             'value' in cat &&
             'icon' in cat &&
-            'bgColor' in cat
-        )
+            'bgColor' in cat,
+        ),
       );
     };
 
@@ -230,43 +231,78 @@ const TransactionModal = () => {
 
   return (
     <ModalWrapper>
-      <View style={styles.container}>
+      <View style={[styles.container, { paddingHorizontal: spacing.y._20 }]}>
         <Header
           title={oldTransaction?.id ? 'Update Transaction' : 'Add Transaction'}
           leftIcon={<BackButton />}
-          style={{ marginBottom: theme.spacing.y._10 }}
+          style={{ marginBottom: spacing.y._10 }}
         />
 
         {/* form */}
         <ScrollView
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={styles.form}
+          contentContainerStyle={[
+            styles.form,
+            {
+              gap: spacing.y._20,
+              paddingVertical: spacing.y._15,
+              paddingBottom: spacing.y._40,
+            },
+          ]}
         >
           {/* type */}
-          <View style={styles.inputContainer}>
+          <View style={[styles.inputContainer, { gap: spacing.y._10 }]}>
             <Typography
-              color={theme.colors.neutral200}
-              size={16}
+              color={colors.textSecondary}
+              size={14}
               fontWeight={'500'}
             >
               Type
             </Typography>
             <Dropdown
-              style={styles.dropdownContainer}
-              activeColor={theme.colors.neutral700}
-              itemTextStyle={styles.dropdownItemText}
-              selectedTextStyle={styles.dropdownSelectedText}
-              itemContainerStyle={styles.dropdownItemContainer}
-              iconStyle={styles.dropdownIcon}
+              style={[
+                styles.dropdownContainer,
+                {
+                  borderColor: colors.neutral300,
+                  paddingHorizontal: spacing.x._15,
+                  borderRadius: radius.sm,
+                },
+              ]}
+              activeColor={colors.neutral700}
+              itemTextStyle={(styles.dropdownItemText, { color: colors.text })}
+              selectedTextStyle={[
+                styles.dropdownSelectedText,
+                { color: colors.text },
+              ]}
+              itemContainerStyle={[
+                styles.dropdownItemContainer,
+                { borderRadius: radius.sm, marginHorizontal: spacing.x._7 },
+              ]}
+              iconStyle={[
+                styles.dropdownIcon,
+                { tintColor: colors.neutral300 },
+              ]}
               data={transactionTypes}
               maxHeight={300}
               labelField="label"
               valueField="value"
               // placeholder={!isFocus ? "Select item" : "..."}
               // searchPlaceholder="Search..."
-              placeholderStyle={styles.dropdownPlaceholder}
+              placeholderStyle={[
+                styles.dropdownPlaceholder,
+                { color: colors.text },
+              ]}
               value={transaction.type}
-              containerStyle={styles.dropdownListContainer}
+              containerStyle={[
+                styles.dropdownListContainer,
+                {
+                  backgroundColor: colors.background,
+                  borderRadius: radius.sm,
+                  borderColor: colors.neutral500,
+                  shadowColor: colors.black,
+                  paddingVertical: spacing.y._7,
+                },
+              ]}
               onChange={(item) => {
                 setTransaction({ ...transaction, type: item.value });
               }}
@@ -274,21 +310,37 @@ const TransactionModal = () => {
           </View>
 
           {/* wallet */}
-          <View style={styles.inputContainer}>
+          <View style={[styles.inputContainer, { gap: spacing.y._10 }]}>
             <Typography
-              color={theme.colors.neutral200}
+              color={colors.textSecondary}
               size={16}
               fontWeight={'500'}
             >
               Wallet
             </Typography>
             <Dropdown
-              style={styles.dropdownContainer}
-              activeColor={theme.colors.neutral700}
-              itemTextStyle={styles.dropdownItemText}
-              selectedTextStyle={styles.dropdownSelectedText}
-              itemContainerStyle={styles.dropdownItemContainer}
-              iconStyle={styles.dropdownIcon}
+              style={[
+                styles.dropdownContainer,
+                {
+                  borderColor: colors.neutral300,
+                  paddingHorizontal: spacing.x._15,
+                  borderRadius: radius.sm,
+                },
+              ]}
+              activeColor={colors.neutral700}
+              itemTextStyle={[styles.dropdownItemText, { color: colors.text }]}
+              selectedTextStyle={[
+                styles.dropdownSelectedText,
+                { color: colors.text },
+              ]}
+              itemContainerStyle={[
+                styles.dropdownItemContainer,
+                { borderRadius: radius.sm, marginHorizontal: spacing.x._7 },
+              ]}
+              iconStyle={[
+                styles.dropdownIcon,
+                { tintColor: colors.neutral300 },
+              ]}
               data={wallets.map((wallet) => ({
                 label: `${wallet?.name} ($${wallet.amount})`,
                 value: wallet?.id,
@@ -298,9 +350,21 @@ const TransactionModal = () => {
               valueField="value"
               // placeholder={!isFocus ? "Select item" : "..."}
               // searchPlaceholder="Search..."
-              placeholderStyle={styles.dropdownPlaceholder}
+              placeholderStyle={[
+                styles.dropdownPlaceholder,
+                { color: colors.text },
+              ]}
               value={transaction.walletId}
-              containerStyle={styles.dropdownListContainer}
+              containerStyle={[
+                styles.dropdownListContainer,
+                {
+                  backgroundColor: colors.neutral900,
+                  borderRadius: radius.sm,
+                  borderColor: colors.neutral500,
+                  shadowColor: colors.black,
+                  paddingVertical: spacing.y._7,
+                },
+              ]}
               onChange={(item) => {
                 setTransaction({ ...transaction, walletId: item.value || '' });
               }}
@@ -310,30 +374,61 @@ const TransactionModal = () => {
           {/* category: show only if type is expense */}
 
           {transaction.type == 'expense' && (
-            <View style={styles.inputContainer}>
+            <View style={[styles.inputContainer, { gap: spacing.y._10 }]}>
               <Typography
-                color={theme.colors.neutral200}
+                color={colors.textSecondary}
                 size={16}
                 fontWeight={'500'}
               >
                 Expense Cateogry
               </Typography>
               <Dropdown
-                style={styles.dropdownContainer}
-                activeColor={theme.colors.neutral700}
-                itemTextStyle={styles.dropdownItemText}
-                selectedTextStyle={styles.dropdownSelectedText}
-                itemContainerStyle={styles.dropdownItemContainer}
-                iconStyle={styles.dropdownIcon}
+                style={[
+                  styles.dropdownContainer,
+                  {
+                    borderColor: colors.neutral300,
+                    paddingHorizontal: spacing.x._15,
+                    borderRadius: radius.sm,
+                  },
+                ]}
+                activeColor={colors.neutral700}
+                itemTextStyle={[
+                  styles.dropdownItemText,
+                  { color: colors.text },
+                ]}
+                selectedTextStyle={[
+                  styles.dropdownSelectedText,
+                  { color: colors.text },
+                ]}
+                itemContainerStyle={[
+                  styles.dropdownItemContainer,
+                  { borderRadius: radius.sm, marginHorizontal: spacing.x._7 },
+                ]}
+                iconStyle={[
+                  styles.dropdownIcon,
+                  { tintColor: colors.neutral300 },
+                ]}
                 data={Object.values(allCategories)}
                 maxHeight={300}
                 labelField="label"
                 valueField="value"
                 // placeholder={!isFocus ? "Select item" : "..."}
                 // searchPlaceholder="Search..."
-                placeholderStyle={styles.dropdownPlaceholder}
+                placeholderStyle={[
+                  styles.dropdownPlaceholder,
+                  { color: colors.text },
+                ]}
                 value={transaction.category}
-                containerStyle={styles.dropdownListContainer}
+                containerStyle={[
+                  styles.dropdownListContainer,
+                  {
+                    backgroundColor: colors.neutral900,
+                    borderRadius: radius.sm,
+                    borderColor: colors.neutral500,
+                    shadowColor: colors.black,
+                    paddingVertical: spacing.y._7,
+                  },
+                ]}
                 onChange={(item) => {
                   setTransaction({
                     ...transaction,
@@ -345,9 +440,9 @@ const TransactionModal = () => {
           )}
 
           {/* date picker */}
-          <View style={styles.inputContainer}>
+          <View style={[styles.inputContainer, { gap: spacing.y._10 }]}>
             <Typography
-              color={theme.colors.neutral200}
+              color={colors.textSecondary}
               size={16}
               fontWeight={'500'}
             >
@@ -355,7 +450,14 @@ const TransactionModal = () => {
             </Typography>
             {!showDatePicker && (
               <Pressable
-                style={styles.dateInput}
+                style={[
+                  styles.dateInput,
+                  {
+                    borderColor: colors.neutral300,
+                    borderRadius: radius.md,
+                    paddingHorizontal: spacing.x._15,
+                  },
+                ]}
                 onPress={() => setShowDatePicker(true)}
               >
                 <Typography size={14}>
@@ -369,7 +471,7 @@ const TransactionModal = () => {
                 <DateTimePicker
                   themeVariant="dark"
                   value={transaction.date as Date}
-                  textColor={theme.colors.white}
+                  textColor={colors.text}
                   mode="date"
                   display={Platform.OS == 'ios' ? 'spinner' : 'default'}
                   onChange={onDateChange}
@@ -377,7 +479,16 @@ const TransactionModal = () => {
 
                 {Platform.OS == 'ios' && (
                   <TouchableOpacity
-                    style={styles.datePickerButton}
+                    style={[
+                      styles.datePickerButton,
+                      {
+                        backgroundColor: colors.neutral700,
+                        padding: spacing.y._7,
+                        marginRight: spacing.x._7,
+                        paddingHorizontal: spacing.y._15,
+                        borderRadius: radius.pill,
+                      },
+                    ]}
                     onPress={() => setShowDatePicker(false)}
                   >
                     <Typography size={15} fontWeight={'500'}>
@@ -390,8 +501,8 @@ const TransactionModal = () => {
           </View>
 
           {/* amount */}
-          <View style={styles.inputContainer}>
-            <Typography color={theme.colors.neutral200} size={16}>
+          <View style={[styles.inputContainer, { gap: spacing.y._10 }]}>
+            <Typography color={colors.textSecondary} size={16}>
               Amount
             </Typography>
             <Input
@@ -407,18 +518,18 @@ const TransactionModal = () => {
             />
           </View>
           {/* description */}
-          <View style={styles.inputContainer}>
-            <View style={styles.flexRow}>
-              <Typography color={theme.colors.neutral200} size={16}>
+          <View style={[styles.inputContainer, { gap: spacing.y._10 }]}>
+            <View style={[styles.flexRow, { gap: spacing.x._5 }]}>
+              <Typography color={colors.textSecondary} size={16}>
                 Description
               </Typography>
-              <Typography color={theme.colors.neutral500} size={14}>
+              <Typography color={colors.neutral500} size={14}>
                 (optional)
               </Typography>
             </View>
 
             <Input
-              // placeholder="Salary"
+              placeholder="Salary"
               value={transaction.description}
               multiline
               numberOfLines={2}
@@ -436,12 +547,12 @@ const TransactionModal = () => {
               }
             />
           </View>
-          <View style={styles.inputContainer}>
-            <View style={styles.flexRow}>
-              <Typography color={theme.colors.neutral200} size={16}>
+          <View style={[styles.inputContainer, { gap: spacing.y._10 }]}>
+            <View style={[styles.flexRow, { gap: spacing.x._5 }]}>
+              <Typography color={colors.textSecondary} size={16}>
                 Receipt
               </Typography>
-              <Typography color={theme.colors.neutral500} size={14}>
+              <Typography color={colors.neutral500} size={14}>
                 (optional)
               </Typography>
             </View>
@@ -456,17 +567,27 @@ const TransactionModal = () => {
       </View>
 
       {/* footer */}
-      <View style={styles.footer}>
+      <View
+        style={[
+          styles.footer,
+          {
+            paddingHorizontal: spacing.x._20,
+            paddingTop: spacing.y._15,
+            borderTopColor: colors.neutral700,
+            marginBottom: spacing.y._5,
+          },
+        ]}
+      >
         {oldTransaction?.id && !loading && (
           <Button
             style={{
-              backgroundColor: theme.colors.rose,
-              paddingHorizontal: theme.spacing.x._15,
+              backgroundColor: colors.rose,
+              paddingHorizontal: spacing.x._15,
             }}
             onPress={showDeleteAlert}
           >
             <Icons.Trash
-              color={theme.colors.white}
+              color={colors.text}
               size={verticalScale(24)}
               weight="bold"
             />
@@ -474,7 +595,7 @@ const TransactionModal = () => {
         )}
 
         <Button loading={loading} onPress={onSubmit} style={{ flex: 1 }}>
-          <Typography color={theme.colors.black} size={20} fontWeight={'bold'}>
+          <Typography color={colors.black} size={20}>
             {oldTransaction?.id ? 'Update' : 'Submit'}
           </Typography>
         </Button>
@@ -488,115 +609,80 @@ export default TransactionModal;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: theme.spacing.y._20,
   },
-  form: {
-    gap: theme.spacing.y._20,
-    paddingVertical: theme.spacing.y._15,
-    paddingBottom: theme.spacing.y._40,
-  },
+  form: {},
   footer: {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
-    paddingHorizontal: theme.spacing.x._20,
     gap: scale(12),
-    paddingTop: theme.spacing.y._15,
-    borderTopColor: theme.colors.neutral700,
-    marginBottom: theme.spacing.y._5,
     borderTopWidth: 1,
   },
-  inputContainer: {
-    gap: theme.spacing.y._10,
-  },
-  iosDropDown: {
-    flexDirection: 'row',
-    height: verticalScale(54),
-    alignItems: 'center',
-    justifyContent: 'center',
-    fontSize: verticalScale(14),
-    borderWidth: 1,
-    color: theme.colors.white,
-    borderColor: theme.colors.neutral300,
-    borderRadius: theme.radius.md,
-    borderCurve: 'continuous',
-    paddingHorizontal: theme.spacing.x._15,
-  },
-  androidDropDown: {
-    // flexDirection: "row",
-    height: verticalScale(54),
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    fontSize: verticalScale(14),
-    color: theme.colors.white,
-    borderColor: theme.colors.neutral300,
-    borderRadius: theme.radius.md,
-    borderCurve: 'continuous',
-    // paddingHorizontal: theme.spacing.x._15,
-  },
+  inputContainer: {},
+  // iosDropDown: {
+  //   flexDirection: 'row',
+  //   height: verticalScale(54),
+  //   alignItems: 'center',
+  //   justifyContent: 'center',
+  //   fontSize: verticalScale(14),
+  //   borderWidth: 1,
+  //   color: colors.text,
+  //   borderColor: colors.neutral300,
+  //   borderRadius: radius.md,
+  //   borderCurve: 'continuous',
+  //   paddingHorizontal: spacing.x._15,
+  // },
+  // androidDropDown: {
+  //   // flexDirection: "row",
+  //   height: verticalScale(54),
+  //   alignItems: 'center',
+  //   justifyContent: 'center',
+  //   borderWidth: 1,
+  //   fontSize: verticalScale(14),
+  //   color: colors.text,
+  //   borderColor: colors.neutral300,
+  //   borderRadius: radius.md,
+  //   borderCurve: 'continuous',
+  //   // paddingHorizontal: spacing.x._15,
+  // },
   flexRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: theme.spacing.x._5,
   },
   dateInput: {
     flexDirection: 'row',
     height: verticalScale(54),
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: theme.colors.neutral300,
-    borderRadius: theme.radius.md,
     borderCurve: 'continuous',
-    paddingHorizontal: theme.spacing.x._15,
   },
 
   iosDatePicker: {
     // backgroundColor: "red",
   },
   datePickerButton: {
-    backgroundColor: theme.colors.neutral700,
     alignSelf: 'flex-end',
-    padding: theme.spacing.y._7,
-    marginRight: theme.spacing.x._7,
-    paddingHorizontal: theme.spacing.y._15,
-    borderRadius: theme.radius.pill,
   },
   dropdownContainer: {
     height: verticalScale(54),
     borderWidth: 1,
-    borderColor: theme.colors.neutral300,
-    paddingHorizontal: theme.spacing.x._15,
-    borderRadius: theme.radius.sm,
     borderCurve: 'continuous',
   },
-  dropdownItemText: { color: theme.colors.white },
+  dropdownItemText: {},
   dropdownSelectedText: {
-    color: theme.colors.white,
     fontSize: verticalScale(14),
   },
   dropdownListContainer: {
-    backgroundColor: theme.colors.neutral900,
-    borderRadius: theme.radius.sm,
     borderCurve: 'continuous',
-    paddingVertical: theme.spacing.y._7,
     top: 5,
-    borderColor: theme.colors.neutral500,
-    shadowColor: theme.colors.black,
     shadowOffset: { width: 0, height: 5 },
     shadowOpacity: 1,
     shadowRadius: 15,
     elevation: 5,
   },
-  dropdownPlaceholder: {
-    color: theme.colors.white,
-  },
-  dropdownItemContainer: {
-    borderRadius: theme.radius.sm,
-    marginHorizontal: theme.spacing.x._7,
-  },
+  dropdownPlaceholder: {},
+  dropdownItemContainer: {},
   dropdownIcon: {
     height: verticalScale(30),
-    tintColor: theme.colors.neutral300,
   },
 });

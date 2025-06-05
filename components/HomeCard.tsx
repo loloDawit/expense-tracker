@@ -1,5 +1,5 @@
-import { theme } from '@/constants/theme';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import useFetchData from '@/hooks/useFetchData';
 import { WalletType } from '@/types';
 import { formatAmount } from '@/utils/helper';
@@ -11,6 +11,7 @@ import { ImageBackground, StyleSheet, View } from 'react-native';
 import Typography from './Typography';
 
 const HomeCard = () => {
+  const { colors, spacing } = useTheme();
   const { user } = useAuth();
   const {
     data: wallets,
@@ -38,25 +39,21 @@ const HomeCard = () => {
       resizeMode="stretch"
       style={styles.bgImage}
     >
-      <View style={styles.container}>
+      <View style={[styles.container, { padding: spacing.x._20 }]}>
         <View>
           {/* total Income */}
-          <View style={styles.totalIncomeRow}>
-            <Typography
-              color={theme.colors.neutral800}
-              size={17}
-              fontWeight={'500'}
-            >
+          <View style={[styles.totalIncomeRow, { marginBottom: spacing.y._5 }]}>
+            <Typography color={colors.neutral800} size={17} fontWeight={'500'}>
               Total Income
             </Typography>
             <Icons.DotsThreeOutline
               size={verticalScale(23)}
-              color={theme.colors.black}
+              color={colors.black}
               weight="fill"
             />
           </View>
           <Typography
-            color={theme.colors.black}
+            color={colors.black}
             size={30}
             fontWeight={'bold'}
             style={{
@@ -78,13 +75,13 @@ const HomeCard = () => {
               <View style={styles.statsIcon}>
                 <Icons.ArrowDown
                   size={verticalScale(15)}
-                  color={theme.colors.black}
+                  color={colors.black}
                   weight="bold"
                 />
               </View>
               <Typography
                 size={16}
-                color={theme.colors.neutral700}
+                color={colors.neutral700}
                 fontWeight={'500'}
               >
                 Income
@@ -97,7 +94,7 @@ const HomeCard = () => {
                   fontVariant: ['tabular-nums'],
                 }}
                 size={17}
-                color={theme.colors.green}
+                color={colors.green}
                 fontWeight={'600'}
               >
                 {walletLoading
@@ -109,17 +106,25 @@ const HomeCard = () => {
 
           {/* expense */}
           <View style={{ gap: verticalScale(5) }}>
-            <View style={styles.incomeExpense}>
-              <View style={styles.statsIcon}>
+            <View style={[styles.incomeExpense, { gap: spacing.y._7 }]}>
+              <View
+                style={[
+                  styles.statsIcon,
+                  {
+                    backgroundColor: colors.neutral350,
+                    padding: spacing.y._5,
+                  },
+                ]}
+              >
                 <Icons.ArrowUp
                   size={verticalScale(15)}
-                  color={theme.colors.black}
+                  color={colors.black}
                   weight="bold"
                 />
               </View>
               <Typography
                 size={16}
-                color={theme.colors.neutral700}
+                color={colors.neutral700}
                 fontWeight={'500'}
               >
                 Expense
@@ -128,7 +133,7 @@ const HomeCard = () => {
             <View style={{ alignSelf: 'center' }}>
               <Typography
                 size={17}
-                color={theme.colors.rose}
+                color={colors.rose}
                 fontWeight={'600'}
                 style={{
                   fontFamily: 'Manrope-Regular',
@@ -155,7 +160,6 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   container: {
-    padding: theme.spacing.x._20,
     paddingHorizontal: scale(23),
     height: '87%',
     width: '100%',
@@ -165,7 +169,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: theme.spacing.y._5,
   },
   stats: {
     flexDirection: 'row',
@@ -173,13 +176,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statsIcon: {
-    backgroundColor: theme.colors.neutral350,
-    padding: theme.spacing.y._5,
     borderRadius: 50,
   },
   incomeExpense: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: theme.spacing.y._7,
   },
 });

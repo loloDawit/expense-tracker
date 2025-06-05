@@ -5,8 +5,8 @@ import { Alert, Dimensions, ScrollView, StyleSheet, View } from 'react-native';
 import Header from '@/components/Header';
 import Loading from '@/components/Loading';
 import TransactionList from '@/components/TransactionList';
-import { theme } from '@/constants/theme';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import {
   fetchMonthlyStats,
   fetchWeeklyStats,
@@ -18,88 +18,89 @@ import { BarChart } from 'react-native-gifted-charts';
 
 const { width: screenWidth } = Dimensions.get('window');
 
-const barData = [
-  {
-    value: 40,
-    label: 'Mon',
-    spacing: scale(4),
-    labelWidth: scale(30),
-    frontColor: theme.colors.primary,
-    // topLabelComponent: () => (
-    //   <Typo size={10} style={{ marginBottom: 4 }} fontWeight={"bold"}>
-    //     50
-    //   </Typo>
-    // ),
-  },
-  {
-    value: 20,
-    frontColor: theme.colors.rose,
-  },
-
-  {
-    value: 50,
-    label: 'Tue',
-    spacing: scale(4),
-    labelWidth: scale(30),
-    frontColor: theme.colors.primary,
-  },
-  { value: 40, frontColor: theme.colors.rose },
-  {
-    value: 75,
-    label: 'Wed',
-    spacing: scale(4),
-    labelWidth: scale(30),
-    frontColor: theme.colors.primary,
-  },
-  { value: 25, frontColor: theme.colors.rose },
-  {
-    value: 30,
-    label: 'Thu',
-    spacing: scale(4),
-    labelWidth: scale(30),
-    frontColor: theme.colors.primary,
-  },
-  { value: 20, frontColor: theme.colors.rose },
-  {
-    value: 60,
-    label: 'Fri',
-    spacing: scale(4),
-    labelWidth: scale(30),
-    frontColor: theme.colors.primary,
-  },
-  { value: 40, frontColor: theme.colors.rose },
-  {
-    value: 65,
-    label: 'Sat',
-    spacing: scale(4),
-    labelWidth: scale(30),
-    frontColor: theme.colors.primary,
-  },
-  { value: 30, frontColor: theme.colors.rose },
-  {
-    value: 65,
-    label: 'Sun',
-    spacing: scale(4),
-    labelWidth: scale(30),
-    frontColor: theme.colors.primary,
-  },
-  { value: 30, frontColor: theme.colors.rose },
-  // {
-  //   value: 65,
-  //   label: "Sun",
-  //   spacing: scale(4),
-  //   labelWidth: scale(30),
-  //   frontColor: theme.colors.primary,
-  // },
-  // { value: 30, frontColor: theme.colors.rose },
-];
-
 const Analytics = () => {
+  const { colors, spacing, radius } = useTheme();
   const [chartLoading, setChartLoading] = useState(false);
   const [activeIndex, setActiveIndex] = useState(0);
   const [chartData, setChartData] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const { user } = useAuth();
+
+  const barData = [
+    {
+      value: 40,
+      label: 'Mon',
+      spacing: scale(4),
+      labelWidth: scale(30),
+      frontColor: colors.primary,
+      // topLabelComponent: () => (
+      //   <Typo size={10} style={{ marginBottom: 4 }} fontWeight={"bold"}>
+      //     50
+      //   </Typo>
+      // ),
+    },
+    {
+      value: 20,
+      frontColor: colors.rose,
+    },
+
+    {
+      value: 50,
+      label: 'Tue',
+      spacing: scale(4),
+      labelWidth: scale(30),
+      frontColor: colors.primary,
+    },
+    { value: 40, frontColor: colors.rose },
+    {
+      value: 75,
+      label: 'Wed',
+      spacing: scale(4),
+      labelWidth: scale(30),
+      frontColor: colors.primary,
+    },
+    { value: 25, frontColor: colors.rose },
+    {
+      value: 30,
+      label: 'Thu',
+      spacing: scale(4),
+      labelWidth: scale(30),
+      frontColor: colors.primary,
+    },
+    { value: 20, frontColor: colors.rose },
+    {
+      value: 60,
+      label: 'Fri',
+      spacing: scale(4),
+      labelWidth: scale(30),
+      frontColor: colors.primary,
+    },
+    { value: 40, frontColor: colors.rose },
+    {
+      value: 65,
+      label: 'Sat',
+      spacing: scale(4),
+      labelWidth: scale(30),
+      frontColor: colors.primary,
+    },
+    { value: 30, frontColor: colors.rose },
+    {
+      value: 65,
+      label: 'Sun',
+      spacing: scale(4),
+      labelWidth: scale(30),
+      frontColor: colors.primary,
+    },
+    { value: 30, frontColor: colors.rose },
+    // {
+    //   value: 65,
+    //   label: "Sun",
+    //   spacing: scale(4),
+    //   labelWidth: scale(30),
+    //   frontColor: colors.primary,
+    // },
+    // { value: 30, frontColor: colors.rose },
+  ];
 
   useEffect(() => {
     if (activeIndex == 0) {
@@ -151,16 +152,25 @@ const Analytics = () => {
 
   return (
     <ScreenWrapper>
-      <View style={styles.container}>
+      <View
+        style={[
+          styles.container,
+          {
+            paddingHorizontal: spacing.x._20,
+            paddingVertical: spacing.y._5,
+            gap: spacing.y._10,
+          },
+        ]}
+      >
         {/* segments */}
         <View style={styles.header}>
           <Header
             title="Statistics"
             // rightIcon={
-            //   <TouchableOpacity style={styles.searchIcon}>
+            //   <TouchableOpacity style={styles.searchIcon, { backgroundColor: colors.neutral700,}}>
             //     <Icons.MagnifyingGlass
             //       size={verticalScale(22)}
-            //       color={theme.colors.white}
+            //       color={colors.white}
             //     />
             //   </TouchableOpacity>
             // }
@@ -168,8 +178,8 @@ const Analytics = () => {
         </View>
         <ScrollView
           contentContainerStyle={{
-            gap: theme.spacing.y._20,
-            paddingTop: theme.spacing.y._5,
+            gap: spacing.y._20,
+            paddingTop: spacing.y._5,
             paddingBottom: verticalScale(100),
           }}
           showsVerticalScrollIndicator={false}
@@ -177,13 +187,13 @@ const Analytics = () => {
           <SegmentedControl
             values={['Weekly', 'Monthly', 'Yearly']}
             selectedIndex={activeIndex}
-            tintColor={theme.colors.neutral200}
-            backgroundColor={theme.colors.neutral800}
+            tintColor={colors.neutral200}
+            backgroundColor={colors.card}
             appearance="dark"
-            activeFontStyle={styles.segmentFontStyle}
+            activeFontStyle={(styles.segmentFontStyle, { color: colors.black })}
             fontStyle={{
               ...styles.segmentFontStyle,
-              color: theme.colors.white,
+              color: colors.white,
             }}
             style={styles.segmentStyle}
             onChange={(event) =>
@@ -197,7 +207,7 @@ const Analytics = () => {
                 data={chartData}
                 barWidth={scale(12)}
                 spacing={[1, 2].includes(activeIndex) ? scale(25) : scale(16)}
-                // width={screenWidth - theme.spacing.x._30}
+                // width={screenWidth - spacing.x._30}
                 roundedTop
                 roundedBottom
                 hideRules
@@ -208,9 +218,9 @@ const Analytics = () => {
                   [1, 2].includes(activeIndex) ? scale(38) : scale(35)
                 }
                 // hideYAxisText
-                yAxisTextStyle={{ color: theme.colors.neutral350 }}
+                yAxisTextStyle={{ color: colors.neutral350 }}
                 xAxisLabelTextStyle={{
-                  color: theme.colors.neutral350,
+                  color: colors.neutral350,
                   fontSize: verticalScale(12),
                 }}
                 noOfSections={3}
@@ -224,7 +234,11 @@ const Analytics = () => {
             )}
 
             {chartLoading && (
-              <View style={styles.chartLoadingContainer}>
+              <View
+                style={
+                  (styles.chartLoadingContainer, { borderRadius: radius.sm })
+                }
+              >
                 <Loading color="white" />
               </View>
             )}
@@ -256,7 +270,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     width: '100%',
     height: '100%',
-    borderRadius: theme.radius.sm,
     backgroundColor: 'rgba(0,0,0, 0.6)',
   },
   header: {},
@@ -265,7 +278,6 @@ const styles = StyleSheet.create({
     height: verticalScale(210),
   },
   searchIcon: {
-    backgroundColor: theme.colors.neutral700,
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 100,
@@ -279,11 +291,6 @@ const styles = StyleSheet.create({
   segmentFontStyle: {
     fontSize: verticalScale(13),
     fontWeight: 'bold',
-    color: theme.colors.black,
   },
-  container: {
-    paddingHorizontal: theme.spacing.x._20,
-    paddingVertical: theme.spacing.y._5,
-    gap: theme.spacing.y._10,
-  },
+  container: {},
 });

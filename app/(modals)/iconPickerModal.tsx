@@ -4,7 +4,7 @@ import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import ModalWrapper from '@/components/ModalWrapper';
 import Typography from '@/components/Typography';
-import { theme } from '@/constants/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const iconList = Object.entries(Icons)
   .filter(
@@ -23,17 +23,18 @@ export default function IconPickerModal({
   onClose,
   onSelect,
 }: IconPickerModalProps) {
+  const { colors, spacing } = useTheme();
   if (!visible) return null;
 
   return (
     <ModalWrapper>
-      <View style={styles.wrapper}>
-        <View style={styles.header}>
+      <View style={(styles.wrapper, { padding: spacing.y._10 })}>
+        <View style={(styles.header, { marginBottom: spacing.y._10 })}>
           <Typography fontWeight="semibold" style={{ flex: 1 }}>
             Pick an Icon
           </Typography>
           <TouchableOpacity onPress={onClose}>
-            <Icons.X size={20} color={theme.colors.neutral300} />
+            <Icons.X size={20} color={colors.neutral300} />
           </TouchableOpacity>
         </View>
 
@@ -50,9 +51,9 @@ export default function IconPickerModal({
                   onSelect(item);
                   onClose();
                 }}
-                style={styles.iconBox}
+                style={(styles.iconBox, { backgroundColor: colors.neutral800 })}
               >
-                <IconComponent size={26} color={theme.colors.primary} />
+                <IconComponent size={26} color={colors.primary} />
               </TouchableOpacity>
             );
           }}
@@ -63,14 +64,11 @@ export default function IconPickerModal({
 }
 
 const styles = StyleSheet.create({
-  wrapper: {
-    padding: theme.spacing.y._10,
-  },
+  wrapper: {},
   header: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: theme.spacing.y._10,
   },
   grid: {
     alignItems: 'center',
@@ -79,7 +77,6 @@ const styles = StyleSheet.create({
   iconBox: {
     width: 60,
     height: 60,
-    backgroundColor: theme.colors.neutral800,
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 12,

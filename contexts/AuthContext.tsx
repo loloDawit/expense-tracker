@@ -62,7 +62,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         } else {
           logger.warn('❗ Email not verified');
           setUser(null);
-          router.replace('/(auth)/verify-email');
         }
       } else {
         logger.info('🚪 User signed out or session expired');

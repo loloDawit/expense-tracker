@@ -24,8 +24,10 @@ import BackButton from "@/components/BackButton";
 import TransactionList from "@/components/TransactionList";
 import { orderBy, where } from "firebase/firestore";
 import useFetchData from "@/hooks/useFetchData";
+import { useTheme } from "@/contexts/ThemeContext";
 
 const SearchModal = () => {
+  const { colors } = useTheme();
   const { user } = useAuth();
   const [search, setSearch] = useState("");
 
@@ -56,7 +58,7 @@ const SearchModal = () => {
   });
 
   return (
-    <ModalWrapper style={{ backgroundColor: theme.colors.neutral900 }}>
+    <ModalWrapper style={{ backgroundColor: colors.neutral900 }}>
       <View style={styles.container}>
         <Header
           title={"Search"}
@@ -69,8 +71,8 @@ const SearchModal = () => {
             <Input
               placeholder="shoes..."
               value={search}
-              placeholderTextColor={theme.colors.neutral400}
-              containerStyle={{ backgroundColor: theme.colors.neutral800 }}
+              placeholderTextColor={colors.neutral400}
+              containerStyle={{ backgroundColor: colors.neutral800 }}
               onChangeText={(value) => setSearch(value)}
             />
           </View>

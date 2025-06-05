@@ -5,8 +5,8 @@ import ImageUpload from '@/components/ImageUpload';
 import Input from '@/components/Input';
 import ModalWrapper from '@/components/ModalWrapper';
 import Typography from '@/components/Typography';
-import { theme } from '@/constants/theme';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { createOrUpdateWallet, deleteWallet } from '@/services/walletService';
 import { WalletType } from '@/types';
 import { scale, verticalScale } from '@/utils/styling';
@@ -16,6 +16,7 @@ import React, { useEffect, useState } from 'react';
 import { Alert, ScrollView, StyleSheet, View } from 'react-native';
 
 const WalletModal = () => {
+  const { colors, spacing } = useTheme();
   const [wallet, setWallet] = useState<WalletType>({
     name: '',
     image: null,
@@ -104,16 +105,25 @@ const WalletModal = () => {
 
   return (
     <ModalWrapper>
-      <View style={styles.container}>
+      <View style={(styles.container, { paddingHorizontal: spacing.y._20 })}>
         <Header
           title={oldWallet?.id ? 'Updated Wallet' : 'New Wallet'}
           leftIcon={<BackButton />}
-          style={{ marginBottom: theme.spacing.y._10 }}
+          style={{ marginBottom: spacing.y._10 }}
         />
         {/* form */}
-        <ScrollView contentContainerStyle={styles.form}>
-          <View style={styles.inputContainer}>
-            <Typography color={theme.colors.neutral200}>Wallet Name</Typography>
+        <ScrollView
+          contentContainerStyle={
+            (styles.form,
+            {
+              gap: spacing.y._20,
+              paddingVertical: spacing.y._15,
+              paddingBottom: spacing.y._40,
+            })
+          }
+        >
+          <View style={(styles.inputContainer, { gap: spacing.y._10 })}>
+            <Typography color={colors.neutral200}>Wallet Name</Typography>
             <Input
               placeholder="Salary"
               value={wallet.name}
@@ -121,7 +131,7 @@ const WalletModal = () => {
             />
           </View>
           <View style={styles.inputContainer}>
-            <Typography color={theme.colors.neutral200}>Wallet Icon</Typography>
+            <Typography color={colors.neutral200}>Wallet Icon</Typography>
             <ImageUpload
               file={wallet.image}
               onSelect={onSelectImage}
@@ -133,24 +143,34 @@ const WalletModal = () => {
       </View>
 
       {/* footer */}
-      <View style={styles.footer}>
+      <View
+        style={
+          (styles.footer,
+          {
+            paddingHorizontal: spacing.x._20,
+            paddingTop: spacing.y._15,
+            borderTopColor: colors.neutral700,
+            marginBottom: spacing.y._5,
+          })
+        }
+      >
         {oldWallet?.id && !loading && (
           <Button
             style={{
-              backgroundColor: theme.colors.rose,
-              paddingHorizontal: theme.spacing.x._15,
+              backgroundColor: colors.rose,
+              paddingHorizontal: spacing.x._15,
             }}
             onPress={showDeleteAlert}
           >
             <Icons.Trash
-              color={theme.colors.white}
+              color={colors.white}
               size={verticalScale(24)}
               weight="bold"
             />
           </Button>
         )}
         <Button onPress={onSubmit} loading={loading} style={{ flex: 1 }}>
-          <Typography color={theme.colors.black} fontWeight={'700'} size={18}>
+          <Typography color={colors.black} fontWeight={'700'} size={18}>
             {oldWallet?.id ? 'Update Wallet' : 'Add Wallet'}
           </Typography>
         </Button>
@@ -164,25 +184,14 @@ export default WalletModal;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: theme.spacing.y._20,
   },
   footer: {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
-    paddingHorizontal: theme.spacing.x._20,
     gap: scale(12),
-    paddingTop: theme.spacing.y._15,
-    borderTopColor: theme.colors.neutral700,
-    marginBottom: theme.spacing.y._5,
     borderTopWidth: 1,
   },
-  form: {
-    gap: theme.spacing.y._20,
-    paddingVertical: theme.spacing.y._15,
-    paddingBottom: theme.spacing.y._40,
-  },
-  inputContainer: {
-    gap: theme.spacing.y._10,
-  },
+  form: {},
+  inputContainer: {},
 });

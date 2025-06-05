@@ -1,4 +1,4 @@
-import { theme } from '@/constants/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { scale, verticalScale } from '@/utils/styling';
 import { BottomTabBarProps } from '@react-navigation/bottom-tabs';
 import * as Icons from 'phosphor-react-native';
@@ -8,6 +8,8 @@ import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 type TabNames = 'home' | 'statistics' | 'wallet' | 'settings';
 
 const CustomTabs = ({ state, descriptors, navigation }: BottomTabBarProps) => {
+  const { colors } = useTheme();
+
   const displayLabels: Record<TabNames, string> = {
     home: 'Home',
     statistics: 'Stats',
@@ -20,34 +22,44 @@ const CustomTabs = ({ state, descriptors, navigation }: BottomTabBarProps) => {
       <Icons.House
         size={verticalScale(30)}
         weight={isFocused ? 'fill' : 'regular'}
-        color={isFocused ? theme.colors.primary : theme.colors.neutral400}
+        color={isFocused ? colors.primary : colors.neutral400}
       />
     ),
     statistics: (isFocused) => (
       <Icons.ChartBar
         size={verticalScale(30)}
         weight={isFocused ? 'fill' : 'regular'}
-        color={isFocused ? theme.colors.primary : theme.colors.neutral400}
+        color={isFocused ? colors.primary : colors.neutral400}
       />
     ),
     wallet: (isFocused) => (
       <Icons.Wallet
         size={verticalScale(30)}
         weight={isFocused ? 'fill' : 'regular'}
-        color={isFocused ? theme.colors.primary : theme.colors.neutral400}
+        color={isFocused ? colors.primary : colors.neutral400}
       />
     ),
     settings: (isFocused) => (
       <Icons.Gear
         size={verticalScale(30)}
         weight={isFocused ? 'fill' : 'regular'}
-        color={isFocused ? theme.colors.primary : theme.colors.neutral400}
+        color={isFocused ? colors.primary : colors.neutral400}
       />
     ),
   };
 
   return (
-    <View style={[styles.tabbar, { paddingBottom: 10 }]}>
+    <View
+      style={[
+        styles.tabbar,
+        {
+          backgroundColor: colors.neutral800,
+          shadowColor: colors.white,
+          borderTopColor: colors.neutral700,
+          paddingBottom: 10,
+        },
+      ]}
+    >
       {state.routes.map((route, index) => {
         const isFocused = state.index === index;
         const { options } = descriptors[route.key];
@@ -87,9 +99,7 @@ const CustomTabs = ({ state, descriptors, navigation }: BottomTabBarProps) => {
               style={[
                 styles.label,
                 {
-                  color: isFocused
-                    ? theme.colors.primary
-                    : theme.colors.neutral400,
+                  color: isFocused ? colors.primary : colors.neutral400,
                 },
               ]}
             >
@@ -110,17 +120,14 @@ const styles = StyleSheet.create({
     width: '100%',
     height: Platform.OS === 'ios' ? verticalScale(73) : verticalScale(60),
     paddingHorizontal: scale(10),
-    backgroundColor: theme.colors.neutral800,
     justifyContent: 'space-around',
     alignItems: 'center',
-    shadowColor: theme.colors.white,
     shadowOffset: {
       width: 0,
       height: 20,
     },
     shadowOpacity: 0.5,
     shadowRadius: 20,
-    borderTopColor: theme.colors.neutral700,
     borderTopWidth: 1,
   },
   tabbarItem: {
@@ -130,6 +137,6 @@ const styles = StyleSheet.create({
   label: {
     marginTop: verticalScale(2),
     fontSize: scale(12),
-    fontWeight: '500',
+    fontWeight: '500' as const,
   },
 });

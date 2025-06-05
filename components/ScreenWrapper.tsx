@@ -1,4 +1,4 @@
-import { colors } from '@/constants/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { ScreenWrapperProps } from '@/types';
 import React from 'react';
 import {
@@ -12,6 +12,7 @@ import {
 const { height } = Dimensions.get('window');
 
 const ScreenWrapper = ({ style, children }: ScreenWrapperProps) => {
+  const { colors } = useTheme();
   let paddingTop = Platform.OS === 'ios' ? height * 0.06 : 50;
   return (
     <View
@@ -19,7 +20,7 @@ const ScreenWrapper = ({ style, children }: ScreenWrapperProps) => {
         {
           paddingTop,
           flex: 1,
-          backgroundColor: colors.neutral900,
+          backgroundColor: colors.background,
         },
         style,
       ]}

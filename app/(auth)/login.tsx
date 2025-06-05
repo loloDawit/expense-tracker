@@ -3,7 +3,7 @@ import Button from '@/components/Button';
 import FormInput from '@/components/FormInput';
 import ScreenWrapper from '@/components/ScreenWrapper';
 import Typography from '@/components/Typography';
-import { theme } from '@/constants/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { useLoginForm } from '@/hooks/useLoginForm';
 import { verticalScale } from '@/utils/styling';
 import { useRouter } from 'expo-router';
@@ -13,6 +13,7 @@ import { Controller } from 'react-hook-form';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 const Login = () => {
+  const { colors, spacing } = useTheme();
   const router = useRouter();
   const {
     control,
@@ -22,9 +23,17 @@ const Login = () => {
 
   return (
     <ScreenWrapper>
-      <View style={styles.container}>
+      <View
+        style={
+          (styles.container,
+          {
+            gap: spacing.y._30,
+            paddingHorizontal: spacing.x._20,
+          })
+        }
+      >
         <BackButton />
-        <View style={{ gap: 5, marginTop: theme.spacing.y._20 }}>
+        <View style={{ gap: 5, marginTop: spacing.y._20 }}>
           <Typography size={30} fontWeight={'800'}>
             Hey,
           </Typography>
@@ -33,8 +42,8 @@ const Login = () => {
           </Typography>
         </View>
         {/* From  */}
-        <View style={styles.form}>
-          <Typography size={16} color={theme.colors.textLight}>
+        <View style={(styles.form, { gap: spacing.y._20 })}>
+          <Typography size={16} color={colors.textLight}>
             Login to your account
           </Typography>
           <Controller
@@ -48,7 +57,7 @@ const Login = () => {
                 icon={
                   <Icons.At
                     size={verticalScale(26)}
-                    color={theme.colors.neutral300}
+                    color={colors.neutral300}
                     weight="fill"
                   />
                 }
@@ -69,7 +78,7 @@ const Login = () => {
                 icon={
                   <Icons.Lock
                     size={verticalScale(26)}
-                    color={theme.colors.neutral300}
+                    color={colors.neutral300}
                     weight="fill"
                   />
                 }
@@ -80,8 +89,13 @@ const Login = () => {
           {/* todo: add forgot password functionality */}
           <Typography
             size={14}
-            color={theme.colors.text}
-            style={styles.forgotPassword}
+            color={colors.text}
+            style={
+              (styles.forgotPassword,
+              {
+                color: colors.text,
+              })
+            }
           >
             Forgot Password?
           </Typography>
@@ -89,12 +103,12 @@ const Login = () => {
             loading={isSubmitting}
             onPress={handleSubmit}
             style={{
-              backgroundColor: theme.colors.primary,
+              backgroundColor: colors.primary,
               borderRadius: 17,
               height: verticalScale(52),
             }}
           >
-            <Typography size={16} color={theme.colors.white}>
+            <Typography size={16} color={colors.white}>
               Login
             </Typography>
           </Button>
@@ -103,11 +117,7 @@ const Login = () => {
         <View style={styles.footer}>
           <Typography size={15}>Don’t have an account?</Typography>
           <Pressable onPress={() => router.navigate('/(auth)/signup')}>
-            <Typography
-              size={15}
-              color={theme.colors.primary}
-              fontWeight={'600'}
-            >
+            <Typography size={15} color={colors.primary} fontWeight={'600'}>
               Sign Up
             </Typography>
           </Pressable>
@@ -122,32 +132,17 @@ export default Login;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    gap: theme.spacing.y._30,
-    paddingHorizontal: theme.spacing.x._20,
   },
-  WelcomeText: {
-    fontSize: verticalScale(20),
-    fontWeight: 'bold',
-    color: theme.colors.text,
-  },
-  form: {
-    gap: theme.spacing.y._20,
-  },
+  form: {},
   forgotPassword: {
     alignSelf: 'flex-end',
     textAlign: 'right',
     fontWeight: '500',
-    color: theme.colors.text,
   },
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     gap: 5,
-  },
-  footerText: {
-    fontSize: verticalScale(15),
-    color: theme.colors.text,
-    textAlign: 'center',
   },
 });
