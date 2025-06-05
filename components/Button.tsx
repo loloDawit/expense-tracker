@@ -1,8 +1,8 @@
-import { theme } from '@/constants/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { CustomButtonProps } from '@/types';
 import { verticalScale } from '@/utils/styling';
 import React from 'react';
-import { StyleSheet, TouchableOpacity, View } from 'react-native';
+import { TouchableOpacity, View, ViewStyle } from 'react-native';
 import Loading from './Loading';
 
 const Button = ({
@@ -12,14 +12,22 @@ const Button = ({
   disabled = false,
   children,
 }: CustomButtonProps) => {
-  const backgroundColor = disabled
-    ? theme.colors.neutral600
-    : theme.colors.primary;
+  const { colors, radius } = useTheme();
+  const backgroundColor = disabled ? colors.neutral600 : colors.primary;
+
+  const baseStyle: ViewStyle = {
+    backgroundColor,
+    borderRadius: radius.md,
+    borderCurve: 'continuous',
+    height: verticalScale(52),
+    justifyContent: 'center',
+    alignItems: 'center',
+  };
 
   if (loading) {
     return (
-      <View style={[styles.button, style, { backgroundColor }]}>
-        <Loading color={theme.colors.black} />
+      <View style={[baseStyle, style]}>
+        <Loading color={colors.black} />
       </View>
     );
   }
@@ -28,12 +36,7 @@ const Button = ({
     <TouchableOpacity
       onPress={onPress}
       disabled={disabled}
-      style={[
-        styles.button,
-        style,
-        { backgroundColor },
-        disabled && styles.disabled,
-      ]}
+      style={[baseStyle, style]}
     >
       {children}
     </TouchableOpacity>
@@ -41,17 +44,3 @@ const Button = ({
 };
 
 export default Button;
-
-const styles = StyleSheet.create({
-  button: {
-    backgroundColor: theme.colors.primary,
-    borderRadius: theme.radius.md,
-    borderCurve: 'continuous',
-    height: verticalScale(52),
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  disabled: {
-    backgroundColor: theme.colors.neutral600,
-  },
-});

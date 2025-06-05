@@ -1,13 +1,7 @@
-import { theme } from '@/constants/theme';
+import { useTheme } from '@/contexts/ThemeContext';
 import { verticalScale } from '@/utils/styling';
 import React, { forwardRef } from 'react';
-import {
-  StyleSheet,
-  TextInput,
-  TextInputProps,
-  View,
-  ViewStyle,
-} from 'react-native';
+import { TextInput, TextInputProps, View, ViewStyle } from 'react-native';
 
 type Props = TextInputProps & {
   icon?: React.ReactNode;
@@ -15,18 +9,40 @@ type Props = TextInputProps & {
 };
 
 const Input = forwardRef<TextInput, Props>((props, ref) => {
+  const { colors, spacing, radius } = useTheme();
   const { icon, containerStyle, style, ...rest } = props;
 
   return (
-    <View style={[styles.container, containerStyle]}>
+    <View
+      style={[
+        {
+          flexDirection: 'row',
+          height: verticalScale(54),
+          alignItems: 'center',
+          justifyContent: 'center',
+          borderCurve: 'continuous',
+          borderWidth: 1,
+          borderColor: colors.neutral300,
+          borderRadius: radius.md,
+          paddingHorizontal: spacing.x._15,
+          gap: spacing.x._10,
+        },
+        containerStyle,
+      ]}
+    >
       {icon}
       <TextInput
         ref={ref}
         style={[
-          styles.input,
-          style, // ✅ allow custom input styles
+          {
+            flex: 1,
+            fontSize: verticalScale(14),
+            color: colors.text,
+            textAlign: 'left',
+          },
+          style,
         ]}
-        placeholderTextColor={theme.colors.neutral400}
+        placeholderTextColor={colors.neutral400}
         {...rest}
       />
     </View>
@@ -34,24 +50,3 @@ const Input = forwardRef<TextInput, Props>((props, ref) => {
 });
 
 export default Input;
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    height: verticalScale(54),
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: theme.colors.neutral300,
-    borderRadius: theme.radius.md,
-    borderCurve: 'continuous',
-    paddingHorizontal: theme.spacing.x._15,
-    gap: theme.spacing.x._10,
-  },
-  input: {
-    flex: 1,
-    fontSize: verticalScale(14),
-    color: theme.colors.white,
-    textAlign: 'left',
-  },
-});

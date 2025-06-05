@@ -5,8 +5,8 @@ import Button from '@/components/Button';
 import Input from '@/components/Input';
 import ModalWrapper from '@/components/ModalWrapper';
 import Typography from '@/components/Typography';
-import { theme } from '@/constants/theme';
 import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { getUserAvatar } from '@/services/imageServices';
 import { updateUser } from '@/services/userService';
 import { UserType } from '@/types';
@@ -25,6 +25,7 @@ import {
 } from 'react-native';
 
 const ProfileModal = () => {
+  const { colors, spacing } = useTheme();
   let [userData, setUserData] = useState<UserType>({
     displayName: '',
     photoURL: undefined,
@@ -90,16 +91,31 @@ const ProfileModal = () => {
 
   return (
     <ModalWrapper>
-      <View style={styles.container}>
+      <View style={[styles.container, { paddingHorizontal: spacing.y._20 }]}>
         <Header
           title={'Update Profile'}
           leftIcon={<BackButton />}
-          style={{ marginBottom: theme.spacing.y._10 }}
+          style={{ marginBottom: spacing.y._10 }}
         />
-        <ScrollView contentContainerStyle={styles.form}>
+
+        <ScrollView
+          contentContainerStyle={[
+            styles.form,
+            {
+              gap: spacing.y._30,
+              marginTop: spacing.y._15,
+            },
+          ]}
+        >
           <View style={styles.avatarContainer}>
             <Image
-              style={styles.avatar}
+              style={[
+                styles.avatar,
+                {
+                  backgroundColor: colors.neutral300,
+                  borderColor: colors.neutral500,
+                },
+              ]}
               source={getUserAvatar(
                 typeof userData?.photoURL === 'string'
                   ? userData.photoURL
@@ -108,22 +124,38 @@ const ProfileModal = () => {
               contentFit="cover"
               transition={100}
             />
-            <TouchableOpacity style={styles.editIcon} onPress={onPickImage}>
+            <TouchableOpacity
+              style={[
+                styles.editIcon,
+                {
+                  backgroundColor: colors.neutral100,
+                  borderRadius: 100,
+                  padding: spacing.y._7,
+                  shadowColor: colors.black,
+                },
+              ]}
+              onPress={onPickImage}
+            >
               <Icons.Pencil
                 size={verticalScale(20)}
-                color={theme.colors.neutral800}
+                color={colors.neutral800}
               />
             </TouchableOpacity>
           </View>
-          <View style={styles.inputContainer}>
-            <Typography color={theme.colors.neutral200}>Email</Typography>
+
+          <View style={[styles.inputContainer, { gap: spacing.y._10 }]}>
+            <Typography color={colors.neutral200}>Email</Typography>
             <Input
               placeholder="Email"
               value={user?.email || ''}
               editable={false}
-              style={styles.inputdisabled}
+              style={{
+                backgroundColor: colors.neutral800,
+                color: colors.neutral400,
+                textAlign: 'left',
+              }}
             />
-            <Typography color={theme.colors.neutral200}>Name</Typography>
+            <Typography color={colors.neutral200}>Name</Typography>
             <Input
               placeholder="Name"
               value={userData?.displayName || ''}
@@ -134,14 +166,26 @@ const ProfileModal = () => {
           </View>
         </ScrollView>
       </View>
-      <View style={styles.footer}>
+
+      <View
+        style={[
+          styles.footer,
+          {
+            paddingHorizontal: spacing.x._20,
+            paddingTop: spacing.y._15,
+            borderTopColor: colors.neutral700,
+            marginBottom: spacing.y._5,
+            borderTopWidth: 1,
+          },
+        ]}
+      >
         <Button
           onPress={onSubmit}
           style={{ flex: 1 }}
           loading={loading}
           disabled={!isDirty}
         >
-          <Typography color={theme.colors.black} fontWeight={'700'} size={18}>
+          <Typography color={colors.black} fontWeight={'700'} size={18}>
             Update
           </Typography>
         </Button>
@@ -156,22 +200,15 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'space-between',
-    paddingHorizontal: theme.spacing.y._20,
   },
   footer: {
     alignItems: 'center',
     flexDirection: 'row',
     justifyContent: 'center',
-    paddingHorizontal: theme.spacing.x._20,
     gap: scale(12),
-    paddingTop: theme.spacing.y._15,
-    borderTopColor: theme.colors.neutral700,
-    marginBottom: theme.spacing.y._5,
-    borderTopWidth: 1,
   },
   form: {
-    gap: theme.spacing.y._30,
-    marginTop: theme.spacing.y._15,
+    // spacing applied inline
   },
   avatarContainer: {
     position: 'relative',
@@ -179,34 +216,19 @@ const styles = StyleSheet.create({
   },
   avatar: {
     alignSelf: 'center',
-    backgroundColor: theme.colors.neutral300,
     height: verticalScale(135),
     width: verticalScale(135),
     borderRadius: 200,
     borderWidth: 1,
-    borderColor: theme.colors.neutral500,
-    // overflow: "hidden",
-    // position: "relative",
   },
   editIcon: {
     position: 'absolute',
-    bottom: theme.spacing.y._5,
-    right: theme.spacing.y._7,
-    borderRadius: 100,
-    backgroundColor: theme.colors.neutral100,
-    shadowColor: theme.colors.black,
+    bottom: 0, // theme values now inline
+    right: 0,
+    elevation: 4,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.25,
     shadowRadius: 10,
-    elevation: 4,
-    padding: theme.spacing.y._7,
   },
-  inputContainer: {
-    gap: theme.spacing.y._10,
-  },
-  inputdisabled: {
-    backgroundColor: theme.colors.neutral800,
-    color: theme.colors.neutral400,
-    textAlign: 'left',
-  },
+  inputContainer: {},
 });
