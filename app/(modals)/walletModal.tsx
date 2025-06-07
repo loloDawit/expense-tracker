@@ -26,7 +26,6 @@ const WalletModal = () => {
   const router = useRouter();
   const oldWallet: { name: string; image: string; id?: string } =
     useLocalSearchParams();
-  // console.log("params: ", oldWallet);
 
   useEffect(() => {
     if (oldWallet?.id) {
@@ -38,7 +37,6 @@ const WalletModal = () => {
   }, []);
 
   const onSelectImage = (file: any) => {
-    // console.log("file: ", file);
     if (file) setWallet({ ...wallet, image: file });
   };
 
@@ -61,7 +59,6 @@ const WalletModal = () => {
 
     const res = await createOrUpdateWallet(data);
     setLoading(false);
-    console.log('res: ', res);
     if (res.success) {
       router.back();
     } else {
@@ -101,11 +98,9 @@ const WalletModal = () => {
     );
   };
 
-  // console.log("wallet here: ", wallet);
-
   return (
     <ModalWrapper>
-      <View style={(styles.container, { paddingHorizontal: spacing.y._20 })}>
+      <View style={[styles.container, { paddingHorizontal: spacing.y._20 }]}>
         <Header
           title={oldWallet?.id ? 'Updated Wallet' : 'New Wallet'}
           leftIcon={<BackButton />}
@@ -122,7 +117,7 @@ const WalletModal = () => {
             })
           }
         >
-          <View style={(styles.inputContainer, { gap: spacing.y._10 })}>
+          <View style={[styles.inputContainer, { gap: spacing.y._10 }]}>
             <Typography color={colors.neutral200}>Wallet Name</Typography>
             <Input
               placeholder="Salary"

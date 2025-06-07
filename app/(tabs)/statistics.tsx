@@ -190,7 +190,10 @@ const Analytics = () => {
             tintColor={colors.neutral200}
             backgroundColor={colors.card}
             appearance="dark"
-            activeFontStyle={(styles.segmentFontStyle, { color: colors.black })}
+            activeFontStyle={{
+              ...styles.segmentFontStyle,
+              color: colors.black,
+            }}
             fontStyle={{
               ...styles.segmentFontStyle,
               color: colors.white,
@@ -235,9 +238,10 @@ const Analytics = () => {
 
             {chartLoading && (
               <View
-                style={
-                  (styles.chartLoadingContainer, { borderRadius: radius.sm })
-                }
+                style={[
+                  styles.chartLoadingContainer,
+                  { borderRadius: radius.sm },
+                ]}
               >
                 <Loading color="white" />
               </View>

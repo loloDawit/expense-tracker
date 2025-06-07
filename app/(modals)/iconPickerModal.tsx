@@ -28,8 +28,8 @@ export default function IconPickerModal({
 
   return (
     <ModalWrapper>
-      <View style={(styles.wrapper, { padding: spacing.y._10 })}>
-        <View style={(styles.header, { marginBottom: spacing.y._10 })}>
+      <View style={[styles.wrapper, { padding: spacing.y._10 }]}>
+        <View style={[styles.header, { marginBottom: spacing.y._10 }]}>
           <Typography fontWeight="semibold" style={{ flex: 1 }}>
             Pick an Icon
           </Typography>
@@ -51,7 +51,7 @@ export default function IconPickerModal({
                   onSelect(item);
                   onClose();
                 }}
-                style={(styles.iconBox, { backgroundColor: colors.neutral800 })}
+                style={[styles.iconBox, { backgroundColor: colors.neutral800 }]}
               >
                 <IconComponent size={26} color={colors.primary} />
               </TouchableOpacity>

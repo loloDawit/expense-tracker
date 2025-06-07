@@ -178,7 +178,7 @@ const Settings = () => {
               <Typography
                 size={fontSize['2xl']}
                 fontWeight="600"
-                color={colors.neutral100}
+                color={colors.textSecondary}
               >
                 {user?.displayName}
               </Typography>

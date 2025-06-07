@@ -194,7 +194,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     try {
       if (!docSnapshot.exists()) {
         logger.warn('User document does not exist, creating a new one');
-        console.log('Creating new user document:', user);
         await setDoc(
           userRef,
           {
@@ -208,7 +207,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         return;
       }
       const data = docSnapshot.data() ?? {};
-      console.log({ data });
 
       const userData: UserType = {
         uid: data.uid ?? '',

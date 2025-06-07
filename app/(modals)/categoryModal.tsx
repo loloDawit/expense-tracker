@@ -108,7 +108,7 @@ const CategoryModal = () => {
 
   return (
     <ModalWrapper>
-      <View style={(styles.container, { paddingHorizontal: spacing.y._20 })}>
+      <View style={[styles.container, { paddingHorizontal: spacing.y._20 }]}>
         <Header
           title="Expense Categories"
           leftIcon={<BackButton />}
@@ -128,7 +128,7 @@ const CategoryModal = () => {
             return (
               <View
                 key={item.id || `${item.label}-${item.icon}`}
-                style={(styles.row, { borderBottomColor: colors.neutral700 })}
+                style={[styles.row, { borderBottomColor: colors.neutral700 }]}
               >
                 <View
                   style={[
@@ -141,7 +141,7 @@ const CategoryModal = () => {
                 >
                   <IconComponent size={20} color={colors.white} />
                 </View>
-                <Typography style={(styles.label, { color: colors.white })}>
+                <Typography style={[styles.label, { color: colors.white }]}>
                   {item.label}
                 </Typography>
                 <View style={styles.actions}>

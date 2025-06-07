@@ -180,7 +180,6 @@ const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   // Get system color scheme
   const colorScheme = useColorScheme();
-  console.log('🎨 colorScheme from system:', colorScheme);
 
   const [isDark, setIsDark] = useState(colorScheme === 'dark');
 
@@ -205,8 +204,6 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
     isDark,
     toggleTheme,
   };
-
-  console.log('theme', theme);
 
   return (
     <ThemeContext.Provider value={theme}>{children}</ThemeContext.Provider>

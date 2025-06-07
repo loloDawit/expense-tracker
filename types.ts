@@ -1,7 +1,7 @@
 import { Timestamp } from 'firebase/firestore';
-import { Icon } from 'phosphor-react-native';
 import React, { ReactNode } from 'react';
 import {
+  StyleProp,
   TextInput,
   TextInputProps,
   TextProps,
@@ -32,7 +32,7 @@ export type TypoProps = {
   color?: string;
   fontWeight?: TextStyle['fontWeight'];
   children: any | null;
-  style?: TextStyle;
+  style?: StyleProp<TextStyle>;
   textProps?: TextProps;
 };
 

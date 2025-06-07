@@ -151,7 +151,7 @@ const SettingsModal = () => {
 
           <View
             style={{
-              backgroundColor: isDark ? colors.neutral800 : colors.neutral100,
+              backgroundColor: isDark ? colors.neutral800 : colors.textSecondary,
               padding: spacing.y._15,
               borderRadius: radius.md,
               gap: 6,

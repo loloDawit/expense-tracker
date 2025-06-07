@@ -73,6 +73,12 @@ export const radius = {
   pill: 9999,
 };
 
+export const lineHeights = {
+  tight: 1.2, // For headings
+  normal: 1.5, // For body text
+  relaxed: 1.75, // For long-form text
+};
+
 // FONT SIZES
 export const fontSize = {
   xs: scale(10),

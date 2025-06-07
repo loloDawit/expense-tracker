@@ -42,7 +42,7 @@ const Login = () => {
           </Typography>
         </View>
         {/* From  */}
-        <View style={(styles.form, { gap: spacing.y._20 })}>
+        <View style={[styles.form, { gap: spacing.y._20 }]}>
           <Typography size={16} color={colors.textLight}>
             Login to your account
           </Typography>

@@ -128,7 +128,7 @@ const ProfileModal = () => {
               style={[
                 styles.editIcon,
                 {
-                  backgroundColor: colors.neutral100,
+                  backgroundColor: colors.textSecondary,
                   borderRadius: 100,
                   padding: spacing.y._7,
                   shadowColor: colors.black,

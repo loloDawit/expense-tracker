@@ -49,7 +49,6 @@ const TransactionModal = () => {
     walletId: string;
   };
   const oldTransaction: paramType = useLocalSearchParams();
-  // console.log("old transaction: ", oldTransaction);
   const [allCategories, setAllCategories] = useState<CategoryType[]>([]);
 
   useEffect(() => {
@@ -92,8 +91,6 @@ const TransactionModal = () => {
     fetch();
   }, [user?.uid]);
 
-  console.log('all categories: ', allCategories);
-
   const {
     data: wallets,
     loading: walletLoading,
@@ -119,7 +116,6 @@ const TransactionModal = () => {
 
   useEffect(() => {
     if (oldTransaction?.id) {
-      // console.log("old tr: ", oldTransaction);
       setTransaction({
         type: oldTransaction.type,
         amount: Number(oldTransaction.amount),
@@ -139,7 +135,6 @@ const TransactionModal = () => {
   };
 
   const onSelectImage = (file: any) => {
-    // console.log("file: ", file);
     if (file) setTransaction({ ...transaction, image: file });
   };
 
@@ -182,7 +177,6 @@ const TransactionModal = () => {
     setLoading(true);
 
     const res = await createOrUpdateTransaction(transactionData);
-    // console.log("transaction: ", res);
     setLoading(false);
     if (res.success) {
       router.back();
@@ -211,7 +205,6 @@ const TransactionModal = () => {
   };
 
   const onDeleteTransaction = async () => {
-    console.log('deleting the tr: ', oldTransaction);
     if (oldTransaction) {
       setLoading(true);
       let res = await deleteTransaction(
@@ -226,8 +219,6 @@ const TransactionModal = () => {
       }
     }
   };
-
-  // console.log("got item: ", transaction.type);
 
   return (
     <ModalWrapper>
@@ -269,7 +260,7 @@ const TransactionModal = () => {
                 },
               ]}
               activeColor={colors.neutral700}
-              itemTextStyle={(styles.dropdownItemText, { color: colors.text })}
+              itemTextStyle={[styles.dropdownItemText, { color: colors.text }]}
               selectedTextStyle={[
                 styles.dropdownSelectedText,
                 { color: colors.text },
