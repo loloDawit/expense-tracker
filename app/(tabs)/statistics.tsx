@@ -1,154 +1,32 @@
-import ScreenWrapper from '@/components/ScreenWrapper';
-import React, { useEffect, useState } from 'react';
-import { Alert, Dimensions, ScrollView, StyleSheet, View } from 'react-native';
-
+import ExpensePieChart from '@/components/ExpensePieChart';
 import Header from '@/components/Header';
 import Loading from '@/components/Loading';
+import ScreenWrapper from '@/components/ScreenWrapper';
+import StatsSummary from '@/components/StatsSummary';
 import TransactionList from '@/components/TransactionList';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
-import {
-  fetchMonthlyStats,
-  fetchWeeklyStats,
-  fetchYearlyStats,
-} from '@/services/transactionService';
+import { useAnalyticsStore } from '@/store/analyticsStore';
 import { scale, verticalScale } from '@/utils/styling';
 import SegmentedControl from '@react-native-segmented-control/segmented-control';
+import * as Icons from 'phosphor-react-native';
+import React, { useEffect, useState } from 'react';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { BarChart } from 'react-native-gifted-charts';
-
-const { width: screenWidth } = Dimensions.get('window');
 
 const Analytics = () => {
   const { colors, spacing, radius } = useTheme();
-  const [chartLoading, setChartLoading] = useState(false);
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [chartData, setChartData] = useState([]);
-  const [transactions, setTransactions] = useState([]);
   const { user } = useAuth();
+  const { chartState, chartLoading, fetchAnalytics } = useAnalyticsStore();
 
-  const barData = [
-    {
-      value: 40,
-      label: 'Mon',
-      spacing: scale(4),
-      labelWidth: scale(30),
-      frontColor: colors.primary,
-      // topLabelComponent: () => (
-      //   <Typo size={10} style={{ marginBottom: 4 }} fontWeight={"bold"}>
-      //     50
-      //   </Typo>
-      // ),
-    },
-    {
-      value: 20,
-      frontColor: colors.rose,
-    },
-
-    {
-      value: 50,
-      label: 'Tue',
-      spacing: scale(4),
-      labelWidth: scale(30),
-      frontColor: colors.primary,
-    },
-    { value: 40, frontColor: colors.rose },
-    {
-      value: 75,
-      label: 'Wed',
-      spacing: scale(4),
-      labelWidth: scale(30),
-      frontColor: colors.primary,
-    },
-    { value: 25, frontColor: colors.rose },
-    {
-      value: 30,
-      label: 'Thu',
-      spacing: scale(4),
-      labelWidth: scale(30),
-      frontColor: colors.primary,
-    },
-    { value: 20, frontColor: colors.rose },
-    {
-      value: 60,
-      label: 'Fri',
-      spacing: scale(4),
-      labelWidth: scale(30),
-      frontColor: colors.primary,
-    },
-    { value: 40, frontColor: colors.rose },
-    {
-      value: 65,
-      label: 'Sat',
-      spacing: scale(4),
-      labelWidth: scale(30),
-      frontColor: colors.primary,
-    },
-    { value: 30, frontColor: colors.rose },
-    {
-      value: 65,
-      label: 'Sun',
-      spacing: scale(4),
-      labelWidth: scale(30),
-      frontColor: colors.primary,
-    },
-    { value: 30, frontColor: colors.rose },
-    // {
-    //   value: 65,
-    //   label: "Sun",
-    //   spacing: scale(4),
-    //   labelWidth: scale(30),
-    //   frontColor: colors.primary,
-    // },
-    // { value: 30, frontColor: colors.rose },
-  ];
+  const [activeIndex, setActiveIndex] = useState(0);
 
   useEffect(() => {
-    if (activeIndex == 0) {
-      getWeeklyStats();
-    }
-    if (activeIndex == 1) {
-      getMonthlyStats();
-    }
-    if (activeIndex == 2) {
-      getYearlyStats();
-    }
+    if (!user?.uid) return;
+    const period =
+      activeIndex === 0 ? 'weekly' : activeIndex === 1 ? 'monthly' : 'yearly';
+    fetchAnalytics(user.uid, period);
   }, [activeIndex]);
-
-  const getWeeklyStats = async () => {
-    setChartLoading(true);
-    let res = await fetchWeeklyStats(user?.uid as string);
-    setChartLoading(false);
-    if (res.success) {
-      setChartData(res.data.stats);
-      setTransactions(res.data.transactions);
-    } else {
-      Alert.alert('Error', res.msg);
-    }
-  };
-
-  const getMonthlyStats = async () => {
-    setChartLoading(true);
-    let res = await fetchMonthlyStats(user?.uid as string);
-    setChartLoading(false);
-    if (res.success) {
-      setChartData(res.data.stats);
-      setTransactions(res.data.transactions);
-    } else {
-      Alert.alert('Error', res.msg);
-    }
-  };
-
-  const getYearlyStats = async () => {
-    setChartLoading(true);
-    let res = await fetchYearlyStats(user?.uid as string);
-    setChartLoading(false);
-    if (res.success) {
-      setChartData(res.data.stats);
-      setTransactions(res.data.transactions);
-    } else {
-      Alert.alert('Error', res.msg);
-    }
-  };
 
   return (
     <ScreenWrapper>
@@ -162,20 +40,24 @@ const Analytics = () => {
           },
         ]}
       >
-        {/* segments */}
-        <View style={styles.header}>
-          <Header
-            title="Statistics"
-            // rightIcon={
-            //   <TouchableOpacity style={styles.searchIcon, { backgroundColor: colors.neutral700,}}>
-            //     <Icons.MagnifyingGlass
-            //       size={verticalScale(22)}
-            //       color={colors.white}
-            //     />
-            //   </TouchableOpacity>
-            // }
-          />
-        </View>
+        <Header
+          title="Statistics"
+          rightIcon={
+            <TouchableOpacity
+              onPress={() => {
+                const period =
+                  activeIndex === 0
+                    ? 'weekly'
+                    : activeIndex === 1
+                      ? 'monthly'
+                      : 'yearly';
+                fetchAnalytics(user?.uid, period);
+              }}
+            >
+              <Icons.ArrowsClockwise size={22} color={colors.text} />
+            </TouchableOpacity>
+          }
+        />
         <ScrollView
           contentContainerStyle={{
             gap: spacing.y._20,
@@ -184,6 +66,11 @@ const Analytics = () => {
           }}
           showsVerticalScrollIndicator={false}
         >
+          {chartState.summary && <StatsSummary metrics={chartState.summary} />}
+          {chartState.expenseByCategory.length > 0 && (
+            <ExpensePieChart data={chartState.expenseByCategory} />
+          )}
+
           <SegmentedControl
             values={['Weekly', 'Monthly', 'Yearly']}
             selectedIndex={activeIndex}
@@ -194,10 +81,7 @@ const Analytics = () => {
               ...styles.segmentFontStyle,
               color: colors.black,
             }}
-            fontStyle={{
-              ...styles.segmentFontStyle,
-              color: colors.white,
-            }}
+            fontStyle={{ ...styles.segmentFontStyle, color: colors.white }}
             style={styles.segmentStyle}
             onChange={(event) =>
               setActiveIndex(event.nativeEvent.selectedSegmentIndex)
@@ -205,12 +89,11 @@ const Analytics = () => {
           />
 
           <View style={styles.chartContainer}>
-            {chartData.length > 0 ? (
+            {chartState.chartData.length > 0 ? (
               <BarChart
-                data={chartData}
+                data={chartState.chartData}
                 barWidth={scale(12)}
                 spacing={[1, 2].includes(activeIndex) ? scale(25) : scale(16)}
-                // width={screenWidth - spacing.x._30}
                 roundedTop
                 roundedBottom
                 hideRules
@@ -220,7 +103,6 @@ const Analytics = () => {
                 yAxisLabelWidth={
                   [1, 2].includes(activeIndex) ? scale(38) : scale(35)
                 }
-                // hideYAxisText
                 yAxisTextStyle={{ color: colors.neutral350 }}
                 xAxisLabelTextStyle={{
                   color: colors.neutral350,
@@ -228,9 +110,6 @@ const Analytics = () => {
                 }}
                 noOfSections={3}
                 minHeight={5}
-                // maxValue={100}
-                // animationDuration={500}
-                // isAnimated={true}
               />
             ) : (
               <View style={styles.noChart} />
@@ -248,14 +127,11 @@ const Analytics = () => {
             )}
           </View>
 
-          {/* transactions */}
-          <View>
-            <TransactionList
-              title="Transactions"
-              emptyListMessage="No transactions found"
-              data={transactions}
-            />
-          </View>
+          <TransactionList
+            title="Transactions"
+            emptyListMessage="No transactions found"
+            data={chartState.transactions}
+          />
         </ScrollView>
       </View>
     </ScreenWrapper>

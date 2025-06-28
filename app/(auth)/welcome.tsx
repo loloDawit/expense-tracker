@@ -17,6 +17,7 @@ const Welcome = () => {
   const handleGetStarted = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     router.push('/(auth)/signup');
+    //router.replace('/(modals)/verifyEmail');
   };
 
   return (

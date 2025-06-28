@@ -1,4 +1,4 @@
-import { firestore } from '@/config/firebase';
+import { auth, firestore } from '@/config/firebase';
 import { colors } from '@/constants/theme';
 import {
   CategoryType,
@@ -155,7 +155,14 @@ export const createOrUpdateTransaction = async (
     const transactionRef = id
       ? doc(firestore, 'transactions', id)
       : doc(collection(firestore, 'transactions'));
-    await setDoc(transactionRef, transactionData, { merge: true });
+    await setDoc(
+      transactionRef,
+      {
+        ...transactionData,
+        uid: auth.currentUser?.uid,
+      },
+      { merge: true },
+    );
 
     return {
       success: true,

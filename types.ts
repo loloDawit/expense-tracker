@@ -131,6 +131,7 @@ export type UserType = {
   uid?: string;
   email?: string | null;
   displayName?: string | null;
+  emailVerified?: boolean;
   photoURL?: string | { uri: string };
 };
 
@@ -165,4 +166,24 @@ export type WalletType = {
   image: any;
   uid?: string;
   created?: Date;
+};
+
+export type MetricsType = {
+  totalIncome: number;
+  totalExpenses: number;
+  netBalance: number;
+  avgTransactionAmount: number;
+  highestExpense: number;
+  avgDailySpending: number;
+  mostActiveDay: string;
+  topSpendingCategory: string;
+  topIncomeSource: string;
+  expenseToIncomeRatio: number;
+};
+
+export type ChartState = {
+  chartData: any[];
+  transactions: TransactionType[];
+  summary: MetricsType | null;
+  expenseByCategory: { name: string; amount: number }[];
 };

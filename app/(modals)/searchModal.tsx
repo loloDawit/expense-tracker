@@ -1,44 +1,34 @@
-import {
-  Alert,
-  ScrollView,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import React, { useCallback, useEffect, useState } from "react";
-import ScreenWrapper from "@/components/ScreenWrapper";
-import ModalWrapper from "@/components/ModalWrapper";
-import Header from "@/components/Header";
-import {theme} from "@/constants/theme";
-import Button from "@/components/Button";
-import Input from "@/components/Input";
-import ImageUpload from "@/components/ImageUpload";
-import { scale, verticalScale } from "@/utils/styling";
-import { createOrUpdateWallet, deleteWallet } from "@/services/walletService";
-import { useAuth } from "@/contexts/AuthContext";
-import { useLocalSearchParams, useRouter } from "expo-router";
-import { TransactionType, WalletType } from "@/types";
-import BackButton from "@/components/BackButton";
+import BackButton from '@/components/BackButton';
+import Header from '@/components/Header';
+import Input from '@/components/Input';
+import ModalWrapper from '@/components/ModalWrapper';
+import { theme } from '@/constants/theme';
+import { useAuth } from '@/contexts/AuthContext';
+import { TransactionType } from '@/types';
+import React, { useMemo, useState } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
 
-import TransactionList from "@/components/TransactionList";
-import { orderBy, where } from "firebase/firestore";
-import useFetchData from "@/hooks/useFetchData";
-import { useTheme } from "@/contexts/ThemeContext";
+import TransactionList from '@/components/TransactionList';
+import { useTheme } from '@/contexts/ThemeContext';
+import useFetchData from '@/hooks/useFetchData';
+import { orderBy, where } from 'firebase/firestore';
 
 const SearchModal = () => {
   const { colors } = useTheme();
   const { user } = useAuth();
-  const [search, setSearch] = useState("");
+  const [search, setSearch] = useState('');
 
-  const constraints = [where("uid", "==", user?.uid), orderBy("date", "desc")];
+  const constraints = useMemo(() => {
+    if (!user?.uid) return [];
+    return [where('uid', '==', user.uid), orderBy('date', 'desc')];
+  }, [user?.uid]);
 
   // Use the useFetchData hook with the 'transactions' collection and constraints
   const {
     data: allTransactions,
     loading: transactionsLoading,
     error,
-  } = useFetchData<TransactionType>("transactions", constraints);
+  } = useFetchData<TransactionType>('transactions', constraints);
 
   //   const hanldeSearch = (search: string) => {};
   //   const handleTextDebounce = useCallback(debounce(hanldeSearch, 400), []);
@@ -61,7 +51,7 @@ const SearchModal = () => {
     <ModalWrapper style={{ backgroundColor: colors.neutral900 }}>
       <View style={styles.container}>
         <Header
-          title={"Search"}
+          title={'Search'}
           leftIcon={<BackButton />}
           style={{ marginBottom: theme.spacing.y._10 }}
         />
@@ -81,7 +71,7 @@ const SearchModal = () => {
             <TransactionList
               loading={transactionsLoading}
               data={filteredTransactions}
-              emptyListMessage={"No transactions match your search keywords"}
+              emptyListMessage={'No transactions match your search keywords'}
             />
           </View>
         </ScrollView>

@@ -86,6 +86,12 @@ const Layout = () => {
               presentation: 'modal',
             }}
           />
+          <Stack.Screen
+            name="(modals)/verifyEmail"
+            options={{
+              presentation: 'modal',
+            }}
+          />
         </Stack>
       </AuthProvider>
     </ThemeProvider>

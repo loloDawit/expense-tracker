@@ -1,4 +1,4 @@
-import { firestore } from '@/config/firebase';
+import { auth, firestore } from '@/config/firebase';
 import { ResponseType, WalletType } from '@/types';
 import {
   collection,
@@ -47,7 +47,14 @@ export const createOrUpdateWallet = async (
       ? doc(firestore, 'wallets', walletData.id)
       : doc(collection(firestore, 'wallets'));
 
-    await setDoc(walletRef, walletToSave, { merge: true }); // merge: true updates only the data provided
+    await setDoc(
+      walletRef,
+      {
+        ...walletToSave,
+        uid: auth.currentUser?.uid,
+      },
+      { merge: true },
+    );
 
     return {
       success: true,

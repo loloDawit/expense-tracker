@@ -1,5 +1,5 @@
 import ScreenWrapper from '@/components/ScreenWrapper';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import Loading from '@/components/Loading';
@@ -18,14 +18,16 @@ const Wallet = () => {
   const { colors, fontSize, radius, spacing } = useTheme();
   const router = useRouter();
   const { user } = useAuth();
+  const walletConstraints = useMemo(() => {
+    if (!user?.uid) return [];
+    return [where('uid', '==', user.uid), orderBy('created', 'desc')];
+  }, [user?.uid]);
+
   const {
     data: wallets,
     loading,
     error,
-  } = useFetchData<WalletType>('wallets', [
-    where('uid', '==', user?.uid),
-    orderBy('created', 'desc'),
-  ]);
+  } = useFetchData<WalletType>('wallets', walletConstraints);
 
   const getTotalBalance = () =>
     wallets.reduce((total, item) => {

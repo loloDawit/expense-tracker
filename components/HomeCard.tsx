@@ -6,21 +6,24 @@ import { formatAmount } from '@/utils/helper';
 import { scale, verticalScale } from '@/utils/styling';
 import { orderBy, where } from 'firebase/firestore';
 import * as Icons from 'phosphor-react-native';
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ImageBackground, StyleSheet, View } from 'react-native';
 import Typography from './Typography';
 
 const HomeCard = () => {
+  console.log('test');
+
   const { colors, spacing } = useTheme();
   const { user } = useAuth();
+  const walletConstraints = useMemo(() => {
+    if (!user?.uid) return [];
+    return [where('uid', '==', user.uid), orderBy('created', 'desc')];
+  }, [user?.uid]);
   const {
     data: wallets,
     loading: walletLoading,
     error,
-  } = useFetchData<WalletType>('wallets', [
-    where('uid', '==', user?.uid),
-    orderBy('created', 'desc'),
-  ]);
+  } = useFetchData<WalletType>('wallets', walletConstraints);
 
   const getTotals = () => {
     return wallets.reduce(

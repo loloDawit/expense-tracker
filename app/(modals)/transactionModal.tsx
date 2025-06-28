@@ -6,7 +6,7 @@ import ModalWrapper from '@/components/ModalWrapper';
 import { scale, verticalScale } from '@/utils/styling';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Icons from 'phosphor-react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import {
   Alert,
   Platform,
@@ -90,15 +90,15 @@ const TransactionModal = () => {
 
     fetch();
   }, [user?.uid]);
-
+  const walletConstraints = useMemo(() => {
+    if (!user?.uid) return [];
+    return [where('uid', '==', user.uid), orderBy('created', 'desc')];
+  }, [user?.uid]);
   const {
     data: wallets,
     loading: walletLoading,
     error,
-  } = useFetchData<WalletType>('wallets', [
-    where('uid', '==', user?.uid),
-    orderBy('created', 'desc'),
-  ]);
+  } = useFetchData<WalletType>('wallets', walletConstraints);
 
   const [loading, setLoading] = useState(false);
 

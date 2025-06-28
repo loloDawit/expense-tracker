@@ -34,34 +34,29 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     logger.info('🔐 AuthProvider mounted');
     let isMounted = true;
 
-    const unsubscribe = onAuthStateChanged(auth, (firebaseUser) => {
+    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser) => {
       if (!isMounted) return;
 
       if (firebaseUser) {
-        logger.info('✅ Signed in:', firebaseUser);
-        if (firebaseUser.emailVerified) {
-          logger.info('✅ Email verified:', firebaseUser.email);
+        await firebaseUser.reload();
+        const { uid, email, displayName, emailVerified, photoURL } =
+          firebaseUser;
 
-          setUser({
-            uid: firebaseUser.uid,
-            email: firebaseUser.email ?? '',
-            displayName: firebaseUser.displayName ?? '',
-            photoURL: firebaseUser.photoURL
-              ? { uri: firebaseUser.photoURL }
-              : undefined,
-          });
-          updateUserData({
-            uid: firebaseUser.uid,
-            email: firebaseUser.email ?? '',
-            displayName: firebaseUser.displayName ?? '',
-            photoURL: firebaseUser.photoURL
-              ? { uri: firebaseUser.photoURL }
-              : undefined,
-          });
+        const loggedInUser: UserType = {
+          uid,
+          email: email ?? '',
+          displayName: displayName ?? '',
+          emailVerified,
+          photoURL: photoURL ? { uri: photoURL } : undefined,
+        };
+
+        setUser(loggedInUser);
+        updateUserData(loggedInUser);
+
+        if (emailVerified) {
           router.replace('/(tabs)/home');
         } else {
-          logger.warn('❗ Email not verified');
-          setUser(null);
+          router.replace('/(modals)/verifyEmail');
         }
       } else {
         logger.info('🚪 User signed out or session expired');
@@ -135,20 +130,34 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     password: string,
   ): Promise<{ success: boolean; msg?: string }> => {
     setIsLoading(true);
+    // 👇 inside signup()
     try {
       const res = await createUserWithEmailAndPassword(auth, email, password);
       const { uid } = res.user;
 
-      // send email verification
-      await sendEmailVerification(res.user, {
-        url: 'https://expense-tracker-app-68fed.web.app/verify',
-      });
-      logger.info('Email verification sent to:', email);
+      // 📤 Send email verification with custom URL
+      try {
+        await sendEmailVerification(res.user, {
+          url: 'https://expense-tracker-app-68fed.web.app/verify',
+        });
+        logger.info('✅ Custom verification email sent to:', email);
+      } catch (err) {
+        logger.warn('❌ Custom verification failed, trying fallback', err);
 
+        // Fallback: default email with no URL
+        try {
+          await sendEmailVerification(res.user);
+          logger.info('✅ Fallback verification email sent');
+        } catch (fallbackErr) {
+          logger.error('❌ Fallback verification also failed', fallbackErr);
+        }
+      }
+
+      // Store user profile
       const newUser: UserType = {
         uid,
         email,
-        displayName: name
+        displayName: name,
       };
 
       await setDoc(doc(firestore, 'users', uid), newUser);

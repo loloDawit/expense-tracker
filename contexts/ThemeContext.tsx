@@ -97,7 +97,7 @@ export const darkTheme = {
   background: palette.gray[900],
 
   // Text
-  text: palette.gray[50],
+  text: '#fff',
   textLight: '#e5e5e5', // Light Gray
   textLighter: '#d4d4d4', // Lighter Gray
   border: '#2D3235',

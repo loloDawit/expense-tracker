@@ -1,6 +1,6 @@
 import ScreenWrapper from '@/components/ScreenWrapper';
-import React from 'react';
-import { ScrollView, TouchableOpacity, View } from 'react-native';
+import React, { useCallback, useMemo, useState } from 'react';
+import { TouchableOpacity, View } from 'react-native';
 
 import Button from '@/components/Button';
 import HomeCard from '@/components/HomeCard';
@@ -17,28 +17,36 @@ import * as Icons from 'phosphor-react-native';
 
 const Home = () => {
   const { colors, spacing } = useTheme();
+  const [refreshing, setRefreshing] = useState(false);
   const { user } = useAuth();
   const router = useRouter();
 
-  const constraints = [
-    where('uid', '==', user?.uid),
-    orderBy('date', 'desc'),
-    limit(30),
-  ];
+  const constraints = useMemo(() => {
+    if (!user?.uid) return [];
+    return [where('uid', '==', user.uid), orderBy('date', 'desc'), limit(30)];
+  }, [user?.uid]);
 
   const {
     data: recentTransactions,
     loading: transactionsLoading,
     error,
+    refetch,
   } = useFetchData<TransactionType>('transactions', constraints);
-
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await refetch();
+    setRefreshing(false);
+  }, [refetch]);
+  console.log('[Home] constraints:', constraints);
+  console.log('[Home] handleRefresh:', handleRefresh);
   return (
-    <ScreenWrapper>
+    <ScreenWrapper refreshing={refreshing} onRefresh={handleRefresh} scrollable>
       <View
         style={{
           flex: 1,
           paddingHorizontal: spacing.x._20,
           marginTop: verticalScale(8),
+          gap: spacing.x._25,
         }}
       >
         {/* header */}
@@ -74,23 +82,16 @@ const Home = () => {
           </TouchableOpacity>
         </View>
 
-        <ScrollView
-          contentContainerStyle={{
-            marginTop: spacing.x._10,
-            paddingBottom: verticalScale(100),
-            gap: spacing.x._25,
-          }}
-          showsVerticalScrollIndicator={false}
-        >
-          <HomeCard />
-          <TransactionList
-            title={'Recent Transactions'}
-            loading={transactionsLoading}
-            data={recentTransactions}
-            emptyListMessage="No Transactions added yet!"
-          />
-        </ScrollView>
+        {/* main content */}
+        <HomeCard />
+        <TransactionList
+          title={'Recent Transactions'}
+          loading={transactionsLoading}
+          data={recentTransactions}
+          emptyListMessage="No Transactions added yet!"
+        />
 
+        {/* floating button */}
         <Button
           onPress={() => router.push('/(modals)/transactionModal')}
           style={{
