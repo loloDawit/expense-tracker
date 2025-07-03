@@ -1,11 +1,10 @@
 import ScreenWrapper from '@/components/ScreenWrapper';
 import React, { useCallback, useMemo, useState } from 'react';
-import { TouchableOpacity, View } from 'react-native';
+import { View } from 'react-native';
 
 import Button from '@/components/Button';
 import HomeCard from '@/components/HomeCard';
 import TransactionList from '@/components/TransactionList';
-import Typography from '@/components/Typography';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import useFetchData from '@/hooks/useFetchData';
@@ -42,77 +41,51 @@ const Home = () => {
   console.log('[Home] constraints:', constraints);
   console.log('[Home] handleRefresh:', handleRefresh);
   return (
-    <ScreenWrapper refreshing={refreshing} onRefresh={handleRefresh} scrollable>
-      <View
-        style={{
-          flex: 1,
-          paddingHorizontal: spacing.x._20,
-          marginTop: verticalScale(8),
-          gap: spacing.x._25,
-        }}
+    <View style={{ flex: 1 }}>
+      <ScreenWrapper
+        refreshing={refreshing}
+        onRefresh={handleRefresh}
+        scrollable
       >
-        {/* header */}
         <View
           style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-            marginBottom: spacing.x._10,
+            flex: 1,
+            paddingHorizontal: spacing.x._20,
+            marginTop: verticalScale(8),
+            gap: spacing.x._25,
           }}
         >
-          <View style={{ gap: 4 }}>
-            <Typography size={16} color={colors.text}>
-              Hello,
-            </Typography>
-            <Typography fontWeight={'500'} size={20}>
-              {capitalizedName}
-            </Typography>
-          </View>
-          <TouchableOpacity
-            onPress={() => router.push('/(modals)/searchModal')}
-            style={{
-              backgroundColor: colors.neutral700,
-              padding: spacing.x._10,
-              borderRadius: 50,
-            }}
-          >
-            <Icons.MagnifyingGlass
-              size={verticalScale(22)}
-              color={colors.neutral200}
-              weight="bold"
-            />
-          </TouchableOpacity>
-        </View>
-
-        {/* main content */}
-        <HomeCard />
-        <TransactionList
-          title={'Recent Transactions'}
-          loading={transactionsLoading}
-          data={recentTransactions}
-          emptyListMessage="No Transactions added yet!"
-        />
-
-        {/* floating button */}
-        <Button
-          onPress={() => router.push('/(modals)/transactionModal')}
-          style={{
-            height: verticalScale(50),
-            width: verticalScale(50),
-            borderRadius: 100,
-            position: 'absolute',
-            bottom: verticalScale(30),
-            right: verticalScale(30),
-          }}
-        >
-          <Icons.Plus
-            color={colors.black}
-            weight="bold"
-            size={verticalScale(24)}
+          {/* header */}
+          <HomeCard />
+          <TransactionList
+            title={'Recent Transactions'}
+            loading={transactionsLoading}
+            data={recentTransactions}
+            emptyListMessage="No Transactions added yet!"
           />
-        </Button>
-      </View>
-    </ScreenWrapper>
+        </View>
+      </ScreenWrapper>
+
+      {/* floating button */}
+      <Button
+        onPress={() => router.push('/(modals)/transactionModal')}
+        style={{
+          height: verticalScale(50),
+          width: verticalScale(50),
+          borderRadius: 100,
+          position: 'absolute',
+          bottom: verticalScale(30),
+          right: verticalScale(30),
+          zIndex: 10,
+        }}
+      >
+        <Icons.Plus
+          color={colors.black}
+          weight="bold"
+          size={verticalScale(24)}
+        />
+      </Button>
+    </View>
   );
 };
 
