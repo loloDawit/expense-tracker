@@ -72,7 +72,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       logger.info('👋 AuthProvider unmounted');
       unsubscribe();
     };
-  }, []);
+  }, [router]);
 
   /**
    * Logs in a user using their email and password.

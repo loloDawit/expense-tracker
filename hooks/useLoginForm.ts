@@ -26,7 +26,7 @@ export const useLoginForm = () => {
         // Handle login error
         Alert.alert('Login Failed', response.msg);
       }
-    } catch (err) {
+    } catch (_err) { // eslint-disable-line @typescript-eslint/no-unused-vars
       Alert.alert('Login Failed', 'Something went wrong.');
     }
   });

@@ -14,7 +14,7 @@ import Input from '@/components/Input';
 import ModalWrapper from '@/components/ModalWrapper';
 import Typography from '@/components/Typography';
 import { useAuth } from '@/contexts/AuthContext';
-import * as Icons from 'phosphor-react-native';
+import { Icons } from '@/constants/icons';
 
 import {
   createOrUpdateCategory,

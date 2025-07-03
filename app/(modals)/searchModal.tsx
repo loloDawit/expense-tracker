@@ -27,7 +27,6 @@ const SearchModal = () => {
   const {
     data: allTransactions,
     loading: transactionsLoading,
-    error,
   } = useFetchData<TransactionType>('transactions', constraints);
 
   //   const hanldeSearch = (search: string) => {};

@@ -51,7 +51,7 @@ const Section = ({
 };
 
 const Settings = () => {
-  const { colors, spacing, radius, fontSize, isDark } = useTheme();
+  const { colors, spacing, radius, fontSize } = useTheme();
 
   const { user, isLoading, logout } = useAuth();
   const router = useRouter();

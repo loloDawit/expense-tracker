@@ -26,7 +26,7 @@ const Analytics = () => {
     const period =
       activeIndex === 0 ? 'weekly' : activeIndex === 1 ? 'monthly' : 'yearly';
     fetchAnalytics(user.uid, period);
-  }, [activeIndex]);
+  }, [activeIndex, fetchAnalytics, user.uid]);
 
   return (
     <ScreenWrapper>

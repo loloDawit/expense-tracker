@@ -22,7 +22,6 @@ const HomeCard = () => {
   const {
     data: wallets,
     loading: walletLoading,
-    error,
   } = useFetchData<WalletType>('wallets', walletConstraints);
 
   const getTotals = () => {

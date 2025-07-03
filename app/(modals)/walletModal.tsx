@@ -34,7 +34,7 @@ const WalletModal = () => {
         image: oldWallet?.image || null,
       });
     }
-  }, []);
+  }, [oldWallet?.id, oldWallet?.image, oldWallet.name]);
 
   const onSelectImage = (file: any) => {
     if (file) setWallet({ ...wallet, image: file });
@@ -98,6 +98,8 @@ const WalletModal = () => {
     );
   };
 
+  console.log('[WalletModal] oldWallet:', oldWallet.id);
+
   return (
     <ModalWrapper>
       <View style={[styles.container, { paddingHorizontal: spacing.y._20 }]}>
@@ -108,14 +110,14 @@ const WalletModal = () => {
         />
         {/* form */}
         <ScrollView
-          contentContainerStyle={
-            (styles.form,
+          contentContainerStyle={[
+            styles.form,
             {
               gap: spacing.y._20,
               paddingVertical: spacing.y._15,
               paddingBottom: spacing.y._40,
-            })
-          }
+            },
+          ]}
         >
           <View style={[styles.inputContainer, { gap: spacing.y._10 }]}>
             <Typography color={colors.neutral200}>Wallet Name</Typography>
@@ -139,15 +141,15 @@ const WalletModal = () => {
 
       {/* footer */}
       <View
-        style={
-          (styles.footer,
+        style={[
+          styles.footer,
           {
             paddingHorizontal: spacing.x._20,
             paddingTop: spacing.y._15,
             borderTopColor: colors.neutral700,
             marginBottom: spacing.y._5,
-          })
-        }
+          },
+        ]}
       >
         {oldWallet?.id && !loading && (
           <Button

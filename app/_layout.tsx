@@ -5,7 +5,7 @@ import * as Sentry from '@sentry/react-native';
 import { useFonts } from 'expo-font';
 import { Stack } from 'expo-router';
 import React, { useEffect } from 'react';
-import { StyleSheet } from 'react-native';
+
 
 Sentry.init({
   dsn: process.env.EXPO_PUBLIC_SENTRY_DSN,
@@ -100,4 +100,4 @@ const Layout = () => {
 
 export default Layout;
 
-const styles = StyleSheet.create({});
+

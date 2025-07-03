@@ -19,6 +19,8 @@ const Wallet = () => {
   const router = useRouter();
   const { user } = useAuth();
   const walletConstraints = useMemo(() => {
+    console.log('[Wallet] walletConstraints:', user?.uid);
+
     if (!user?.uid) return [];
     return [where('uid', '==', user.uid), orderBy('created', 'desc')];
   }, [user?.uid]);
@@ -26,7 +28,6 @@ const Wallet = () => {
   const {
     data: wallets,
     loading,
-    error,
   } = useFetchData<WalletType>('wallets', walletConstraints);
 
   const getTotalBalance = () =>
@@ -34,6 +35,8 @@ const Wallet = () => {
       total = total + (item?.amount || 0);
       return total;
     }, 0);
+
+  console.log({ wallets });
 
   return (
     <ScreenWrapper style={{ backgroundColor: colors.black }}>

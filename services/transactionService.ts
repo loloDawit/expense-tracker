@@ -110,9 +110,9 @@ export const createOrUpdateTransaction = async (
       const oldTransaction = oldTransactionSnapshot.data() as TransactionType;
 
       const shouldRevertOriginal =
-        oldTransaction.type != type ||
-        oldTransaction.amount != amount ||
-        oldTransaction.walletId != walletId;
+        oldTransaction.type !== type ||
+        oldTransaction.amount !== amount ||
+        oldTransaction.walletId !== walletId;
 
       if (shouldRevertOriginal) {
         // Check if we need to revert the original transaction (type, amount, or wallet changed)
@@ -191,7 +191,7 @@ export const updateWalletForNewTransaction = async (
 
     const walletData = walletSnapshot.data() as WalletType;
 
-    if (type == 'expense' && walletData.amount! - amount < 0) {
+    if (type === 'expense' && walletData.amount! - amount < 0) {
       return {
         success: false,
         msg: "Selected wallet don't have enough balance",
@@ -320,7 +320,7 @@ export const deleteTransaction = async (
     const updatedTotals = walletData[updateType] - transactionAmount;
 
     // if its income and the wallet amount can go below zero
-    if (transactionType == 'income' && newWalletAmount < 0) {
+    if (transactionType === 'income' && newWalletAmount < 0) {
       return { success: false, msg: 'You cannot delete this transaction' };
     }
 

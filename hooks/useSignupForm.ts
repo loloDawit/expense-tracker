@@ -25,7 +25,7 @@ export const useSignupForm = () => {
         // Handle signup error
         Alert.alert('Signup Failed', response.msg);
       }
-    } catch (err) {
+    } catch (_err) { // eslint-disable-line @typescript-eslint/no-unused-vars
       Alert.alert('Signup Failed', 'Something went wrong.');
     }
   });

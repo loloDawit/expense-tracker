@@ -1,8 +1,9 @@
 import { useTheme } from '@/contexts/ThemeContext';
 import { TypoProps } from '@/types';
 import { verticalScale } from '@/utils/styling';
+import { Text, TextStyle } from 'react-native';
 import React from 'react';
-import { StyleSheet, Text, TextStyle } from 'react-native';
+
 
 const Typography = ({
   size,
@@ -29,4 +30,4 @@ const Typography = ({
 
 export default Typography;
 
-const styles = StyleSheet.create({});
+

@@ -22,7 +22,7 @@ type Props = {
 };
 
 const StatsSummary: React.FC<Props> = ({ metrics }) => {
-  const { colors, spacing } = useTheme();
+  const { spacing } = useTheme();
 
   return (
     <View style={[styles.container, { gap: spacing.y._10 }]}>

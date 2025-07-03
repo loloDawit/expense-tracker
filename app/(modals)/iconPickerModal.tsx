@@ -1,4 +1,4 @@
-import * as Icons from 'phosphor-react-native';
+import { Icons } from '@/constants/icons';
 import React from 'react';
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 

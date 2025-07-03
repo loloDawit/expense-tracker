@@ -1,11 +1,11 @@
 import { useTheme } from '@/contexts/ThemeContext';
-import { useRouter } from 'expo-router';
+
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 
 const Index = () => {
   const { colors } = useTheme();
-  const router = useRouter();
+  
 
   React.useEffect(() => {
     // const timer = setTimeout(() => {

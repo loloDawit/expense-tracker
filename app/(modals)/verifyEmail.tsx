@@ -3,7 +3,7 @@ import { auth } from '@/config/firebase';
 import { useTheme } from '@/contexts/ThemeContext';
 import { useRouter } from 'expo-router';
 import { sendEmailVerification } from 'firebase/auth';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Alert,
@@ -24,7 +24,7 @@ const VerifyEmailScreen = () => {
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const { isDark, colors } = useTheme();
 
-  const checkEmailVerified = async (showAlert = true) => {
+  const checkEmailVerified = useCallback(async (showAlert = true) => {
     try {
       setChecking(true);
       await auth.currentUser?.reload();
@@ -42,7 +42,7 @@ const VerifyEmailScreen = () => {
     } finally {
       setChecking(false);
     }
-  };
+  }, [navigation]);
 
   const resendVerification = async () => {
     const now = Date.now();
@@ -77,7 +77,7 @@ const VerifyEmailScreen = () => {
     return () => {
       if (intervalRef.current) clearInterval(intervalRef.current);
     };
-  }, [polling]);
+  }, [polling, checkEmailVerified]);
 
   return (
     <ModalWrapper>

@@ -38,6 +38,9 @@ const useFetchData = <T>(
         ...doc.data(),
       })) as T[];
 
+      console.log(`[useFetchData] Fetched ${fetchedData.length} items from ${collectionName}`);
+      
+
       setData(fetchedData);
     } catch (err: any) {
       console.error('Error fetching data:', err);
@@ -45,7 +48,7 @@ const useFetchData = <T>(
     } finally {
       setLoading(false);
     }
-  }, [collectionName, ...constraints]);
+  }, [collectionName, constraints]);
 
   // ✅ Track when auth is ready before fetching
   useEffect(() => {

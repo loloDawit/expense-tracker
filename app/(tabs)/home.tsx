@@ -20,6 +20,9 @@ const Home = () => {
   const [refreshing, setRefreshing] = useState(false);
   const { user } = useAuth();
   const router = useRouter();
+  const capitalizedName = user?.displayName
+    ? user.displayName.charAt(0).toUpperCase() + user.displayName.slice(1)
+    : '';
 
   const constraints = useMemo(() => {
     if (!user?.uid) return [];
@@ -29,7 +32,6 @@ const Home = () => {
   const {
     data: recentTransactions,
     loading: transactionsLoading,
-    error,
     refetch,
   } = useFetchData<TransactionType>('transactions', constraints);
   const handleRefresh = useCallback(async () => {
@@ -63,7 +65,7 @@ const Home = () => {
               Hello,
             </Typography>
             <Typography fontWeight={'500'} size={20}>
-              {user?.displayName || ' '}
+              {capitalizedName}
             </Typography>
           </View>
           <TouchableOpacity

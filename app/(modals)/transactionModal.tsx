@@ -96,8 +96,6 @@ const TransactionModal = () => {
   }, [user?.uid]);
   const {
     data: wallets,
-    loading: walletLoading,
-    error,
   } = useFetchData<WalletType>('wallets', walletConstraints);
 
   const [loading, setLoading] = useState(false);
@@ -126,12 +124,12 @@ const TransactionModal = () => {
         image: oldTransaction?.image || null,
       });
     }
-  }, []);
+  }, [oldTransaction.amount, oldTransaction.category, oldTransaction.date, oldTransaction.description, oldTransaction?.id, oldTransaction?.image, oldTransaction.type, oldTransaction.walletId]);
 
   const onDateChange = (event: any, selectedDate: any) => {
     const currentDate = selectedDate || transaction.date;
     setTransaction({ ...transaction, date: currentDate }); // Update the date state
-    setShowDatePicker(Platform.OS == 'android' ? false : true); // will be false on android, but will stay open on ios
+    setShowDatePicker(Platform.OS === 'android' ? false : true); // will be false on android, but will stay open on ios
   };
 
   const onSelectImage = (file: any) => {
@@ -142,7 +140,7 @@ const TransactionModal = () => {
     const { type, amount, description, category, date, walletId, image } =
       transaction;
 
-    if (!walletId || !date || !amount || (type == 'expense' && !category)) {
+    if (!walletId || !date || !amount || (type === 'expense' && !category)) {
       Alert.alert('Transaction', 'Please fill all the fields');
       return;
     }
@@ -364,7 +362,7 @@ const TransactionModal = () => {
 
           {/* category: show only if type is expense */}
 
-          {transaction.type == 'expense' && (
+          {transaction.type === 'expense' && (
             <View style={[styles.inputContainer, { gap: spacing.y._10 }]}>
               <Typography
                 color={colors.textSecondary}
@@ -458,17 +456,17 @@ const TransactionModal = () => {
             )}
 
             {showDatePicker && (
-              <View style={Platform.OS == 'ios' && styles.iosDatePicker}>
+              <View style={Platform.OS === 'ios' && styles.iosDatePicker}>
                 <DateTimePicker
                   themeVariant="dark"
                   value={transaction.date as Date}
                   textColor={colors.text}
                   mode="date"
-                  display={Platform.OS == 'ios' ? 'spinner' : 'default'}
+                  display={Platform.OS === 'ios' ? 'spinner' : 'default'}
                   onChange={onDateChange}
                 />
 
-                {Platform.OS == 'ios' && (
+                {Platform.OS === 'ios' && (
                   <TouchableOpacity
                     style={[
                       styles.datePickerButton,

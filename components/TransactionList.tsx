@@ -1,7 +1,7 @@
 import { FlashList } from '@shopify/flash-list';
 import { useRouter } from 'expo-router';
 import { Timestamp } from 'firebase/firestore';
-import * as Icons from 'phosphor-react-native';
+import { Icons } from '@/constants/icons';
 import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeInDown } from 'react-native-reanimated';
@@ -35,6 +35,7 @@ function getCategory(
   categoryKey: string | undefined,
   type: 'income' | 'expense',
   userCategories: CategoryType[],
+  colors: any,
 ): CategoryType {
   if (type === 'income') return incomeCategory;
 
@@ -50,13 +51,14 @@ function getCategory(
   );
 }
 
-const TransactionList = ({
+
+  const TransactionList = ({
   data,
   title,
   loading,
   emptyListMessage,
 }: TransactionListType) => {
-  const { colors, spacing, radius } = useTheme();
+  const { colors, spacing } = useTheme();
   const router = useRouter();
   const { user } = useAuth();
   const [userCategories, setUserCategories] = useState<CategoryType[]>([]);
@@ -172,14 +174,16 @@ const TransactionItem = ({
   userCategories,
 }: TransactionItemProps & { userCategories: CategoryType[] }) => {
   const { colors, spacing, radius } = useTheme();
+
   const category = useMemo(
     () =>
       getCategory(
         item.category,
         item.type as 'income' | 'expense',
         userCategories,
+        colors,
       ),
-    [item.category, item.type, userCategories],
+    [item.category, item.type, userCategories, colors],
   );
 
   const IconComponent = useMemo(() => {
@@ -189,10 +193,7 @@ const TransactionItem = ({
     return category.icon || Icons.Tag;
   }, [category.icon]);
 
-  const date = (item.date as Timestamp)?.toDate()?.toLocaleDateString('en-GB', {
-    day: 'numeric',
-    month: 'short',
-  });
+  const RenderedIcon = IconComponent as React.ElementType;
 
   return (
     <Animated.View
@@ -220,7 +221,7 @@ const TransactionItem = ({
             { backgroundColor: category.bgColor, borderRadius: radius.sm },
           ]}
         >
-          <IconComponent
+          <RenderedIcon
             size={verticalScale(25)}
             weight="fill"
             color={colors.white}
