@@ -1,10 +1,11 @@
 import ScreenWrapper from '@/components/ScreenWrapper';
 import React, { useCallback, useMemo, useState } from 'react';
-import { View } from 'react-native';
+import { TouchableOpacity, View } from 'react-native';
 
 import Button from '@/components/Button';
 import HomeCard from '@/components/HomeCard';
 import TransactionList from '@/components/TransactionList';
+import Typography from '@/components/Typography';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import useFetchData from '@/hooks/useFetchData';
@@ -56,6 +57,37 @@ const Home = () => {
           }}
         >
           {/* header */}
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              marginBottom: spacing.x._10,
+            }}
+          >
+            <View style={{ gap: 4 }}>
+              <Typography size={16} color={colors.text}>
+                Hello,
+              </Typography>
+              <Typography fontWeight={'500'} size={20}>
+                {capitalizedName}
+              </Typography>
+            </View>
+            <TouchableOpacity
+              onPress={() => router.push('/(modals)/searchModal')}
+              style={{
+                backgroundColor: colors.neutral700,
+                padding: spacing.x._10,
+                borderRadius: 50,
+              }}
+            >
+              <Icons.MagnifyingGlass
+                size={verticalScale(22)}
+                color={colors.neutral200}
+                weight="bold"
+              />
+            </TouchableOpacity>
+          </View>
           <HomeCard />
           <TransactionList
             title={'Recent Transactions'}
@@ -76,7 +108,7 @@ const Home = () => {
           position: 'absolute',
           bottom: verticalScale(30),
           right: verticalScale(30),
-          zIndex: 10,
+          zIndex: 10, // optional but good for layering
         }}
       >
         <Icons.Plus
