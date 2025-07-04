@@ -13,15 +13,20 @@ A mobile application built with React Native and Expo for tracking expenses and 
 
 ## App Screenshots
 
-![Home Screen](fastlane/screenshots/en-US/framed_simulator_screenshot_iphone_16_pro_max_2025_07_03_at_13.17.21_framed.png)
-![Wallet Screen](fastlane/screenshots/en-US/framed_simulator_screenshot_iphone_16_pro_max_2025_07_03_at_13.17.31_framed.png)
-![Add Transaction](fastlane/screenshots/en-US/framed_simulator_screenshot_iphone_16_pro_max_2025_07_03_at_13.17.42_framed.png)
-![Statistics Screen](fastlane/screenshots/en-US/framed_simulator_screenshot_iphone_16_pro_max_2025_07_03_at_13.18.03_framed.png)
-![Settings Screen](fastlane/screenshots/en-US/framed_simulator_screenshot_iphone_16_pro_max_2025_07_03_at_13.18.19_framed.png)
-![Login Screen](fastlane/screenshots/en-US/framed_simulator_screenshot_iphone_16_pro_max_2025_07_03_at_13.18.33_framed.png)
-![Signup Screen](fastlane/screenshots/en-US/framed_simulator_screenshot_iphone_16_pro_max_2025_07_03_at_13.18.38_framed.png)
-![Profile Modal](fastlane/screenshots/en-US/framed_simulator_screenshot_iphone_16_pro_max_2025_07_03_at_13.18.51_framed.png)
-![Search Modal](fastlane/screenshots/en-US/framed_simulator_screenshot_iphone_16_pro_max_2025_07_03_at_13.19.01_framed.png)
+## App Screenshots
+
+<div style="display: flex; flex-wrap: wrap; gap: 12px;">
+  <img src="fastlane/screenshots/en-US/framed_simulator_screenshot_iphone_16_pro_max_2025_07_03_at_13.17.21_framed.png" alt="Home Screen" width="200"/>
+  <img src="fastlane/screenshots/en-US/framed_simulator_screenshot_iphone_16_pro_max_2025_07_03_at_13.17.31_framed.png" alt="Wallet Screen" width="200"/>
+  <img src="fastlane/screenshots/en-US/framed_simulator_screenshot_iphone_16_pro_max_2025_07_03_at_13.17.42_framed.png" alt="Add Transaction" width="200"/>
+  <img src="fastlane/screenshots/en-US/framed_simulator_screenshot_iphone_16_pro_max_2025_07_03_at_13.18.03_framed.png" alt="Statistics Screen" width="200"/>
+  <img src="fastlane/screenshots/en-US/framed_simulator_screenshot_iphone_16_pro_max_2025_07_03_at_13.18.19_framed.png" alt="Settings Screen" width="200"/>
+  <img src="fastlane/screenshots/en-US/framed_simulator_screenshot_iphone_16_pro_max_2025_07_03_at_13.18.33_framed.png" alt="Login Screen" width="200"/>
+  <img src="fastlane/screenshots/en-US/framed_simulator_screenshot_iphone_16_pro_max_2025_07_03_at_13.18.38_framed.png" alt="Signup Screen" width="200"/>
+  <img src="fastlane/screenshots/en-US/framed_simulator_screenshot_iphone_16_pro_max_2025_07_03_at_13.18.51_framed.png" alt="Profile Modal" width="200"/>
+  <img src="fastlane/screenshots/en-US/framed_simulator_screenshot_iphone_16_pro_max_2025_07_03_at_13.19.01_framed.png" alt="Search Modal" width="200"/>
+</div>
+
 
 ## Technologies Used
 
