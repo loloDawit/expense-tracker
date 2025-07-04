@@ -81,7 +81,7 @@ export type CategoryType = {
   id: string; // Unique identifier for the category
   label: string;
   value: string;
-  icon: keyof typeof import('phosphor-react-native');
+  icon: string;
   bgColor: string;
   type: 'income' | 'expense'; // Type of category, either income or expense
 };
