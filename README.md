@@ -1,50 +1,128 @@
-# Welcome to your Expo app 👋
+# Expense Tracker App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A mobile application built with React Native and Expo for tracking expenses and managing personal finances.
 
-## Get started
+## Features
 
-1. Install dependencies
+- **User Authentication**: Secure user login and registration.
+- **Expense Tracking**: Easily add, categorize, and manage your daily expenses.
+- **Wallet Management**: Create and manage multiple wallets for different accounts.
+- **Statistics & Analytics**: Visualize your spending habits with charts and summaries.
+- **Search & Filter**: Quickly find transactions with powerful search and filtering options.
+- **User Profile**: Manage your profile information and settings.
 
-   ```bash
-   npm install
-   ```
+## App Screenshots
 
-2. Start the app
+![Home Screen](fastlane/screenshots/en-US/framed_Simulator Screenshot - iPhone 16 Pro Max - 2025-07-03 at 13.17.21_framed.png)
+![Wallet Screen](fastlane/screenshots/en-US/framed_Simulator Screenshot - iPhone 16 Pro Max - 2025-07-03 at 13.17.31_framed.png)
+![Add Transaction](fastlane/screenshots/en-US/framed_Simulator Screenshot - iPhone 16 Pro Max - 2025-07-03 at 13.17.42_framed.png)
+![Statistics Screen](fastlane/screenshots/en-US/framed_Simulator Screenshot - iPhone 16 Pro Max - 2025-07-03 at 13.18.03_framed.png)
+![Settings Screen](fastlane/screenshots/en-US/framed_Simulator Screenshot - iPhone 16 Pro Max - 2025-07-03 at 13.18.19_framed.png)
+![Login Screen](fastlane/screenshots/en-US/framed_Simulator Screenshot - iPhone 16 Pro Max - 2025-07-03 at 13.18.33_framed.png)
+![Signup Screen](fastlane/screenshots/en-US/framed_Simulator Screenshot - iPhone 16 Pro Max - 2025-07-03 at 13.18.38_framed.png)
+![Profile Modal](fastlane/screenshots/en-US/framed_Simulator Screenshot - iPhone 16 Pro Max - 2025-07-03 at 13.18.51_framed.png)
+![Search Modal](fastlane/screenshots/en-US/framed_Simulator Screenshot - iPhone 16 Pro Max - 2025-07-03 at 13.19.01_framed.png)
 
-   ```bash
-   npx expo start
-   ```
+## Technologies Used
 
-In the output, you'll find options to open the app in a
+- **React Native**: For building native mobile applications.
+- **Expo**: A framework and platform for universal React applications.
+- **Firebase**: Backend services for authentication, database (Firestore), and storage.
+- **React Navigation**: For handling navigation within the app.
+- **Formik & Yup**: For form management and validation.
+- **Recharts**: For data visualization (charts).
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Getting Started
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+Follow these steps to set up and run the project locally:
 
-## Get a fresh project
+### Prerequisites
 
-When you're ready, run:
+- Node.js (LTS version recommended)
+- npm or Yarn
+- Expo CLI (`npm install -g expo-cli`)
+- A Firebase project set up with Authentication (Email/Password), Firestore, and Storage enabled.
 
-```bash
-npm run reset-project
+### Installation
+
+1.  **Clone the repository:**
+    ```bash
+    git clone https://github.com/your-username/expense-tracker-app.git
+    cd expense-tracker-app
+    ```
+
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    # or
+    yarn install
+    ```
+
+3.  **Configure Firebase:**
+    Create a `config/firebase.ts` file and add your Firebase configuration. You can get this from your Firebase project settings.
+
+    ```typescript
+    // config/firebase.ts
+    import { initializeApp } from 'firebase/app';
+    import { getAuth } from 'firebase/auth';
+    import { getFirestore } from 'firebase/firestore';
+    import { getStorage } from 'firebase/storage';
+
+    const firebaseConfig = {
+      apiKey: "YOUR_API_KEY",
+      authDomain: "YOUR_AUTH_DOMAIN",
+      projectId: "YOUR_PROJECT_ID",
+      storageBucket: "YOUR_STORAGE_BUCKET",
+      messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+      appId: "YOUR_APP_ID"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    const storage = getStorage(app);
+
+    export { app, auth, db, storage };
+    ```
+
+### Running the App
+
+1.  **Start the Expo development server:**
+    ```bash
+    npx expo start
+    ```
+
+2.  **Open the app:**
+    -   Scan the QR code with the Expo Go app on your physical device (iOS or Android).
+    -   Press `a` to open on Android emulator.
+    -   Press `i` to open on iOS simulator.
+    -   Press `w` to open in web browser (limited functionality).
+
+## Project Structure
+
+```
+.
+├── app/                  # Main application screens and navigation
+│   ├── (auth)/           # Authentication related screens (Login, Signup, Welcome)
+│   ├── (modals)/         # Modal components (Category, Icon Picker, Profile, etc.)
+│   └── (tabs)/           # Tab-based navigation screens (Home, Settings, Statistics, Wallet)
+├── assets/               # Static assets like fonts and images
+├── components/           # Reusable UI components
+├── config/               # Firebase configuration
+├── constants/            # App-wide constants (data, icons, theme)
+├── contexts/             # React Contexts for global state (Auth, Theme)
+├── hooks/                # Custom React hooks
+├── schemas/              # Validation schemas (e.g., for forms)
+├── services/             # API service calls (Firebase interactions)
+├── store/                # Zustand store for analytics (example)
+└── utils/                # Utility functions (auth, common helpers, styling)
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Contributing
 
-## Learn more
+Contributions are welcome! Please feel free to open issues or submit pull requests.
 
-To learn more about developing your project with Expo, look at the following resources:
+## License
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+This project is licensed under the MIT License.
