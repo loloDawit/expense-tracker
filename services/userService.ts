@@ -1,5 +1,7 @@
-import { firestore } from '@/config/firebase';
+import { auth, firestore } from '@/config/firebase';
 import { ResponseType, UserType } from '@/types';
+import { FirebaseError } from 'firebase/app';
+import { sendPasswordResetEmail } from 'firebase/auth';
 import { doc, updateDoc } from 'firebase/firestore';
 import { getCloudinaryPath, uploadFileToCloudinary } from './imageServices';
 
@@ -52,6 +54,40 @@ export const updateUser = async (
     return {
       success: false,
       msg: error.message || 'An unknown error occurred',
+    };
+  }
+};
+
+export const resetPassword = async (email: string): Promise<ResponseType> => {
+  const normalizedEmail = email.trim().toLowerCase();
+
+  try {
+    await sendPasswordResetEmail(auth, normalizedEmail);
+    return {
+      success: true,
+      msg: 'Password reset email sent successfully.',
+    };
+  } catch (error: any) {
+    const fbError = error as FirebaseError;
+    let msg = 'An unknown error occurred';
+
+    switch (fbError.code) {
+      case 'auth/user-not-found':
+        msg = 'No account found with this email.';
+        break;
+      case 'auth/invalid-email':
+        msg = 'Invalid email address.';
+        break;
+      case 'auth/too-many-requests':
+        msg = 'Too many requests. Please try again later.';
+        break;
+    }
+
+    console.error('Error sending password reset email:', fbError);
+
+    return {
+      success: false,
+      msg,
     };
   }
 };

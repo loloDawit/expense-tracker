@@ -11,6 +11,7 @@ import * as Icons from 'phosphor-react-native';
 import React from 'react';
 import { Controller } from 'react-hook-form';
 import { Pressable, StyleSheet, View } from 'react-native';
+import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 
 const Signup = () => {
   const { colors, spacing } = useTheme();
@@ -23,129 +24,103 @@ const Signup = () => {
 
   return (
     <ScreenWrapper>
-      <View
-        style={
-          (styles.container,
-          { gap: spacing.y._30, paddingHorizontal: spacing.x._20 })
-        }
-      >
-        <BackButton />
-        <View style={{ gap: 5, marginTop: spacing.y._20 }}>
-          <Typography size={30} fontWeight={'800'}>
-            Let&apos;s
-          </Typography>
-          <Typography size={30} fontWeight={'800'}>
-            Get Started!
-          </Typography>
-        </View>
-        {/* From  */}
-        <View style={[styles.form, { gap: spacing.y._20 }]}>
-          <Typography size={16} color={colors.textLight}>
-            Create an account
-          </Typography>
-          <Controller
-            control={control}
-            name="username"
-            render={({ field: { onChange, value } }) => (
-              <FormInput
-                placeholder="Enter your username"
-                value={value}
-                onChangeText={onChange}
-                icon={
-                  <Icons.User
-                    size={verticalScale(26)}
-                    color={colors.neutral300}
-                    weight="fill"
-                  />
-                }
-                error={errors.username?.message}
-              />
-            )}
-          />
-          <Controller
-            control={control}
-            name="email"
-            render={({ field: { onChange, value } }) => (
-              <FormInput
-                placeholder="Enter your email"
-                value={value}
-                onChangeText={onChange}
-                icon={
-                  <Icons.At
-                    size={verticalScale(26)}
-                    color={colors.neutral300}
-                    weight="fill"
-                  />
-                }
-                error={errors.email?.message}
-              />
-            )}
-          />
+      <View style={[styles.container, { paddingHorizontal: spacing.x._20 }]}>
+        <Animated.View entering={FadeIn.duration(500)} style={styles.backButtonContainer}>
+          <BackButton />
+        </Animated.View>
 
-          <Controller
-            control={control}
-            name="password"
-            render={({ field: { onChange, value } }) => (
-              <FormInput
-                placeholder="Enter your password"
-                value={value}
-                onChangeText={onChange}
-                secureTextEntry
-                icon={
-                  <Icons.Lock
-                    size={verticalScale(26)}
-                    color={colors.neutral300}
-                    weight="fill"
-                  />
-                }
-                error={errors.password?.message}
-              />
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="confirmPassword"
-            render={({ field: { onChange, value } }) => (
-              <FormInput
-                placeholder="Confirm your password"
-                value={value}
-                onChangeText={onChange}
-                secureTextEntry
-                icon={
-                  <Icons.Lock
-                    size={verticalScale(26)}
-                    color={colors.neutral300}
-                    weight="fill"
-                  />
-                }
-                error={errors.password?.message}
-              />
-            )}
-          />
-
-          <Button
-            loading={isSubmitting}
-            onPress={handleSubmit}
-            style={{
-              backgroundColor: colors.primary,
-              borderRadius: 17,
-              height: verticalScale(52),
-            }}
-          >
-            <Typography size={16} color={colors.white}>
-              Sign Up
+        <View style={styles.contentContainer}>
+          <Animated.View entering={FadeInDown.duration(500).delay(200)} style={[styles.header, { marginBottom: spacing.y._40 }]}>
+            <Typography size={32} fontWeight={'800'}>
+              Let&apos;s Get Started!
             </Typography>
-          </Button>
-        </View>
-        {/* footer */}
-        <View style={styles.footer}>
-          <Typography size={15}>Already have an account?</Typography>
-          <Pressable onPress={() => router.navigate('/(auth)/login')}>
-            <Typography size={15} color={colors.primary}>
-              Login
+            <Typography size={16} color={colors.textLight}>
+              Create an account to start tracking your expenses.
             </Typography>
-          </Pressable>
+          </Animated.View>
+
+          {/* Form */}
+          <Animated.View entering={FadeInDown.duration(500).delay(400)} style={[styles.form, { gap: spacing.y._20 }]}>
+            <Controller
+              control={control}
+              name="username"
+              render={({ field: { onChange, value } }) => (
+                <FormInput
+                  placeholder="Enter your username"
+                  value={value}
+                  onChangeText={onChange}
+                  icon={<Icons.User size={verticalScale(26)} color={colors.primary} weight="fill" />}
+                  error={errors.username?.message}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="email"
+              render={({ field: { onChange, value } }) => (
+                <FormInput
+                  placeholder="Enter your email"
+                  value={value}
+                  onChangeText={onChange}
+                  icon={<Icons.At size={verticalScale(26)} color={colors.primary} weight="fill" />}
+                  error={errors.email?.message}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="password"
+              render={({ field: { onChange, value } }) => (
+                <FormInput
+                  placeholder="Enter your password"
+                  value={value}
+                  onChangeText={onChange}
+                  secureTextEntry
+                  icon={<Icons.Lock size={verticalScale(26)} color={colors.primary} weight="fill" />}
+                  error={errors.password?.message}
+                />
+              )}
+            />
+            <Controller
+              control={control}
+              name="confirmPassword"
+              render={({ field: { onChange, value } }) => (
+                <FormInput
+                  placeholder="Confirm your password"
+                  value={value}
+                  onChangeText={onChange}
+                  secureTextEntry
+                  icon={<Icons.Lock size={verticalScale(26)} color={colors.primary} weight="fill" />}
+                  error={errors.confirmPassword?.message}
+                />
+              )}
+            />
+            <Button
+              loading={isSubmitting}
+              onPress={handleSubmit}
+              style={{
+                backgroundColor: colors.primary,
+                borderRadius: 25,
+                height: verticalScale(52),
+              }}
+            >
+              <Typography size={18} fontWeight="600" color={colors.white}>
+                Sign Up
+              </Typography>
+            </Button>
+          </Animated.View>
+
+          {/* Footer */}
+          <Animated.View entering={FadeInDown.duration(500).delay(600)} style={styles.footer}>
+            <Typography size={15} color={colors.textLight}>
+              Already have an account?
+            </Typography>
+            <Pressable onPress={() => router.navigate('/(auth)/login')}>
+              <Typography size={15} color={colors.primary} fontWeight={'600'}>
+                Login
+              </Typography>
+            </Pressable>
+          </Animated.View>
         </View>
       </View>
     </ScreenWrapper>
@@ -158,22 +133,26 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
   },
-  form: {},
-  forgotPassword: {
-    alignSelf: 'flex-end',
-    textAlign: 'right',
-    fontWeight: '500',
-    // color: colors.text,
+  backButtonContainer: {
+    position: 'absolute',
+    top: verticalScale(20),
+    left: 20,
+    zIndex: 1,
   },
+  contentContainer: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+  header: {
+    alignItems: 'center',
+    gap: 5,
+  },
+  form: {},
   footer: {
     flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     gap: 5,
-  },
-  footerText: {
-    fontSize: verticalScale(15),
-    // color: colors.text,
-    textAlign: 'center',
+    marginTop: verticalScale(30),
   },
 });

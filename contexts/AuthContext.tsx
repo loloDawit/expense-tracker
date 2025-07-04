@@ -1,4 +1,5 @@
 import { auth, firestore } from '@/config/firebase';
+import { resetPassword as resetPasswordService } from '@/services/userService';
 import { AuthContextType, UserType } from '@/types';
 import { getFirebaseAuthErrorMessage } from '@/utils/firebaseError';
 import logger from '@/utils/logger';
@@ -74,19 +75,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     };
   }, [router]);
 
-  /**
-   * Logs in a user using their email and password.
-   *
-   * @param email - The user's email address.
-   * @param password - The user's password.
-   * @returns An object containing:
-   *   - `success`: `true` if login succeeds, `false` otherwise.
-   *   - `msg`: A user-friendly error message if login fails.
-   *
-   * @example
-   * const { success, msg } = await login('user@example.com', 'password123');
-   * if (!success) alert(msg);
-   */
   const login = async (
     email: string,
     password: string,
@@ -110,32 +98,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
-  /**
-   * Registers a new user and stores their profile in Firestore.
-   *
-   * @param name - Display name for the new user.
-   * @param email - Email address for the new user.
-   * @param password - Password for the new user.
-   * @returns An object containing:
-   *   - `success`: `true` if signup succeeds, `false` otherwise.
-   *   - `msg`: A user-friendly error message if signup fails.
-   *
-   * @example
-   * const { success, msg } = await signup('Jane Doe', 'jane@example.com', 'securePassword123');
-   * if (!success) logger.error(msg);
-   */
   const signup = async (
     name: string,
     email: string,
     password: string,
   ): Promise<{ success: boolean; msg?: string }> => {
     setIsLoading(true);
-    // 👇 inside signup()
     try {
       const res = await createUserWithEmailAndPassword(auth, email, password);
       const { uid } = res.user;
 
-      // 📤 Send email verification with custom URL
       try {
         await sendEmailVerification(res.user, {
           url: 'https://expense-tracker-app-68fed.web.app/verify',
@@ -144,7 +116,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
       } catch (err) {
         logger.warn('❌ Custom verification failed, trying fallback', err);
 
-        // Fallback: default email with no URL
         try {
           await sendEmailVerification(res.user);
           logger.info('✅ Fallback verification email sent');
@@ -153,7 +124,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
         }
       }
 
-      // Store user profile
       const newUser: UserType = {
         uid,
         email,
@@ -172,28 +142,11 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
-  /**
-   * Signs out the currently authenticated user.
-   *
-   * @returns A promise that resolves when logout is complete.
-   *
-   * @example
-   * await logout();
-   */
   const logout = async (): Promise<void> => {
     await signOut(auth);
     setUser(null);
   };
 
-  /**
-   * Updates the current user's data in Firestore and local state.
-   *
-   * @param data - A partial object of `UserType` fields to update.
-   * @returns A promise that resolves once the update is complete.
-   *
-   * @example
-   * await updateUserData({ displayName: 'Updated Name' });
-   */
   const updateUserData = async (user: Partial<UserType>): Promise<void> => {
     if (!user?.uid) return;
 
@@ -230,24 +183,30 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     }
   };
 
+  const resetPassword = async (email: string): Promise<{ success: boolean; msg?: string }> => {
+    setIsLoading(true);
+    try {
+      await resetPasswordService(email);
+      console.log('🔄 Password reset email sent to:', email);
+      
+      return { success: true };
+    } catch (error: any) {
+      logger.error('Password reset error:', error);
+      return { success: false, msg: getFirebaseAuthErrorMessage(error) };
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   return (
     <AuthContext.Provider
-      value={{ user, isLoading, login, signup, logout, updateUserData }}
+      value={{ user, isLoading, login, signup, logout, updateUserData, resetPassword }}
     >
       {children}
     </AuthContext.Provider>
   );
 };
 
-/**
- * Custom hook to access the AuthContext.
- *
- * @returns The auth context value, including user state and auth methods.
- * @throws Error if used outside of an `<AuthProvider>`.
- *
- * @example
- * const { user, login } = useAuth();
- */
 export const useAuth = (): AuthContextType => {
   const context = useContext(AuthContext);
   if (!context) throw new Error('useAuth must be used within AuthProvider');

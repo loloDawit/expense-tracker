@@ -17,69 +17,48 @@ const Welcome = () => {
   const handleGetStarted = () => {
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
     router.push('/(auth)/signup');
-    //router.replace('/(modals)/verifyEmail');
   };
 
   return (
     <ScreenWrapper>
-      <View style={[styles.container, { paddingTop: spacing.y._7 }]}>
+      <View style={styles.container}>
         {/* Top: Sign In and Image */}
-        <View>
-          <TouchableOpacity
-            onPress={handleLogin}
-            style={{ alignSelf: 'flex-end', marginRight: spacing.x._20 }}
-          >
-            <Typography fontWeight="500">Sign In</Typography>
+        <Animated.View entering={FadeIn.duration(1000)} style={styles.topSection}>
+          <TouchableOpacity onPress={handleLogin} style={{ alignSelf: 'flex-end', marginRight: spacing.x._20 }}>
+            <Typography fontWeight="600" size={16} color={colors.primary}>
+              Sign In
+            </Typography>
           </TouchableOpacity>
-
           <Animated.Image
-            entering={FadeIn.duration(1000)}
-            style={styles.WelcomeImage}
+            style={styles.welcomeImage}
             source={require('@/assets/images/welcome.png')}
             resizeMode="contain"
           />
-        </View>
+        </Animated.View>
 
         {/* Footer */}
-        <Animated.View
-          style={[styles.footer, { backgroundColor: colors.background }]}
-        >
-          <Animated.View
-            entering={FadeInDown.duration(1000).springify().damping(12)}
-            style={{ alignItems: 'center' }}
-          >
-            <Typography size={30} fontWeight="800">
-              Always take control
-            </Typography>
-            <Typography size={30} fontWeight="800">
-              of your finances
+        <Animated.View style={[styles.footer, { backgroundColor: colors.card, borderTopLeftRadius: 40, borderTopRightRadius: 40 }]}>
+          <Animated.View entering={FadeInDown.duration(1000).springify().damping(12)} style={styles.textContainer}>
+            <Typography size={32} fontWeight="800" style={styles.title}>
+              Take Control of Your Finances
             </Typography>
           </Animated.View>
 
           <Animated.View
-            entering={FadeInDown.duration(1000)
-              .delay(100)
-              .springify()
-              .damping(12)}
-            style={{ alignItems: 'center', gap: 2 }}
+            entering={FadeInDown.duration(1000).delay(100).springify().damping(12)}
+            style={styles.textContainer}
           >
-            <Typography size={17} color={colors.textLight}>
-              Organize your finances today for a better
-            </Typography>
-            <Typography size={17} color={colors.textLight}>
-              lifestyle tomorrow.
+            <Typography size={16} color={colors.textLight} style={styles.subtitle}>
+              Organize your finances today for a better lifestyle tomorrow.
             </Typography>
           </Animated.View>
 
           <Animated.View
-            entering={FadeInDown.duration(1000)
-              .delay(200)
-              .springify()
-              .damping(12)}
+            entering={FadeInDown.duration(1000).delay(200).springify().damping(12)}
             style={{ width: '100%', paddingHorizontal: spacing.x._25 }}
           >
-            <Button onPress={handleGetStarted}>
-              <Typography size={16} color={colors.white}>
+            <Button onPress={handleGetStarted} style={{ borderRadius: 25 }}>
+              <Typography size={18} fontWeight="600" color={colors.white}>
                 Get Started
               </Typography>
             </Button>
@@ -96,25 +75,41 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'space-between',
+    backgroundColor: '#FDFDFF', // A light, clean background
   },
-  WelcomeImage: {
+  topSection: {
+    paddingTop: verticalScale(50),
+  },
+  welcomeImage: {
     width: '100%',
-    height: verticalScale(300),
+    height: verticalScale(320),
     alignSelf: 'center',
-    marginTop: verticalScale(100),
+    marginTop: verticalScale(40),
   },
   footer: {
     alignItems: 'center',
-    paddingTop: verticalScale(30),
-    paddingBottom: verticalScale(45),
-    gap: verticalScale(20), // fallback if theme.spacing.y._20 isn’t dynamic
-    shadowColor: 'white',
+    paddingTop: verticalScale(40),
+    paddingBottom: verticalScale(50),
+    gap: verticalScale(25),
+    shadowColor: '#000',
     shadowOffset: {
       width: 0,
-      height: -10,
+      height: -5,
     },
-    elevation: 10,
-    shadowOpacity: 0.15,
-    shadowRadius: 25,
+    elevation: 20,
+    shadowOpacity: 0.1,
+    shadowRadius: 15,
+  },
+  textContainer: {
+    alignItems: 'center',
+    paddingHorizontal: verticalScale(20),
+  },
+  title: {
+    textAlign: 'center',
+    lineHeight: 40,
+  },
+  subtitle: {
+    textAlign: 'center',
+    lineHeight: 24,
   },
 });

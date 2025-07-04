@@ -6,7 +6,7 @@ export const getFirebaseAuthErrorMessage = (error: unknown): string => {
       case 'auth/invalid-email':
         return 'Please enter a valid email address.';
       case 'auth/user-not-found':
-        return 'No account found with this email.';
+        return 'No account found with this email. Please check the email and try again.';
       case 'auth/wrong-password':
         return 'Incorrect password. Please try again.';
       case 'auth/email-already-in-use':

@@ -150,6 +150,7 @@ export type AuthContextType = {
   ) => Promise<{ success: boolean; msg?: string }>;
   logout: () => Promise<void>;
   updateUserData: (data: Partial<UserType>) => void;
+  resetPassword: (email: string) => Promise<{ success: boolean; msg?: string }>;
 };
 
 export type ResponseType = {

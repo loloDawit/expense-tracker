@@ -7,8 +7,8 @@
     "reset-project": "node ./scripts/reset-project.js",
     "seed:clear": "ts-node seed/clear-user-data.ts",
     "seed": "ts-node seed/seed-transactions.ts",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
     "web": "expo start --web",
     "format": "prettier --write .",
     "test": "jest --watchAll",
@@ -63,7 +63,8 @@
     "react-native-web": "~0.19.13",
     "react-native-webview": "13.12.5",
     "zod": "^3.25.12",
-    "zustand": "^5.0.5"
+    "zustand": "^5.0.5",
+    "expo-notifications": "~0.29.14"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
