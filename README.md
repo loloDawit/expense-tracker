@@ -13,15 +13,15 @@ A mobile application built with React Native and Expo for tracking expenses and 
 
 ## App Screenshots
 
-![Home Screen](fastlane/screenshots/en-US/framed_Simulator Screenshot - iPhone 16 Pro Max - 2025-07-03 at 13.17.21_framed.png)
-![Wallet Screen](fastlane/screenshots/en-US/framed_Simulator Screenshot - iPhone 16 Pro Max - 2025-07-03 at 13.17.31_framed.png)
-![Add Transaction](fastlane/screenshots/en-US/framed_Simulator Screenshot - iPhone 16 Pro Max - 2025-07-03 at 13.17.42_framed.png)
-![Statistics Screen](fastlane/screenshots/en-US/framed_Simulator Screenshot - iPhone 16 Pro Max - 2025-07-03 at 13.18.03_framed.png)
-![Settings Screen](fastlane/screenshots/en-US/framed_Simulator Screenshot - iPhone 16 Pro Max - 2025-07-03 at 13.18.19_framed.png)
-![Login Screen](fastlane/screenshots/en-US/framed_Simulator Screenshot - iPhone 16 Pro Max - 2025-07-03 at 13.18.33_framed.png)
-![Signup Screen](fastlane/screenshots/en-US/framed_Simulator Screenshot - iPhone 16 Pro Max - 2025-07-03 at 13.18.38_framed.png)
-![Profile Modal](fastlane/screenshots/en-US/framed_Simulator Screenshot - iPhone 16 Pro Max - 2025-07-03 at 13.18.51_framed.png)
-![Search Modal](fastlane/screenshots/en-US/framed_Simulator Screenshot - iPhone 16 Pro Max - 2025-07-03 at 13.19.01_framed.png)
+![Home Screen](fastlane/screenshots/en-US/framed_simulator_screenshot_iphone_16_pro_max_2025_07_03_at_13.17.21_framed.png)
+![Wallet Screen](fastlane/screenshots/en-US/framed_simulator_screenshot_iphone_16_pro_max_2025_07_03_at_13.17.31_framed.png)
+![Add Transaction](fastlane/screenshots/en-US/framed_simulator_screenshot_iphone_16_pro_max_2025_07_03_at_13.17.42_framed.png)
+![Statistics Screen](fastlane/screenshots/en-US/framed_simulator_screenshot_iphone_16_pro_max_2025_07_03_at_13.18.03_framed.png)
+![Settings Screen](fastlane/screenshots/en-US/framed_simulator_screenshot_iphone_16_pro_max_2025_07_03_at_13.18.19_framed.png)
+![Login Screen](fastlane/screenshots/en-US/framed_simulator_screenshot_iphone_16_pro_max_2025_07_03_at_13.18.33_framed.png)
+![Signup Screen](fastlane/screenshots/en-US/framed_simulator_screenshot_iphone_16_pro_max_2025_07_03_at_13.18.38_framed.png)
+![Profile Modal](fastlane/screenshots/en-US/framed_simulator_screenshot_iphone_16_pro_max_2025_07_03_at_13.18.51_framed.png)
+![Search Modal](fastlane/screenshots/en-US/framed_simulator_screenshot_iphone_16_pro_max_2025_07_03_at_13.19.01_framed.png)
 
 ## Technologies Used
 
