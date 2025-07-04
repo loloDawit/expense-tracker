@@ -4,7 +4,7 @@ import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import { Bell, Moon, ShieldCheck, Sun } from 'phosphor-react-native';
 import React from 'react';
-import { ScrollView, StyleSheet, Switch, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Switch, View } from 'react-native';
 
 import Header from '@/components/Header';
 import ModalWrapper from '@/components/ModalWrapper';
@@ -13,19 +13,22 @@ import Typography from '@/components/Typography';
 const SettingsModal = () => {
   const { colors, spacing, radius, isDark, toggleTheme } = useTheme();
 
-  const runtimeVersion = Constants.expoConfig?.runtimeVersion;
+  const appVersion = Constants.expoConfig?.version ?? 'N/A';
   const buildVersion =
-    typeof runtimeVersion === 'string'
-      ? runtimeVersion
-      : (runtimeVersion?.policy ?? 'N/A');
+    Platform.OS === 'ios'
+      ? (Constants.platform?.ios?.buildNumber ?? 'N/A')
+      : (Constants.platform?.android?.versionCode?.toString() ?? 'N/A');
 
   const deviceInfo = {
     modelName: Device.modelName ?? 'Unknown',
     osName: Device.osName ?? 'OS',
     osVersion: Device.osVersion ?? '0',
-    appVersion: Constants.expoConfig?.version ?? 'N/A',
+    appVersion,
     buildVersion,
   };
+
+  console.log(`App Version: ${appVersion} (${buildVersion})`);
+  console.log('Device Info:', JSON.stringify(deviceInfo, null, 2));
 
   return (
     <ModalWrapper>
@@ -151,7 +154,9 @@ const SettingsModal = () => {
 
           <View
             style={{
-              backgroundColor: isDark ? colors.neutral800 : colors.textSecondary,
+              backgroundColor: isDark
+                ? colors.neutral800
+                : colors.textSecondary,
               padding: spacing.y._15,
               borderRadius: radius.md,
               gap: 6,
