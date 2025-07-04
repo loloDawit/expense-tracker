@@ -144,18 +144,18 @@ const ProfileModal = () => {
           </View>
 
           <View style={[styles.inputContainer, { gap: spacing.y._10 }]}>
-            <Typography color={colors.neutral200}>Email</Typography>
+            <Typography color={colors.text}>Email</Typography>
             <Input
               placeholder="Email"
               value={user?.email || ''}
               editable={false}
               style={{
-                backgroundColor: colors.neutral800,
+                backgroundColor: colors.background,
                 color: colors.neutral400,
                 textAlign: 'left',
               }}
             />
-            <Typography color={colors.neutral200}>Name</Typography>
+            <Typography color={colors.text}>Name</Typography>
             <Input
               placeholder="Name"
               value={userData?.displayName || ''}
@@ -181,7 +181,7 @@ const ProfileModal = () => {
       >
         <Button
           onPress={onSubmit}
-          style={{ flex: 1 }}
+          style={{ flex: 1, backgroundColor: colors.primary }}
           loading={loading}
           disabled={!isDirty}
         >
