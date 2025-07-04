@@ -6,12 +6,15 @@ import { useTheme } from '@/contexts/ThemeContext';
 import { getUserAvatar } from '@/services/imageServices';
 import { accountOptionType } from '@/types';
 import { verticalScale } from '@/utils/styling';
+import Constants from 'expo-constants';
+import * as Device from 'expo-device';
 import { Image } from 'expo-image';
 import { useRouter } from 'expo-router';
 import * as Icons from 'phosphor-react-native';
 import React from 'react';
 import {
   ActivityIndicator,
+  Platform,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -37,11 +40,7 @@ const Section = ({
           marginBottom: spacing.y._10,
         }}
       >
-        <Typography
-          size={fontSize.base}
-          fontWeight="600"
-          color={colors.text}
-        >
+        <Typography size={fontSize.base} fontWeight="600" color={colors.text}>
           {title}
         </Typography>
       </View>
@@ -52,9 +51,25 @@ const Section = ({
 
 const Settings = () => {
   const { colors, spacing, radius, fontSize } = useTheme();
-
   const { user, isLoading, logout } = useAuth();
   const router = useRouter();
+
+  const appVersion = Constants.expoConfig?.version ?? 'N/A';
+  const buildVersion =
+    Platform.OS === 'ios'
+      ? (Constants.platform?.ios?.buildNumber ?? 'N/A')
+      : (Constants.platform?.android?.versionCode?.toString() ?? 'N/A');
+
+  const deviceInfo = {
+    modelName: Device.modelName ?? 'Unknown',
+    osName: Device.osName ?? 'OS',
+    osVersion: Device.osVersion ?? '0',
+    appVersion,
+    buildVersion,
+  };
+
+  console.log(`App Version: ${appVersion} (${buildVersion})`);
+  console.log('Device Info:', JSON.stringify(deviceInfo, null, 2));
 
   const accountOptions: accountOptionType[] = [
     {
@@ -96,6 +111,9 @@ const Settings = () => {
       bgColor: '#059669',
       details: true,
     },
+  ];
+
+  const supportOptions: accountOptionType[] = [
     {
       title: 'Privacy Policy',
       icon: (
@@ -108,6 +126,9 @@ const Settings = () => {
       bgColor: colors.neutral600,
       details: true,
     },
+  ];
+
+  const logoutOption: accountOptionType[] = [
     {
       title: 'Logout',
       icon: (
@@ -150,8 +171,6 @@ const Settings = () => {
         }}
       >
         <View style={{ flex: 1, paddingHorizontal: spacing.x._20 }}>
-          <Header title="Settings" style={{ marginVertical: spacing.y._10 }} />
-
           <View
             style={{
               marginTop: verticalScale(30),
@@ -194,55 +213,52 @@ const Settings = () => {
 
           <View style={{ marginTop: spacing.y._35 }}>
             <Section title="Account">
-              <AccountOptionItem
-                item={accountOptions[0]}
-                delay={0}
-                onPress={handlePress}
-                spacing={spacing}
-                radius={radius}
-                colors={colors}
-              />
-            </Section>
-
-            <Section title="Preferences">
-              <AccountOptionItem
-                item={accountOptions[1]}
-                delay={50}
-                onPress={handlePress}
-                spacing={spacing}
-                radius={radius}
-                colors={colors}
-              />
-              <AccountOptionItem
-                item={accountOptions[2]}
-                delay={100}
-                onPress={handlePress}
-                spacing={spacing}
-                radius={radius}
-                colors={colors}
-              />
+              {accountOptions.map((item, index) => (
+                <AccountOptionItem
+                  key={item.title}
+                  item={item}
+                  delay={index * 50}
+                  onPress={handlePress}
+                  spacing={spacing}
+                  radius={radius}
+                  colors={colors}
+                />
+              ))}
             </Section>
 
             <Section title="Support">
-              <AccountOptionItem
-                item={accountOptions[3]}
-                delay={150}
-                onPress={handlePress}
-                spacing={spacing}
-                radius={radius}
-                colors={colors}
-              />
+              {supportOptions.map((item, index) => (
+                <AccountOptionItem
+                  key={item.title}
+                  item={item}
+                  delay={index * 50}
+                  onPress={handlePress}
+                  spacing={spacing}
+                  radius={radius}
+                  colors={colors}
+                />
+              ))}
             </Section>
 
             <View style={{ marginTop: spacing.y._15 }}>
-              <AccountOptionItem
-                item={accountOptions[4]}
-                delay={200}
-                onPress={handlePress}
-                spacing={spacing}
-                radius={radius}
-                colors={colors}
-              />
+              {logoutOption.map((item, index) => (
+                <AccountOptionItem
+                  key={item.title}
+                  item={item}
+                  delay={index * 50}
+                  onPress={handlePress}
+                  spacing={spacing}
+                  radius={radius}
+                  colors={colors}
+                />
+              ))}
+            </View>
+            <View style={{ marginTop: spacing.y._15, alignItems: 'center' }}>
+              <View style={{ marginTop: spacing.y._5 }}>
+                <Typography size={12} color={colors.neutral400}>
+                  v{deviceInfo.appVersion} ({deviceInfo.buildVersion})
+                </Typography>
+              </View>
             </View>
           </View>
         </View>
@@ -280,6 +296,7 @@ const AccountOptionItem = ({
       }}
       accessibilityRole="button"
       onPress={() => onPress(item)}
+      disabled={item.value !== undefined}
     >
       <View
         style={{
@@ -296,12 +313,18 @@ const AccountOptionItem = ({
       <Typography size={14} style={{ flex: 1 }}>
         {item.title}
       </Typography>
-      {item.details && (
-        <Icons.CaretRight
-          size={verticalScale(20)}
-          weight="bold"
-          color={colors.white}
-        />
+      {item.value !== undefined ? (
+        <Typography size={14} color={colors.textSecondary}>
+          {item.value}
+        </Typography>
+      ) : (
+        item.details && (
+          <Icons.CaretRight
+            size={verticalScale(20)}
+            weight="bold"
+            color={colors.white}
+          />
+        )
       )}
     </TouchableOpacity>
   </Animated.View>
