@@ -25,6 +25,7 @@ export type accountOptionType = {
   bgColor: string;
   routeName?: any;
   details?: boolean;
+  value?: string;
 };
 
 export type TypoProps = {
