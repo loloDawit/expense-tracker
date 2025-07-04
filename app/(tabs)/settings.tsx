@@ -1,4 +1,4 @@
-import Header from '@/components/Header';
+
 import ScreenWrapper from '@/components/ScreenWrapper';
 import Typography from '@/components/Typography';
 import { useAuth } from '@/contexts/AuthContext';
