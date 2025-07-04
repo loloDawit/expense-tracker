@@ -53,7 +53,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
 
     return (
       <View style={styles.itemContainer}>
-        {IconComponent && bgColor && (
+        {IconComponent && typeof IconComponent === 'function' && bgColor && (
           <View
             style={{
               backgroundColor: bgColor,
@@ -87,7 +87,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
 
       return (
         <View style={styles.itemContainer}>
-          {IconComponent && bgColor && (
+          {IconComponent && typeof IconComponent === 'function' && bgColor && (
             <View
               style={{
                 backgroundColor: bgColor,
