@@ -49,6 +49,7 @@ const CategoryModal = () => {
   const [newIcon, setNewIcon] = useState<keyof typeof Icons>('Tag');
   const [newColor, setNewColor] = useState<string>('#4B5563');
   const [showIconPicker, setShowIconPicker] = useState(false);
+  const [editingCategory, setEditingCategory] = useState<CategoryType | null>(null);
 
   useEffect(() => {
     if (!user?.uid) return;
@@ -74,9 +75,8 @@ const CategoryModal = () => {
   const handleAddCategory = async () => {
     if (!user?.uid || !newLabel.trim()) return;
 
-    // Store icon as icon (string), matching CategoryType, and include type
-    const newCategory: CategoryType = {
-      id: '', // Temporary, will be replaced after creation
+    const categoryToSave: CategoryType = {
+      id: editingCategory?.id || '',
       label: newLabel,
       value: newLabel.toLowerCase().replace(/\s+/g, '_'),
       icon: newIcon,
@@ -84,15 +84,38 @@ const CategoryModal = () => {
       type: 'expense',
     };
 
-    const res = await createOrUpdateCategory(user.uid, newCategory);
+    const res = await createOrUpdateCategory(user.uid, categoryToSave);
     if (res.success && res.data) {
-      setCategories((prev) => [...prev, { ...newCategory, id: res.data.id }]);
+      if (editingCategory) {
+        setCategories((prev) =>
+          prev.map((cat) =>
+            cat.id === res.data?.id ? { ...categoryToSave, id: res.data.id } : cat,
+          ),
+        );
+        setEditingCategory(null);
+      } else {
+        setCategories((prev) => [...prev, { ...categoryToSave, id: res.data.id }]);
+      }
       setNewLabel('');
       setNewIcon('Tag');
       setNewColor('#4B5563');
     } else {
-      Alert.alert('Error', res.msg || 'Failed to create category');
+      Alert.alert('Error', res.msg || 'Failed to save category');
     }
+  };
+
+  const handleEdit = (category: CategoryType) => {
+    setEditingCategory(category);
+    setNewLabel(category.label);
+    setNewIcon(category.icon);
+    setNewColor(category.bgColor);
+  };
+
+  const handleCancelEdit = () => {
+    setEditingCategory(null);
+    setNewLabel('');
+    setNewIcon('Tag');
+    setNewColor('#4B5563');
   };
 
   const handleDelete = async (id: string) => {
@@ -116,19 +139,18 @@ const CategoryModal = () => {
         />
 
         <ScrollView
-          contentContainerStyle={
-            (styles.form, { gap: spacing.y._10, paddingBottom: spacing.y._20 })
-          }
+          contentContainerStyle={{
+            gap: spacing.y._10, paddingBottom: spacing.y._20
+          }}
         >
           {categories.map((item) => {
-            const IconComponent =
-              typeof Icons[item.icon] === 'function'
-                ? Icons[item.icon]
-                : Icons.Tag;
+            const IconComponent = (typeof Icons[item.icon] === 'function'
+              ? Icons[item.icon]
+              : Icons.Tag) as React.ComponentType<{ size: number; color: string }>;
             return (
               <View
                 key={item.id || `${item.label}-${item.icon}`}
-                style={[styles.row, { borderBottomColor: colors.neutral700 }]}
+                style={[styles.row, { borderBottomColor: colors.neutral700, marginBottom: spacing.y._10 }]}
               >
                 <View
                   style={[
@@ -141,11 +163,11 @@ const CategoryModal = () => {
                 >
                   <IconComponent size={20} color={colors.white} />
                 </View>
-                <Typography style={[styles.label, { color: colors.white }]}>
+                <Typography style={[styles.label, { color: colors.text }]}>
                   {item.label}
                 </Typography>
                 <View style={styles.actions}>
-                  <TouchableOpacity>
+                  <TouchableOpacity onPress={() => handleEdit(item)}>
                     <Icons.PencilSimple size={18} color={colors.primary} />
                   </TouchableOpacity>
                   <TouchableOpacity onPress={() => handleDelete(item.id!)}>
@@ -157,12 +179,14 @@ const CategoryModal = () => {
           })}
 
           <View
-            style={
-              (styles.addSection,
-              { marginTop: spacing.y._20, gap: spacing.y._10 })
-            }
+            style={[
+              styles.addSection,
+              { marginTop: spacing.y._20, gap: spacing.y._10 },
+            ]}
           >
-            <Typography color={colors.neutral200}>Add New Category</Typography>
+            <Typography color={colors.textSecondary}>
+              {editingCategory ? 'Edit Category' : 'Add New Category'}
+            </Typography>
 
             <Input
               placeholder="Category Label"
@@ -174,7 +198,7 @@ const CategoryModal = () => {
               onPress={() => setShowIconPicker(true)}
               style={styles.selectRow}
             >
-              <Typography color={colors.neutral300}>Icon</Typography>
+              <Typography color={colors.textSecondary}>Icon</Typography>
               {(() => {
                 const IconComponent =
                   typeof Icons[newIcon] === 'function'
@@ -201,12 +225,21 @@ const CategoryModal = () => {
               ))}
             </View>
 
-            <Button
-              onPress={handleAddCategory}
-              style={{ marginTop: spacing.y._10 }}
-            >
-              <Typography color={colors.black}>Add Category</Typography>
-            </Button>
+            <View style={styles.buttonContainer}>
+              {editingCategory && (
+                <Button
+                  onPress={handleCancelEdit}
+                  style={{ ...styles.button, backgroundColor: colors.neutral500 }}
+                >
+                  <Typography color={colors.white}>Cancel</Typography>
+                </Button>
+              )}
+              <Button onPress={handleAddCategory} style={styles.button}>
+                <Typography color={colors.black}>
+                  {editingCategory ? 'Save Category' : 'Add Category'}
+                </Typography>
+              </Button>
+            </View>
           </View>
         </ScrollView>
       </View>
@@ -231,6 +264,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     borderBottomWidth: 1,
+    paddingVertical: 12,
   },
   iconWrapper: {
     width: 32,
@@ -264,5 +298,13 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingVertical: 12,
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    gap: 10,
+    marginTop: 10,
+  },
+  button: {
+    flex: 1,
   },
 });
