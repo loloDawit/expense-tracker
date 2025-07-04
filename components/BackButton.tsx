@@ -7,12 +7,9 @@ import { CaretLeft } from 'phosphor-react-native';
 import React from 'react';
 import { StyleSheet, TouchableOpacity } from 'react-native';
 
-const createStyles = (colors: any, radius: any) =>
+const createStyles = (colors: any) =>
   StyleSheet.create({
     button: {
-      backgroundColor: colors.neutral600,
-      borderRadius: radius.sm,
-      borderCurve: 'continuous',
       alignSelf: 'flex-start',
       padding: 5,
     },
@@ -20,8 +17,8 @@ const createStyles = (colors: any, radius: any) =>
 
 const BackButton = ({ style, iconSize = 26 }: BackButtonProps) => {
   const navigation = useNavigation();
-  const { colors, radius } = useTheme();
-  const styles = createStyles(colors, radius);
+  const { colors } = useTheme();
+  const styles = createStyles(colors);
   const router = useRouter();
 
   return (
@@ -38,8 +35,8 @@ const BackButton = ({ style, iconSize = 26 }: BackButtonProps) => {
     >
       <CaretLeft
         size={verticalScale(iconSize)}
-        color={colors.white}
-        weight="bold"
+        color={colors.text}
+        weight="regular"
       />
     </TouchableOpacity>
   );

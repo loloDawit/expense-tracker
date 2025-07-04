@@ -311,41 +311,8 @@ const TransactionModal = () => {
                   setTransaction({ ...transaction, category: item.value || '' })
                 }
                 placeholder="Select category"
-                renderItem={(item: CategoryType, isSelected?: boolean) => {
-                  // eslint-disable-next-line import/namespace
-                  const IconComponent = Icons[
-                    item.icon as keyof typeof Icons
-                  ] as React.ElementType;
-                  return (
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        gap: spacing.x._10,
-                      }}
-                    >
-                      <View
-                        style={{
-                          backgroundColor: item.bgColor,
-                          padding: spacing.x._5,
-                          borderRadius: 999,
-                        }}
-                      >
-                        <IconComponent
-                          size={verticalScale(20)}
-                          color={colors.text}
-                          weight="bold"
-                        />
-                      </View>
-                      <Typography
-                        size={16}
-                        color={isSelected ? colors.text : colors.textSecondary}
-                      >
-                        {item.label}
-                      </Typography>
-                    </View>
-                  );
-                }}
+                iconField="icon"
+                bgColorField="bgColor"
               />
             </View>
           )}

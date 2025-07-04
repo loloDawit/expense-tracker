@@ -19,7 +19,9 @@ interface CustomDropdownProps {
   value: any;
   onSelect: (item: any) => void;
   placeholder?: string;
-  renderItem?: (item: any) => React.ReactNode;
+  renderItem?: (item: any, isSelected?: boolean) => React.ReactNode;
+  iconField?: string;
+  bgColorField?: string;
 }
 
 const CustomDropdown: React.FC<CustomDropdownProps> = ({
@@ -30,18 +32,42 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
   onSelect,
   placeholder,
   renderItem,
+  iconField,
+  bgColorField,
 }) => {
   const { colors, spacing, radius } = useTheme();
   const [modalVisible, setModalVisible] = useState(false);
 
-  
+  const getIconComponent = (iconName: string) => {
+    // eslint-disable-next-line import/namespace
+    return Icons[iconName as keyof typeof Icons] || Icons.Question; // Fallback to Question icon
+  };
 
-  const _renderItem = (item: any) => {
+  const _renderItem = (item: any, isSelected?: boolean) => {
     if (renderItem) {
-      return renderItem(item);
+      return renderItem(item, isSelected);
     }
+
+    const IconComponent = iconField && item[iconField] ? getIconComponent(item[iconField]) : null;
+    const bgColor = bgColorField && item[bgColorField] ? item[bgColorField] : null;
+
     return (
       <View style={styles.itemContainer}>
+        {IconComponent && bgColor && (
+          <View
+            style={{
+              backgroundColor: bgColor,
+              padding: spacing.x._5,
+              borderRadius: 999,
+            }}
+          >
+            <IconComponent
+              size={verticalScale(20)}
+              color={colors.text}
+              weight="bold"
+            />
+          </View>
+        )}
         <Typography size={16} color={colors.text}>
           {item[labelField]}
         </Typography>
@@ -54,15 +80,35 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
   const _renderSelected = () => {
     if (selectedItem) {
       if (renderItem) {
-        return renderItem(selectedItem);
+        return renderItem(selectedItem, true);
       }
+      const IconComponent = iconField && selectedItem[iconField] ? getIconComponent(selectedItem[iconField]) : null;
+      const bgColor = bgColorField && selectedItem[bgColorField] ? selectedItem[bgColorField] : null;
+
       return (
-        <Typography
-          size={14}
-          color={colors.text}
-        >
-          {selectedItem[labelField]}
-        </Typography>
+        <View style={styles.itemContainer}>
+          {IconComponent && bgColor && (
+            <View
+              style={{
+                backgroundColor: bgColor,
+                padding: spacing.x._5,
+                borderRadius: 999,
+              }}
+            >
+              <IconComponent
+                size={verticalScale(20)}
+                color={colors.text}
+                weight="bold"
+              />
+            </View>
+          )}
+          <Typography
+            size={14}
+            color={colors.text}
+          >
+            {selectedItem[labelField]}
+          </Typography>
+        </View>
       );
     }
     return (
