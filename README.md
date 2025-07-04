@@ -13,8 +13,6 @@ A mobile application built with React Native and Expo for tracking expenses and 
 
 ## App Screenshots
 
-## App Screenshots
-
 <div style="display: flex; flex-wrap: wrap; gap: 12px;">
   <img src="fastlane/screenshots/en-US/framed_simulator_screenshot_iphone_16_pro_max_2025_07_03_at_13.17.21_framed.png" alt="Home Screen" width="200"/>
   <img src="fastlane/screenshots/en-US/framed_simulator_screenshot_iphone_16_pro_max_2025_07_03_at_13.17.31_framed.png" alt="Wallet Screen" width="200"/>
