@@ -1,0 +1,20 @@
+{
+  "default": {
+    "show_complete_frame": true,
+    "frame": "blue",
+    "padding": 50,
+    "title": {
+      "font": "Arial",
+      "color": "#000000",
+      "size": 36
+    },
+    "subtitle": {
+      "font": "Arial",
+      "color": "#888888",
+      "size": 24,
+      "text": "Track and manage your expenses easily"
+    }
+  },
+  "data": [
+  ]
+}

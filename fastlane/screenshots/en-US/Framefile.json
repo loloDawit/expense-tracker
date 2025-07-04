@@ -1,0 +1,83 @@
+{
+  "default": {
+    "show_complete_frame": true,
+    "show_title": true,
+    "show_subtitle": true,
+    "frame": "BLUE",
+    "padding": 50,
+    "title": {
+      "color": "#000000",
+      "size": 36
+    },
+    "subtitle": {
+      "color": "#888888",
+      "size": 24,
+      "text": "Track and manage your expenses easily"
+    }
+  },
+  "data": [
+    {
+      "filter": "framed_iPhone_15_Pro_Max-01.png",
+      "title": {
+        "text": "Screenshot 1"
+      },
+      "keyword": "screenshot_1"
+    },
+    {
+      "filter": "framed_iPhone_15_Pro_Max-02.png",
+      "title": {
+        "text": "Screenshot 2"
+      },
+      "keyword": "screenshot_2"
+    },
+    {
+      "filter": "framed_iPhone_15_Pro_Max-03.png",
+      "title": {
+        "text": "Screenshot 3"
+      },
+      "keyword": "screenshot_3"
+    },
+    {
+      "filter": "framed_iPhone_15_Pro_Max-04.png",
+      "title": {
+        "text": "Screenshot 4"
+      },
+      "keyword": "screenshot_4"
+    },
+    {
+      "filter": "framed_iPhone_15_Pro_Max-05.png",
+      "title": {
+        "text": "Screenshot 5"
+      },
+      "keyword": "screenshot_5"
+    },
+    {
+      "filter": "framed_iPhone_15_Pro_Max-06.png",
+      "title": {
+        "text": "Screenshot 6"
+      },
+      "keyword": "screenshot_6"
+    },
+    {
+      "filter": "framed_iPhone_15_Pro_Max-07.png",
+      "title": {
+        "text": "Screenshot 7"
+      },
+      "keyword": "screenshot_7"
+    },
+    {
+      "filter": "framed_iPhone_15_Pro_Max-08.png",
+      "title": {
+        "text": "Screenshot 8"
+      },
+      "keyword": "screenshot_8"
+    },
+    {
+      "filter": "framed_iPhone_15_Pro_Max-09.png",
+      "title": {
+        "text": "Screenshot 9"
+      },
+      "keyword": "screenshot_9"
+    }
+  ]
+}
