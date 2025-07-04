@@ -54,7 +54,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
   const _renderSelected = () => {
     if (selectedItem) {
       if (renderItem) {
-        return renderItem(selectedItem, true); // Pass true for isSelected
+        return renderItem(selectedItem);
       }
       return (
         <Typography
