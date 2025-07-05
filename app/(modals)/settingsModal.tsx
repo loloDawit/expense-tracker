@@ -1,13 +1,14 @@
-
 import BackButton from '@/components/BackButton';
 import Header from '@/components/Header';
 import ModalWrapper from '@/components/ModalWrapper';
 import Typography from '@/components/Typography';
+import { auth, firestore } from '@/config/firebase';
 import { useTheme } from '@/contexts/ThemeContext';
 import { verticalScale } from '@/utils/styling';
 import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { Bell, Moon, Palette, ShieldCheck, Sun } from 'phosphor-react-native';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -23,7 +24,8 @@ import {
 async function registerForPushNotificationsAsync() {
   let token;
   if (Device.isDevice) {
-    const { status: existingStatus } = await Notifications.getPermissionsAsync();
+    const { status: existingStatus } =
+      await Notifications.getPermissionsAsync();
     let finalStatus = existingStatus;
     if (existingStatus !== 'granted') {
       const { status } = await Notifications.requestPermissionsAsync();
@@ -59,7 +61,13 @@ interface SettingItemProps {
   onPress?: () => void;
 }
 
-const SettingItem: React.FC<SettingItemProps> = ({ icon, label, value, onValueChange, onPress }) => {
+const SettingItem: React.FC<SettingItemProps> = ({
+  icon,
+  label,
+  value,
+  onValueChange,
+  onPress,
+}) => {
   const { colors } = useTheme();
   const styles = useStyles();
 
@@ -101,8 +109,8 @@ const AboutSection = () => {
   const appVersion = Constants.expoConfig?.version ?? 'N/A';
   const buildVersion =
     Platform.OS === 'ios'
-      ? Constants.platform?.ios?.buildNumber ?? 'N/A'
-      : Constants.platform?.android?.versionCode?.toString() ?? 'N/A';
+      ? (Constants.platform?.ios?.buildNumber ?? 'N/A')
+      : (Constants.platform?.android?.versionCode?.toString() ?? 'N/A');
 
   const deviceInfo = {
     modelName: Device.modelName ?? 'Unknown',
@@ -133,17 +141,29 @@ const SettingsModal = () => {
   const responseListener = useRef<any>();
 
   useEffect(() => {
-    notificationListener.current = Notifications.addNotificationReceivedListener(
-      (notification) => {
-        console.log(notification);
-      },
-    );
+    const setupNotifications = async () => {
+      if (auth.currentUser) {
+        const userRef = doc(firestore, 'users', auth.currentUser.uid);
+        const userDoc = await getDoc(userRef);
+        if (userDoc.exists()) {
+          const userData = userDoc.data();
+          setNotificationsEnabled(userData.notificationsEnabled || false);
+          setExpoPushToken(userData.expoPushToken || '');
+        }
+      }
+    };
 
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(
-      (response) => {
-        console.log(response);
-      },
-    );
+    setupNotifications();
+
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener((notification) => {
+        console.log({ notification });
+      });
+
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log({ response });
+      });
 
     return () => {
       Notifications.removeNotificationSubscription(
@@ -154,10 +174,22 @@ const SettingsModal = () => {
   }, []);
 
   const handleNotificationsChange = async () => {
-    setNotificationsEnabled((previousState) => !previousState);
-    if (!notificationsEnabled) {
-      const token = await registerForPushNotificationsAsync();
-      setExpoPushToken(token as string);
+    const newNotificationsEnabled = !notificationsEnabled;
+    setNotificationsEnabled(newNotificationsEnabled);
+
+    if (auth.currentUser) {
+      const userRef = doc(firestore, 'users', auth.currentUser.uid);
+      let token = expoPushToken;
+
+      if (newNotificationsEnabled && !token) {
+        token = (await registerForPushNotificationsAsync()) as string;
+        setExpoPushToken(token);
+      }
+
+      await updateDoc(userRef, {
+        notificationsEnabled: newNotificationsEnabled,
+        expoPushToken: newNotificationsEnabled ? token : '',
+      });
     }
   };
 

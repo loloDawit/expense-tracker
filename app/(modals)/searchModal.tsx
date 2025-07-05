@@ -1,3 +1,4 @@
+import { Ionicons } from '@expo/vector-icons';
 import BackButton from '@/components/BackButton';
 import Header from '@/components/Header';
 import Input from '@/components/Input';
@@ -7,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { TransactionType } from '@/types';
 import React, { useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
+import Animated, { FadeIn } from 'react-native-reanimated';
 
 import TransactionList from '@/components/TransactionList';
 import { useTheme } from '@/contexts/ThemeContext';
@@ -47,8 +49,17 @@ const SearchModal = () => {
   });
 
   return (
-    <ModalWrapper style={{ backgroundColor: colors.neutral900 }}>
-      <View style={styles.container}>
+    <ModalWrapper
+      style={{
+        backgroundColor: colors.background,
+        shadowColor: colors.text,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+        elevation: 5,
+      }}
+    >
+      <Animated.View entering={FadeIn.duration(200).delay(100)} style={styles.container}>
         <Header
           title={'Search'}
           leftIcon={<BackButton />}
@@ -61,8 +72,15 @@ const SearchModal = () => {
               placeholder="shoes..."
               value={search}
               placeholderTextColor={colors.neutral400}
-              containerStyle={{ backgroundColor: colors.neutral800 }}
+              containerStyle={{ backgroundColor: colors.neutral100 }}
               onChangeText={(value) => setSearch(value)}
+              icon={
+                <Ionicons
+                  name="search"
+                  size={24}
+                  color={colors.textSecondary}
+                />
+              }
             />
           </View>
 
@@ -74,7 +92,7 @@ const SearchModal = () => {
             />
           </View>
         </ScrollView>
-      </View>
+      </Animated.View>
     </ModalWrapper>
   );
 };
@@ -84,14 +102,13 @@ export default SearchModal;
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingHorizontal: theme.spacing.y._20,
+    paddingHorizontal: theme.spacing.x._20,
   },
 
   form: {
     gap: theme.spacing.y._15,
     paddingVertical: theme.spacing.y._15,
     paddingBottom: theme.spacing.y._40,
-    // flex: 1,
   },
   inputContainer: {
     gap: theme.spacing.y._10,

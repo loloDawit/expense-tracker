@@ -2,7 +2,7 @@ import { auth, firestore } from '@/config/firebase';
 import { ResponseType, UserType } from '@/types';
 import { FirebaseError } from 'firebase/app';
 import { sendPasswordResetEmail } from 'firebase/auth';
-import { doc, updateDoc } from 'firebase/firestore';
+import { doc, setDoc, updateDoc } from 'firebase/firestore';
 import { getCloudinaryPath, uploadFileToCloudinary } from './imageServices';
 
 export const updateUser = async (
@@ -90,4 +90,17 @@ export const resetPassword = async (email: string): Promise<ResponseType> => {
       msg,
     };
   }
+};
+
+export const saveExpoPushToken = async (uid: string, token: string) => {
+  const ref = doc(firestore, 'users', uid);
+
+  await setDoc(
+    ref,
+    {
+      expoPushToken: token,
+      updatedAt: Date.now(),
+    },
+    { merge: true }
+  );
 };

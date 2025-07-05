@@ -11,8 +11,6 @@ import { ImageBackground, StyleSheet, View } from 'react-native';
 import Typography from './Typography';
 
 const HomeCard = () => {
-  console.log('test');
-
   const { colors, spacing } = useTheme();
   const { user } = useAuth();
   const walletConstraints = useMemo(() => {

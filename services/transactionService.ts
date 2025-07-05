@@ -21,8 +21,36 @@ import {
   updateDoc,
   where,
 } from 'firebase/firestore';
+
 import { getCloudinaryPath, uploadFileToCloudinary } from './imageServices';
 import { createOrUpdateWallet } from './walletService';
+
+export const sendPushNotification = async (
+  expoPushToken: string,
+  title: string,
+  body: string,
+) => {
+  const message = {
+    to: expoPushToken,
+    sound: 'default',
+    title,
+    body,
+    data: { someData: 'goes here' },
+  };
+
+  const response = await fetch('https://exp.host/--/api/v2/push/send', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Accept-encoding': 'gzip, deflate',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(message),
+  });
+
+  const data = await response.json();
+  console.log('Push notification response:', data);
+};
 
 export const fetchUserCategories = async (uid: string) => {
   try {
@@ -163,6 +191,28 @@ export const createOrUpdateTransaction = async (
       },
       { merge: true },
     );
+
+    if (auth.currentUser) {
+      const userDocRef = doc(firestore, 'users', auth.currentUser.uid);
+      const userDoc = await getDoc(userDocRef);
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        const userPushToken = userData.expoPushToken;
+        const notificationsEnabled = userData.notificationsEnabled;
+
+        if (userPushToken && notificationsEnabled) {
+          const notificationTitle = id
+            ? 'Transaction Updated!'
+            : 'New Transaction Added!';
+          const notificationBody = `Amount: ${amount}, Type: ${type}`;
+          await sendPushNotification(
+            userPushToken,
+            notificationTitle,
+            notificationBody,
+          );
+        }
+      }
+    }
 
     return {
       success: true,
