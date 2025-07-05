@@ -9,6 +9,7 @@ import { verticalScale } from '@/utils/styling';
 import { useRouter } from 'expo-router';
 import * as Icons from 'phosphor-react-native';
 import React from 'react';
+import { Controller } from 'react-hook-form';
 import { StyleSheet, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 
@@ -46,18 +47,24 @@ const ForgotPasswordModal = () => {
           Enter your email address to receive a password reset link.
         </Typography>
 
-        <FormInput
-          name="email"
+        <Controller
           control={control}
-          placeholder="Enter your email"
-          icon={
-            <Icons.At
-              size={verticalScale(26)}
-              color={colors.primary}
-              weight="fill"
+          name="email"
+          render={({ field: { onChange, value } }) => (
+            <FormInput
+              placeholder="Enter your email"
+              value={value}
+              onChangeText={onChange}
+              icon={
+                <Icons.At
+                  size={verticalScale(26)}
+                  color={colors.primary}
+                  weight="fill"
+                />
+              }
+              error={errors.email?.message}
             />
-          }
-          errors={errors}
+          )}
         />
 
         <Button
