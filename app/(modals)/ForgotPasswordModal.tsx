@@ -1,3 +1,4 @@
+import BackButton from '@/components/BackButton';
 import Button from '@/components/Button';
 import FormInput from '@/components/FormInput';
 import ScreenWrapper from '@/components/ScreenWrapper';
@@ -8,12 +9,13 @@ import { verticalScale } from '@/utils/styling';
 import { useRouter } from 'expo-router';
 import * as Icons from 'phosphor-react-native';
 import React from 'react';
-import { Controller } from 'react-hook-form';
 import { StyleSheet, View } from 'react-native';
+import Animated, { FadeIn } from 'react-native-reanimated';
 
 const ForgotPasswordModal = () => {
   const { colors, spacing } = useTheme();
   const router = useRouter();
+
   const {
     control,
     handleSubmit,
@@ -23,25 +25,39 @@ const ForgotPasswordModal = () => {
   return (
     <ScreenWrapper>
       <View style={[styles.container, { padding: spacing.x._20 }]}>
-        <Typography size={24} fontWeight="700" style={{ marginBottom: spacing.y._10 }}>
+        <Animated.View
+          entering={FadeIn.duration(500)}
+          style={styles.backButtonContainer}
+        >
+          <BackButton />
+        </Animated.View>
+
+        <Typography
+          size={24}
+          fontWeight="700"
+          style={{ marginBottom: spacing.y._10 }}
+        >
           Forgot Password?
         </Typography>
-        <Typography color={colors.textLight} style={{ marginBottom: spacing.y._20 }}>
+        <Typography
+          color={colors.textLight}
+          style={{ marginBottom: spacing.y._20 }}
+        >
           Enter your email address to receive a password reset link.
         </Typography>
 
-        <Controller
-          control={control}
+        <FormInput
           name="email"
-          render={({ field: { onChange, value } }) => (
-            <FormInput
-              placeholder="Enter your email"
-              value={value}
-              onChangeText={onChange}
-              icon={<Icons.At size={verticalScale(26)} color={colors.primary} weight="fill" />}
-              error={errors.email?.message}
+          control={control}
+          placeholder="Enter your email"
+          icon={
+            <Icons.At
+              size={verticalScale(26)}
+              color={colors.primary}
+              weight="fill"
             />
-          )}
+          }
+          errors={errors}
         />
 
         <Button
@@ -69,5 +85,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'center',
+  },
+  backButtonContainer: {
+    position: 'absolute',
+    top: verticalScale(20),
+    left: 20,
+    zIndex: 1,
   },
 });
