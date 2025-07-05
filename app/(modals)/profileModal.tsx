@@ -1,52 +1,72 @@
-import Header from '@/components/Header';
-
-import BackButton from '@/components/BackButton';
-import Button from '@/components/Button';
-import Input from '@/components/Input';
-import ModalWrapper from '@/components/ModalWrapper';
-import Typography from '@/components/Typography';
-import { useAuth } from '@/contexts/AuthContext';
-import { useTheme } from '@/contexts/ThemeContext';
-import { getUserAvatar } from '@/services/imageServices';
-import { updateUser } from '@/services/userService';
-import { UserType } from '@/types';
-import { scale, verticalScale } from '@/utils/styling';
 import { Image } from 'expo-image';
 import * as ImagePicker from 'expo-image-picker';
 import { useRouter } from 'expo-router';
 import * as Icons from 'phosphor-react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Controller } from 'react-hook-form';
 import {
   Alert,
   ScrollView,
   StyleSheet,
+  Switch,
   TouchableOpacity,
   View,
 } from 'react-native';
 
+import BackButton from '@/components/BackButton';
+import Button from '@/components/Button';
+import Header from '@/components/Header';
+import Input from '@/components/Input';
+import ModalWrapper from '@/components/ModalWrapper';
+import Typography from '@/components/Typography';
+
+import { useAuth } from '@/contexts/AuthContext';
+import { useTheme } from '@/contexts/ThemeContext';
+import { ProfileFormType, useProfileForm } from '@/hooks/useProfileForm';
+import { getUserAvatar } from '@/services/imageServices';
+import { updateUser } from '@/services/userService';
+import { UserType } from '@/types';
+import { scale, verticalScale } from '@/utils/styling';
+
 const ProfileModal = () => {
   const { colors, spacing } = useTheme();
-  let [userData, setUserData] = useState<UserType>({
+  const { user, updateUserData } = useAuth();
+  const router = useRouter();
+
+  const [userData, setUserData] = useState<UserType>({
     displayName: '',
     photoURL: undefined,
   });
-
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
-  const { user, updateUserData } = useAuth();
-  const trimmedName = userData.displayName?.trim() ?? '';
   const currentName = user?.displayName?.trim() ?? '';
   const currentPhoto = user?.photoURL;
-  const selectedPhoto = userData.photoURL;
 
-  const nameChanged = trimmedName !== currentName;
-  const photoChanged =
-    selectedPhoto &&
-    ((typeof selectedPhoto === 'object' && 'uri' in selectedPhoto) ||
-      selectedPhoto !== currentPhoto);
+  const {
+    control,
+    handleSubmit,
+    watch,
+    formState: { isDirty },
+  } = useProfileForm({
+    displayName: user?.displayName || '',
+    changePassword: false,
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
 
-  const isDirty = nameChanged || photoChanged;
+  const watchedDisplayName = watch('displayName');
+  const watchedPhoto = userData.photoURL;
+  const watchedChangePassword = watch('changePassword');
+
+  const nameChanged = (watchedDisplayName ?? '').trim() !== currentName;
+
+  const photoChanged = useMemo(() => {
+    if (!watchedPhoto) return false;
+    if (typeof watchedPhoto === 'object' && 'uri' in watchedPhoto)
+      return watchedPhoto.uri !== currentPhoto;
+    return watchedPhoto !== currentPhoto;
+  }, [watchedPhoto, currentPhoto]);
 
   useEffect(() => {
     setUserData({
@@ -55,13 +75,20 @@ const ProfileModal = () => {
     });
   }, [user]);
 
-  const onSubmit = async () => {
+  const onSubmit = async (form: ProfileFormType) => {
     setLoading(true);
 
-    const res = await updateUser(user?.uid as string, {
-      ...(nameChanged ? { displayName: trimmedName } : {}),
-      ...(photoChanged ? { photoURL: selectedPhoto } : {}),
-    });
+    const payload: any = {
+      ...(nameChanged && { displayName: form.displayName.trim() }),
+      ...(photoChanged && { photoURL: watchedPhoto }),
+    };
+
+    if (form.changePassword) {
+      payload.currentPassword = form.currentPassword?.trim();
+      payload.newPassword = form.newPassword?.trim();
+    }
+
+    const res = await updateUser(user?.uid as string, payload);
 
     setLoading(false);
 
@@ -74,74 +101,72 @@ const ProfileModal = () => {
   };
 
   const onPickImage = async () => {
-    let result: ImagePicker.ImagePickerResult =
-      await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: ['images'],
-        aspect: [4, 3],
-        quality: 0.5,
-      });
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      aspect: [4, 3],
+      quality: 0.5,
+    });
 
-    if (!result.canceled) {
-      const asset = result.assets?.[0];
-      if (asset?.uri) {
-        setUserData({ ...userData, photoURL: { uri: asset.uri } });
-      }
+    if (!result.canceled && result.assets?.[0]?.uri) {
+      setUserData((prev) => ({
+        ...prev,
+        photoURL: { uri: result.assets[0].uri },
+      }));
     }
   };
+
+  const renderAvatar = () => (
+    <View style={styles.avatarContainer}>
+      <Image
+        style={[
+          styles.avatar,
+          {
+            backgroundColor: colors.neutral300,
+            borderColor: colors.neutral500,
+          },
+        ]}
+        source={getUserAvatar(
+          typeof userData.photoURL === 'string'
+            ? userData.photoURL
+            : userData.photoURL?.uri || null,
+        )}
+        contentFit="cover"
+        transition={100}
+      />
+      <TouchableOpacity
+        style={[
+          styles.editIcon,
+          {
+            backgroundColor: colors.textSecondary,
+            padding: spacing.y._7,
+            borderRadius: 100,
+            shadowColor: colors.black,
+          },
+        ]}
+        onPress={onPickImage}
+      >
+        <Icons.Pencil size={verticalScale(20)} color={colors.neutral800} />
+      </TouchableOpacity>
+    </View>
+  );
 
   return (
     <ModalWrapper>
       <View style={[styles.container, { paddingHorizontal: spacing.y._20 }]}>
         <Header
-          title={'Update Profile'}
+          title="Update Profile"
           leftIcon={<BackButton />}
           style={{ marginBottom: spacing.y._10 }}
         />
 
         <ScrollView
+          showsVerticalScrollIndicator={false}
           contentContainerStyle={[
             styles.form,
-            {
-              gap: spacing.y._30,
-              marginTop: spacing.y._15,
-            },
+            { gap: spacing.y._30, marginTop: spacing.y._15 },
           ]}
         >
-          <View style={styles.avatarContainer}>
-            <Image
-              style={[
-                styles.avatar,
-                {
-                  backgroundColor: colors.neutral300,
-                  borderColor: colors.neutral500,
-                },
-              ]}
-              source={getUserAvatar(
-                typeof userData?.photoURL === 'string'
-                  ? userData.photoURL
-                  : userData?.photoURL?.uri || null,
-              )}
-              contentFit="cover"
-              transition={100}
-            />
-            <TouchableOpacity
-              style={[
-                styles.editIcon,
-                {
-                  backgroundColor: colors.textSecondary,
-                  borderRadius: 100,
-                  padding: spacing.y._7,
-                  shadowColor: colors.black,
-                },
-              ]}
-              onPress={onPickImage}
-            >
-              <Icons.Pencil
-                size={verticalScale(20)}
-                color={colors.neutral800}
-              />
-            </TouchableOpacity>
-          </View>
+          {renderAvatar()}
 
           <View style={[styles.inputContainer, { gap: spacing.y._10 }]}>
             <Typography color={colors.text}>Email</Typography>
@@ -155,14 +180,98 @@ const ProfileModal = () => {
                 textAlign: 'left',
               }}
             />
+
             <Typography color={colors.text}>Name</Typography>
-            <Input
-              placeholder="Name"
-              value={userData?.displayName || ''}
-              onChangeText={(value) =>
-                setUserData({ ...userData, displayName: value })
-              }
+            <Controller
+              control={control}
+              name="displayName"
+              render={({ field: { value, onChange, onBlur }, fieldState }) => (
+                <Input
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  placeholder="Name"
+                  error={!!fieldState.error}
+                  errorMessage={fieldState.error?.message}
+                />
+              )}
             />
+
+            {/* Password toggle */}
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+                gap: spacing.x._10,
+                marginTop: spacing.y._10,
+              }}
+            >
+              <Typography color={colors.text}>Change Password</Typography>
+              <Controller
+                control={control}
+                name="changePassword"
+                render={({ field }) => (
+                  <Switch
+                    value={field.value}
+                    onValueChange={field.onChange}
+                    trackColor={{
+                      false: colors.neutral300,
+                      true: colors.primary,
+                    }}
+                    thumbColor={colors.white}
+                  />
+                )}
+              />
+            </View>
+
+            {watchedChangePassword && (
+              <>
+                <Typography color={colors.text}>Current Password</Typography>
+                <Controller
+                  control={control}
+                  name="currentPassword"
+                  render={({ field, fieldState }) => (
+                    <Input
+                      {...field}
+                      placeholder="Current Password"
+                      secureTextEntry
+                      error={!!fieldState.error}
+                      errorMessage={fieldState.error?.message}
+                    />
+                  )}
+                />
+
+                <Typography color={colors.text}>New Password</Typography>
+                <Controller
+                  control={control}
+                  name="newPassword"
+                  render={({ field, fieldState }) => (
+                    <Input
+                      {...field}
+                      placeholder="New Password"
+                      secureTextEntry
+                      error={!!fieldState.error}
+                      errorMessage={fieldState.error?.message}
+                    />
+                  )}
+                />
+
+                <Typography color={colors.text}>Confirm Password</Typography>
+                <Controller
+                  control={control}
+                  name="confirmPassword"
+                  render={({ field, fieldState }) => (
+                    <Input
+                      {...field}
+                      placeholder="Confirm Password"
+                      secureTextEntry
+                      error={!!fieldState.error}
+                      errorMessage={fieldState.error?.message}
+                    />
+                  )}
+                />
+              </>
+            )}
           </View>
         </ScrollView>
       </View>
@@ -173,19 +282,17 @@ const ProfileModal = () => {
           {
             paddingHorizontal: spacing.x._20,
             paddingTop: spacing.y._15,
-            borderTopColor: colors.neutral700,
             marginBottom: spacing.y._5,
-            borderTopWidth: 1,
           },
         ]}
       >
         <Button
-          onPress={onSubmit}
+          onPress={handleSubmit(onSubmit)}
           style={{ flex: 1, backgroundColor: colors.primary }}
           loading={loading}
-          disabled={!isDirty}
+          disabled={!isDirty && !photoChanged}
         >
-          <Typography color={colors.black} fontWeight={'700'} size={18}>
+          <Typography color={colors.white} fontWeight="700" size={18}>
             Update
           </Typography>
         </Button>
@@ -201,15 +308,8 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'space-between',
   },
-  footer: {
-    alignItems: 'center',
-    flexDirection: 'row',
-    justifyContent: 'center',
-    gap: scale(12),
-  },
-  form: {
-    // spacing applied inline
-  },
+  form: {},
+  inputContainer: {},
   avatarContainer: {
     position: 'relative',
     alignSelf: 'center',
@@ -223,12 +323,17 @@ const styles = StyleSheet.create({
   },
   editIcon: {
     position: 'absolute',
-    bottom: 0, // theme values now inline
+    bottom: 0,
     right: 0,
     elevation: 4,
     shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.25,
     shadowRadius: 10,
   },
-  inputContainer: {},
+  footer: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: scale(12),
+  },
 });

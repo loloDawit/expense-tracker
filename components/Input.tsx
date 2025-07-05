@@ -1,50 +1,57 @@
 import { useTheme } from '@/contexts/ThemeContext';
 import { verticalScale } from '@/utils/styling';
 import React, { forwardRef } from 'react';
-import { TextInput, TextInputProps, View, ViewStyle } from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  TextInput,
+  TextInputProps,
+  View,
+  ViewStyle,
+} from 'react-native';
 
 type Props = TextInputProps & {
   icon?: React.ReactNode;
   containerStyle?: ViewStyle;
+  error?: boolean;
+  errorMessage?: string;
 };
 
 const Input = forwardRef<TextInput, Props>((props, ref) => {
   const { colors, spacing, radius } = useTheme();
-  const { icon, containerStyle, style, ...rest } = props;
+  const { icon, containerStyle, style, error, errorMessage, ...rest } = props;
 
   return (
-    <View
-      style={[
-        {
-          flexDirection: 'row',
-          height: verticalScale(54),
-          alignItems: 'center',
-          justifyContent: 'center',
-          borderCurve: 'continuous',
-          borderWidth: 1,
-          borderColor: colors.neutral300,
-          borderRadius: radius.md,
-          paddingHorizontal: spacing.x._15,
-          gap: spacing.x._10,
-        },
-        containerStyle,
-      ]}
-    >
-      {icon}
-      <TextInput
-        ref={ref}
+    <View style={containerStyle}>
+      <View
         style={[
+          styles.inputWrapper,
           {
-            flex: 1,
-            fontSize: verticalScale(14),
-            color: colors.text,
-            textAlign: 'left',
+            borderColor: error ? colors.error || 'red' : colors.neutral300,
+            borderRadius: radius.md,
+            paddingHorizontal: spacing.x._15,
+            gap: spacing.x._10,
+            height: verticalScale(54),
           },
-          style,
         ]}
-        placeholderTextColor={colors.neutral400}
-        {...rest}
-      />
+      >
+        {icon}
+        <TextInput
+          ref={ref}
+          style={[
+            styles.input,
+            { color: colors.text, fontSize: verticalScale(14) }, // force visible text color
+            style,
+          ]}
+          placeholderTextColor={colors.neutral400}
+          {...rest}
+        />
+      </View>
+      {error && errorMessage && (
+        <Text style={[styles.errorText, { color: colors.error || 'red' }]}>
+          {errorMessage}
+        </Text>
+      )}
     </View>
   );
 });
@@ -52,3 +59,21 @@ const Input = forwardRef<TextInput, Props>((props, ref) => {
 Input.displayName = 'Input';
 
 export default Input;
+
+const styles = StyleSheet.create({
+  inputWrapper: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderCurve: 'continuous',
+  },
+  input: {
+    flex: 1,
+    textAlign: 'left',
+  },
+  errorText: {
+    fontSize: verticalScale(12),
+    marginTop: verticalScale(4),
+  },
+});
