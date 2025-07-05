@@ -1,4 +1,3 @@
-import { Ionicons } from '@expo/vector-icons';
 import BackButton from '@/components/BackButton';
 import Header from '@/components/Header';
 import Input from '@/components/Input';
@@ -6,7 +5,9 @@ import ModalWrapper from '@/components/ModalWrapper';
 import { theme } from '@/constants/theme';
 import { useAuth } from '@/contexts/AuthContext';
 import { TransactionType } from '@/types';
-import React, { useMemo, useState } from 'react';
+import { Ionicons } from '@expo/vector-icons';
+import { debounce } from 'lodash';
+import React, { useCallback, useMemo, useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import Animated, { FadeIn } from 'react-native-reanimated';
 
@@ -18,7 +19,15 @@ import { orderBy, where } from 'firebase/firestore';
 const SearchModal = () => {
   const { colors } = useTheme();
   const { user } = useAuth();
-  const [search, setSearch] = useState('');
+  const [displaySearch, setDisplaySearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  const handleSearch = useCallback(
+    debounce((value: string) => {
+      setDebouncedSearch(value);
+    }, 400),
+    [],
+  );
 
   const constraints = useMemo(() => {
     if (!user?.uid) return [];
@@ -26,27 +35,22 @@ const SearchModal = () => {
   }, [user?.uid]);
 
   // Use the useFetchData hook with the 'transactions' collection and constraints
-  const {
-    data: allTransactions,
-    loading: transactionsLoading,
-  } = useFetchData<TransactionType>('transactions', constraints);
+  const { data: allTransactions, loading: transactionsLoading } =
+    useFetchData<TransactionType>('transactions', constraints);
 
   //   const hanldeSearch = (search: string) => {};
   //   const handleTextDebounce = useCallback(debounce(hanldeSearch, 400), []);
 
-  const filteredTransactions = allTransactions.filter((item) => {
-    if (search.length > 1) {
-      if (
-        item?.category?.toLowerCase()?.includes(search?.toLowerCase()) ||
-        item?.type?.toLowerCase()?.includes(search?.toLowerCase()) ||
-        item?.description?.toLowerCase()?.includes(search?.toLowerCase())
-      ) {
-        return true;
-      }
-      return false;
-    }
-    return true;
-  });
+  const filteredTransactions = useMemo(() => {
+    if (debouncedSearch.length <= 1) return allTransactions;
+
+    type SearchableField = 'category' | 'type' | 'description';
+    return allTransactions.filter((item) =>
+      (['category', 'type', 'description'] as SearchableField[]).some((field) =>
+        item?.[field]?.toLowerCase()?.includes(debouncedSearch.toLowerCase()),
+      ),
+    );
+  }, [debouncedSearch, allTransactions]);
 
   return (
     <ModalWrapper
@@ -59,7 +63,10 @@ const SearchModal = () => {
         elevation: 5,
       }}
     >
-      <Animated.View entering={FadeIn.duration(200).delay(100)} style={styles.container}>
+      <Animated.View
+        entering={FadeIn.duration(200).delay(100)}
+        style={styles.container}
+      >
         <Header
           title={'Search'}
           leftIcon={<BackButton />}
@@ -70,10 +77,14 @@ const SearchModal = () => {
           <View style={styles.inputContainer}>
             <Input
               placeholder="shoes..."
-              value={search}
+              value={displaySearch}
               placeholderTextColor={colors.neutral400}
               containerStyle={{ backgroundColor: colors.neutral100 }}
-              onChangeText={(value) => setSearch(value)}
+              onChangeText={(value) => {
+                const trimmed = value.trimStart();
+                setDisplaySearch(trimmed);
+                handleSearch(trimmed);
+              }}
               icon={
                 <Ionicons
                   name="search"
