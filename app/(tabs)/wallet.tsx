@@ -39,10 +39,10 @@ const Wallet = () => {
   console.log({ wallets });
 
   return (
-    <ScreenWrapper style={{ backgroundColor: colors.black }}>
+    <ScreenWrapper style={{ backgroundColor: colors.background }}>
       <View style={styles.container}>
         {/* balance view */}
-        <View style={[styles.balanceView, { backgroundColor: colors.black }]}>
+        <View style={[styles.balanceView, { backgroundColor: colors.background }]}>
           <View style={{ alignItems: 'center' }}>
             <Typography
               size={45}
@@ -54,7 +54,7 @@ const Wallet = () => {
             >
               {formatAmount(getTotalBalance())}
             </Typography>
-            <Typography size={16} color={colors.neutral300}>
+            <Typography size={16} color={colors.textSecondary}>
               Total Income
             </Typography>
           </View>
@@ -65,7 +65,7 @@ const Wallet = () => {
           style={[
             styles.wallets,
             {
-              backgroundColor: colors.neutral900,
+              backgroundColor: colors.card,
               borderTopRightRadius: radius.md,
               borderTopLeftRadius: radius.md,
               padding: spacing.x._20,
@@ -91,7 +91,7 @@ const Wallet = () => {
           <Typography
             size={fontSize.base}
             fontWeight="200"
-            color={colors.neutral400}
+            color={colors.textSecondary}
           >
             Track where your money is coming from
           </Typography>

@@ -8,7 +8,7 @@ import { Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 type TabNames = 'home' | 'statistics' | 'wallet' | 'settings';
 
 const CustomTabs = ({ state, descriptors, navigation }: BottomTabBarProps) => {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
 
   const displayLabels: Record<TabNames, string> = {
     home: 'Home',
@@ -53,9 +53,9 @@ const CustomTabs = ({ state, descriptors, navigation }: BottomTabBarProps) => {
       style={[
         styles.tabbar,
         {
-          backgroundColor: colors.neutral800,
-          shadowColor: colors.white,
-          borderTopColor: colors.neutral700,
+          backgroundColor: colors.card,
+          shadowColor: isDark ? colors.white : colors.black,
+          borderTopColor: colors.border,
           paddingBottom: 10,
         },
       ]}
