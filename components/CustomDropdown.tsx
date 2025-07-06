@@ -63,7 +63,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
           >
             <IconComponent
               size={verticalScale(20)}
-              color={colors.text}
+              color={colors.white}
               weight="bold"
             />
           </View>
@@ -96,10 +96,10 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
               }}
             >
               <IconComponent
-                size={verticalScale(20)}
-                color={colors.text}
-                weight="bold"
-              />
+              size={verticalScale(20)}
+              color={colors.white}
+              weight="bold"
+            />
             </View>
           )}
           <Typography
@@ -173,7 +173,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
                     styles.modalItem,
                     {
                       backgroundColor: item[valueField] === value
-                        ? colors.neutral700
+                        ? (isDark ? colors.neutral800 : colors.neutral100)
                         : 'transparent',
                     },
                   ]}
@@ -218,6 +218,7 @@ const styles = StyleSheet.create({
   itemContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 10,
   },
 });
 
