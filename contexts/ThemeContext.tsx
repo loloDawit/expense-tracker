@@ -13,7 +13,7 @@ import {
   useEffect,
   useState,
 } from 'react';
-import { useColorScheme } from 'react-native';
+import { useColorScheme, StatusBar } from 'react-native';
 
 const palette = {
   // Primary
@@ -187,6 +187,10 @@ export const ThemeProvider = ({ children }: { children: ReactNode }) => {
   useEffect(() => {
     setIsDark(colorScheme === 'dark');
   }, [colorScheme]);
+
+  useEffect(() => {
+    StatusBar.setBarStyle(isDark ? 'light-content' : 'dark-content');
+  }, [isDark]);
 
   const toggleTheme = () => {
     setIsDark((prevIsDark) => !prevIsDark);
