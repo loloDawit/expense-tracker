@@ -1,4 +1,5 @@
 import 'dotenv/config';
+
 const IS_DEV = process.env.APP_VARIANT === 'development';
 
 export default {
@@ -20,6 +21,15 @@ export default {
       bundleIdentifier: 'com.dawitabera64.expensetracker',
       supportsTablet: true,
     },
+    plugins: [
+      [
+        'expo-local-authentication',
+        {
+          faceIDPermission:
+            'Allow $(PRODUCT_NAME) to use Face ID for authentication.',
+        },
+      ],
+    ],
     extra: {
       sentryDsn: process.env.SENTRY_DSN,
       eas: {

@@ -26,6 +26,7 @@ import { ProfileFormType, useProfileForm } from '@/hooks/useProfileForm';
 import { getUserAvatar } from '@/services/imageServices';
 import { updateUser } from '@/services/userService';
 import { UserType } from '@/types';
+import { authenticateBiometric } from '@/utils/auth';
 import { scale, verticalScale } from '@/utils/styling';
 
 const ProfileModal = () => {
@@ -213,7 +214,23 @@ const ProfileModal = () => {
                 render={({ field }) => (
                   <Switch
                     value={field.value}
-                    onValueChange={field.onChange}
+                    onValueChange={async (val) => {
+                      if (val) {
+                        const confirmed = await authenticateBiometric({
+                          reason: 'Confirm your identity to change password',
+                        });
+
+                        if (!confirmed) {
+                          Alert.alert(
+                            'Authentication Failed',
+                            'Face ID or passcode is required to enable password change.',
+                          );
+                          return;
+                        }
+                      }
+
+                      field.onChange(val);
+                    }}
                     trackColor={{
                       false: colors.neutral300,
                       true: colors.primary,
