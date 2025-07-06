@@ -20,7 +20,7 @@ export const useSignupForm = () => {
     try {
       const response = await signup(data.username, data.email, data.password);
       if (response.success) {
-        Alert.alert('Signup Successful', 'Welcome aboard!');
+        Alert.alert('Signup Successful!', 'Please verify your email.');
       } else {
         // Handle signup error
         Alert.alert('Signup Failed', response.msg);

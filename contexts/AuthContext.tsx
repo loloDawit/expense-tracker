@@ -82,13 +82,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     setIsLoading(true);
     try {
       const res = await signInWithEmailAndPassword(auth, email, password);
-      const { uid, email: userEmail, displayName, photoURL } = res.user;
+      await res.user.reload(); // Reload user to get latest emailVerified status
+      const { uid, email: userEmail, displayName, photoURL, emailVerified } = res.user;
       setUser({
         uid,
         email: userEmail ?? '',
         displayName: displayName ?? '',
+        emailVerified,
         photoURL: photoURL ? { uri: photoURL } : undefined,
       });
+      if (emailVerified) {
+        router.replace('/(tabs)/home');
+      } else {
+        router.replace('/(modals)/verifyEmail');
+      }
       return { success: true };
     } catch (error: any) {
       logger.error('Login error:', error);

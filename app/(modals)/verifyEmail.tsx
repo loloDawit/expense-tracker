@@ -32,7 +32,7 @@ const VerifyEmailScreen = () => {
       if (auth.currentUser?.emailVerified) {
         if (intervalRef.current) clearInterval(intervalRef.current);
         Alert.alert('✅ Success', 'Your email is verified!');
-        navigation.replace('/(modals)/verifyEmail');
+        navigation.replace('/(auth)/login');
       } else if (showAlert) {
         Alert.alert('⏳ Still Waiting', 'Your email is not verified yet.');
       }
