@@ -6,7 +6,7 @@ import Constants from 'expo-constants';
 import { saveExpoPushToken } from '@/services/userService';
 import { useAuth } from '@/contexts/AuthContext';
 
-export const usePushNotifications = () => {
+export function usePushNotifications() {
   const { user } = useAuth();
 
   useEffect(() => {
