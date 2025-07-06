@@ -39,7 +39,7 @@ const HomeCard = () => {
       resizeMode="stretch"
       style={styles.bgImage}
     >
-      <View style={[styles.container, { padding: spacing.x._20 }]}>
+      <View style={[styles.container, { padding: spacing.x._20, backgroundColor: colors.card + '80' }]}>
         <View>
           {/* total Income */}
           <View style={[styles.totalIncomeRow, { marginBottom: spacing.y._5 }]}>
