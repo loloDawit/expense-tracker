@@ -9,7 +9,7 @@ import SegmentedControl from '@/components/SegmentedControl';
 import { scale, verticalScale } from '@/utils/styling';
 import * as Icons from 'phosphor-react-native';
 import React, { useEffect, useMemo, useState } from 'react';
-import { Alert, ScrollView, StyleSheet, View } from 'react-native';
+import { Alert, Image, ScrollView, StyleSheet, View } from 'react-native';
 
 import ImageUpload from '@/components/ImageUpload';
 import Typography from '@/components/Typography';
@@ -148,6 +148,11 @@ const TransactionModal = () => {
     const { type, amount, description, category, date, walletId, image } =
       transaction;
 
+    if (wallets.length === 0) {
+      Alert.alert('Transaction', 'Please create a wallet first.');
+      return;
+    }
+
     if (!walletId || !date || !amount || (type === 'expense' && !category)) {
       Alert.alert('Transaction', 'Please fill all the fields');
       return;
@@ -276,19 +281,39 @@ const TransactionModal = () => {
             >
               Wallet
             </Typography>
-            <CustomDropdown
-              data={wallets.map((wallet) => ({
-                label: `${wallet?.name} (${wallet.amount})`,
-                value: wallet?.id,
-              }))}
-              labelField="label"
-              valueField="value"
-              value={transaction.walletId}
-              onSelect={(item) =>
-                setTransaction({ ...transaction, walletId: item.value || '' })
-              }
-              placeholder="Select wallet"
-            />
+            {wallets.length === 0 ? (
+              <Typography color={colors.textSecondary} size={14}>
+                No wallets found. Please add a wallet first.
+              </Typography>
+            ) : (
+              <CustomDropdown
+                data={wallets.map((wallet) => ({
+                  label: `${wallet?.name} (${wallet.amount})`,
+                  value: wallet?.id,
+                  image: wallet?.image,
+                }))}
+                labelField="label"
+                valueField="value"
+                value={transaction.walletId}
+                onSelect={(item) =>
+                  setTransaction({ ...transaction, walletId: item.value || '' })
+                }
+                placeholder="Select wallet"
+                renderItem={(item) => (
+                  <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.x._10 }}>
+                    {item.image && (
+                      <Image
+                        source={item.image}
+                        style={{ width: verticalScale(30), height: verticalScale(30), borderRadius: radius.sm }}
+                      />
+                    )}
+                    <Typography size={16} color={colors.text}>
+                      {item.label}
+                    </Typography>
+                  </View>
+                )}
+              />
+            )}
           </View>
 
           {/* category: show only if type is expense */}
