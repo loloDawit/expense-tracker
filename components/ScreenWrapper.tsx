@@ -28,7 +28,7 @@ const ScreenWrapper = ({
   console.log('onRefresh', onRefresh);
   console.log('[ScreenWrapper] refreshing:', refreshing);
 
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const paddingTop = Platform.OS === 'ios' ? height * 0.06 : 50;
 
   const content = (
@@ -38,7 +38,7 @@ const ScreenWrapper = ({
         style,
       ]}
     >
-      <StatusBar barStyle="light-content" />
+      <StatusBar barStyle={isDark ? 'light-content' : 'dark-content'} />
       {children}
     </View>
   );

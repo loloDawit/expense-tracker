@@ -17,7 +17,7 @@ const FormInput = (props: InputProps) => {
           height: verticalScale(55),
           borderRadius: radius.sm,
           borderCurve: 'continuous',
-          borderColor: colors.neutral300,
+          borderColor: colors.border,
           borderWidth: 1,
           alignItems: 'center',
           justifyContent: 'center',
@@ -35,7 +35,7 @@ const FormInput = (props: InputProps) => {
             },
             props.inputStyle,
           ]}
-          placeholderTextColor={colors.neutral400}
+          placeholderTextColor={colors.textSecondary}
           ref={props.inputRef}
           {...props}
         />
@@ -45,7 +45,7 @@ const FormInput = (props: InputProps) => {
       {props.error && (
         <Typography
           size={12}
-          color="red"
+          color={colors.error}
           style={{ marginTop: 4, marginLeft: 4 }}
         >
           {props.error}

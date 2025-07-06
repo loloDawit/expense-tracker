@@ -23,6 +23,9 @@ import {
 
 async function registerForPushNotificationsAsync() {
   let token;
+  // Import useTheme here to access colors
+  const { colors } = require('@/contexts/ThemeContext').useTheme();
+
   if (Device.isDevice) {
     const { status: existingStatus } =
       await Notifications.getPermissionsAsync();
@@ -46,7 +49,7 @@ async function registerForPushNotificationsAsync() {
       name: 'default',
       importance: Notifications.AndroidImportance.MAX,
       vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#FF231F7C',
+      lightColor: colors.primaryLight,
     });
   }
 
@@ -87,8 +90,8 @@ const SettingItem: React.FC<SettingItemProps> = ({
         <Switch
           value={value}
           onValueChange={onValueChange}
-          trackColor={{ false: colors.neutral300, true: colors.primary }}
-          thumbColor={colors.white}
+          trackColor={{ false: colors.border, true: colors.primary }}
+          thumbColor={colors.text}
         />
       )}
     </TouchableOpacity>
@@ -101,10 +104,16 @@ type SectionHeaderProps = {
 
 const SectionHeader: React.FC<SectionHeaderProps> = ({ title }) => {
   const styles = useStyles();
-  return <Typography style={styles.sectionHeader}>{title}</Typography>;
+  const { colors } = useTheme();
+  return (
+    <Typography style={styles.sectionHeader} color={colors.textSecondary}>
+      {title}
+    </Typography>
+  );
 };
 
 const AboutSection = () => {
+  const { colors } = useTheme();
   const styles = useStyles();
   const appVersion = Constants.expoConfig?.version ?? 'N/A';
   const buildVersion =
@@ -122,12 +131,18 @@ const AboutSection = () => {
 
   return (
     <View style={styles.aboutContainer}>
-      <Typography>Device: {deviceInfo.modelName}</Typography>
-      <Typography>
+      <Typography color={colors.textSecondary}>
+        Device: {deviceInfo.modelName}
+      </Typography>
+      <Typography color={colors.textSecondary}>
         OS: {deviceInfo.osName} {deviceInfo.osVersion}
       </Typography>
-      <Typography>App Version: {deviceInfo.appVersion}</Typography>
-      <Typography>Build Version: {deviceInfo.buildVersion}</Typography>
+      <Typography color={colors.textSecondary}>
+        App Version: {deviceInfo.appVersion}
+      </Typography>
+      <Typography color={colors.textSecondary}>
+        Build Version: {deviceInfo.buildVersion}
+      </Typography>
     </View>
   );
 };
@@ -262,7 +277,7 @@ const useStyles = () => {
     sectionHeader: {
       fontSize: 14,
       fontWeight: '600',
-      color: colors.neutral500,
+      color: colors.textSecondary,
       marginBottom: spacing.y._7,
     },
     settingItem: {
@@ -284,10 +299,10 @@ const useStyles = () => {
       borderRadius: 100,
       justifyContent: 'center',
       alignItems: 'center',
-      backgroundColor: colors.primaryLight,
+      backgroundColor: colors.card,
     },
     aboutContainer: {
-      backgroundColor: isDark ? colors.neutral800 : colors.textSecondary,
+      backgroundColor: colors.card,
       padding: spacing.y._15,
       borderRadius: radius.md,
       gap: 6,

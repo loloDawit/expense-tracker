@@ -13,20 +13,20 @@ const PeriodSegmentControl: React.FC<PeriodSegmentControlProps> = ({
   activeIndex,
   onChange,
 }) => {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
 
   return (
     <SegmentedControl
       values={['Weekly', 'Monthly', 'Yearly']}
       selectedIndex={activeIndex}
-      tintColor={colors.neutral200}
+      tintColor={colors.primary}
       backgroundColor={colors.card}
-      appearance="dark"
+      appearance={isDark ? 'dark' : 'light'}
       activeFontStyle={{
         ...styles.segmentFontStyle,
-        color: colors.black,
+        color: colors.text,
       }}
-      fontStyle={{ ...styles.segmentFontStyle, color: colors.white }}
+      fontStyle={{ ...styles.segmentFontStyle, color: colors.textSecondary }}
       style={styles.segmentStyle}
       onChange={(event) => onChange(event.nativeEvent.selectedSegmentIndex)}
     />

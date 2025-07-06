@@ -43,17 +43,17 @@ const HomeCard = () => {
         <View>
           {/* total Income */}
           <View style={[styles.totalIncomeRow, { marginBottom: spacing.y._5 }]}>
-            <Typography color={colors.neutral800} size={17} fontWeight={'500'}>
+            <Typography color={colors.text} size={17} fontWeight={'500'}>
               Total Income
             </Typography>
             <Icons.DotsThreeOutline
               size={verticalScale(23)}
-              color={colors.black}
+              color={colors.text}
               weight="fill"
             />
           </View>
           <Typography
-            color={colors.black}
+            color={colors.text}
             size={30}
             fontWeight={'bold'}
             style={{
@@ -75,13 +75,13 @@ const HomeCard = () => {
               <View style={styles.statsIcon}>
                 <Icons.ArrowDown
                   size={verticalScale(15)}
-                  color={colors.black}
+                  color={colors.text}
                   weight="bold"
                 />
               </View>
               <Typography
                 size={16}
-                color={colors.neutral700}
+                color={colors.text}
                 fontWeight={'500'}
               >
                 Income
@@ -111,20 +111,20 @@ const HomeCard = () => {
                 style={[
                   styles.statsIcon,
                   {
-                    backgroundColor: colors.neutral350,
+                    backgroundColor: colors.neutral200,
                     padding: spacing.y._5,
                   },
                 ]}
               >
                 <Icons.ArrowUp
                   size={verticalScale(15)}
-                  color={colors.black}
+                  color={colors.text}
                   weight="bold"
                 />
               </View>
               <Typography
                 size={16}
-                color={colors.neutral700}
+                color={colors.text}
                 fontWeight={'500'}
               >
                 Expense

@@ -126,7 +126,7 @@ function getCategory(
                   key={`header-${(item as any).date}`}
                   fontWeight="600"
                   size={15}
-                  color={colors.text}
+                  color={colors.primary}
                   style={{ marginBottom: 6, marginTop: 16 }}
                 >
                   {(item as any).date}

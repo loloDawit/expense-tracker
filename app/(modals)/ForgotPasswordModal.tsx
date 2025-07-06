@@ -41,7 +41,7 @@ const ForgotPasswordModal = () => {
           Forgot Password?
         </Typography>
         <Typography
-          color={colors.textLight}
+          color={colors.textSecondary}
           style={{ marginBottom: spacing.y._20 }}
         >
           Enter your email address to receive a password reset link.
@@ -58,7 +58,7 @@ const ForgotPasswordModal = () => {
               icon={
                 <Icons.At
                   size={verticalScale(26)}
-                  color={colors.primary}
+                  color={colors.textSecondary}
                   weight="fill"
                 />
               }
@@ -77,7 +77,7 @@ const ForgotPasswordModal = () => {
             marginTop: spacing.y._20,
           }}
         >
-          <Typography size={18} fontWeight="600" color={colors.white}>
+          <Typography size={18} fontWeight="600" color={colors.text}>
             Send Reset Link
           </Typography>
         </Button>

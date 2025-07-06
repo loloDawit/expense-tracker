@@ -120,7 +120,7 @@ const WalletModal = () => {
           ]}
         >
           <View style={[styles.inputContainer, { gap: spacing.y._10 }]}>
-            <Typography color={colors.neutral200}>Wallet Name</Typography>
+            <Typography color={colors.textSecondary}>Wallet Name</Typography>
             <Input
               placeholder="Salary"
               value={wallet.name}
@@ -128,7 +128,7 @@ const WalletModal = () => {
             />
           </View>
           <View style={styles.inputContainer}>
-            <Typography color={colors.neutral200}>Wallet Icon</Typography>
+            <Typography color={colors.textSecondary}>Wallet Icon</Typography>
             <ImageUpload
               file={wallet.image}
               onSelect={onSelectImage}
@@ -146,7 +146,7 @@ const WalletModal = () => {
           {
             paddingHorizontal: spacing.x._20,
             paddingTop: spacing.y._15,
-            borderTopColor: colors.neutral700,
+            borderTopColor: colors.border,
             marginBottom: spacing.y._5,
           },
         ]}
@@ -160,14 +160,14 @@ const WalletModal = () => {
             onPress={showDeleteAlert}
           >
             <Icons.Trash
-              color={colors.white}
+              color={colors.text}
               size={verticalScale(24)}
               weight="bold"
             />
           </Button>
         )}
         <Button onPress={onSubmit} loading={loading} style={{ flex: 1 }}>
-          <Typography color={colors.black} fontWeight={'700'} size={18}>
+          <Typography color={colors.text} fontWeight={'700'} size={18}>
             {oldWallet?.id ? 'Update Wallet' : 'Add Wallet'}
           </Typography>
         </Button>

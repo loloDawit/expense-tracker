@@ -34,7 +34,7 @@ const Login = () => {
             <Typography size={32} fontWeight={'800'}>
               Welcome Back!
             </Typography>
-            <Typography size={16} color={colors.textLight}>
+            <Typography size={16} color={colors.textSecondary}>
               Login to your account to continue.
             </Typography>
           </Animated.View>
@@ -49,7 +49,7 @@ const Login = () => {
                   placeholder="Enter your email"
                   value={value}
                   onChangeText={onChange}
-                  icon={<Icons.At size={verticalScale(26)} color={colors.primary} weight="fill" />}
+                  icon={<Icons.At size={verticalScale(26)} color={colors.textSecondary} weight="fill" />}
                   error={errors.email?.message}
                 />
               )}
@@ -64,7 +64,7 @@ const Login = () => {
                   value={value}
                   onChangeText={onChange}
                   secureTextEntry
-                  icon={<Icons.Lock size={verticalScale(26)} color={colors.primary} weight="fill" />}
+                  icon={<Icons.Lock size={verticalScale(26)} color={colors.textSecondary} weight="fill" />}
                   error={errors.password?.message}
                 />
               )}
@@ -83,7 +83,7 @@ const Login = () => {
                 height: verticalScale(52),
               }}
             >
-              <Typography size={18} fontWeight="600" color={colors.white}>
+              <Typography size={18} fontWeight="600" color={colors.text}>
                 Login
               </Typography>
             </Button>
@@ -91,7 +91,7 @@ const Login = () => {
 
           {/* Footer */}
           <Animated.View entering={FadeInDown.duration(500).delay(600)} style={styles.footer}>
-            <Typography size={15} color={colors.textLight}>
+            <Typography size={15} color={colors.textSecondary}>
               Don’t have an account?
             </Typography>
             <Pressable onPress={() => router.navigate('/(auth)/signup')}>

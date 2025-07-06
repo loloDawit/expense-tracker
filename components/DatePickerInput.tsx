@@ -20,7 +20,7 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
   date,
   onDateChange,
 }) => {
-  const { colors, spacing, radius } = useTheme();
+  const { colors, spacing, radius, isDark } = useTheme();
   const [showDatePicker, setShowDatePicker] = useState(false);
 
   const handleDateChange = (event: any, selectedDate: Date | undefined) => {
@@ -38,14 +38,14 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
           style={[
             styles.dateInput,
             {
-              borderColor: colors.neutral300,
+              borderColor: colors.border,
               borderRadius: radius.md,
               paddingHorizontal: spacing.x._15,
             },
           ]}
           onPress={() => setShowDatePicker(true)}
         >
-          <Typography size={14}>
+          <Typography size={14} color={colors.text}>
             {date?.toLocaleDateString()}
           </Typography>
         </Pressable>
@@ -54,7 +54,7 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
       {showDatePicker && (
         <View style={Platform.OS === 'ios' && styles.iosDatePicker}>
           <DateTimePicker
-            themeVariant="dark"
+            themeVariant={isDark ? 'dark' : 'light'}
             value={date}
             textColor={colors.text}
             mode="date"
@@ -67,7 +67,7 @@ const DatePickerInput: React.FC<DatePickerInputProps> = ({
               style={[
                 styles.datePickerButton,
                 {
-                  backgroundColor: colors.neutral700,
+                  backgroundColor: colors.primary,
                   padding: spacing.y._7,
                   marginRight: spacing.x._7,
                   paddingHorizontal: spacing.y._15,

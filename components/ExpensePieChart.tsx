@@ -77,7 +77,7 @@ const ExpensePieChart = ({ data, title = 'Breakdown' }: Props) => {
               <Text style={[styles.totalText, { color: colors.text }]}>
                 {selected ? `${selected.label}` : `$${total.toFixed(0)}`}
               </Text>
-              <Text style={[styles.totalLabel, { color: colors.neutral300 }]}>
+              <Text style={[styles.totalLabel, { color: colors.textSecondary }]}>
                 {selected ? `${selected.percent}%` : 'Total'}
               </Text>
             </View>

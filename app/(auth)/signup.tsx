@@ -34,7 +34,7 @@ const Signup = () => {
             <Typography size={32} fontWeight={'800'}>
               Let&apos;s Get Started!
             </Typography>
-            <Typography size={16} color={colors.textLight}>
+            <Typography size={16} color={colors.textSecondary}>
               Create an account to start tracking your expenses.
             </Typography>
           </Animated.View>
@@ -49,7 +49,7 @@ const Signup = () => {
                   placeholder="Enter your username"
                   value={value}
                   onChangeText={onChange}
-                  icon={<Icons.User size={verticalScale(26)} color={colors.primary} weight="fill" />}
+                  icon={<Icons.User size={verticalScale(26)} color={colors.textSecondary} weight="fill" />}
                   error={errors.username?.message}
                 />
               )}
@@ -62,7 +62,7 @@ const Signup = () => {
                   placeholder="Enter your email"
                   value={value}
                   onChangeText={onChange}
-                  icon={<Icons.At size={verticalScale(26)} color={colors.primary} weight="fill" />}
+                  icon={<Icons.At size={verticalScale(26)} color={colors.textSecondary} weight="fill" />}
                   error={errors.email?.message}
                 />
               )}
@@ -76,7 +76,7 @@ const Signup = () => {
                   value={value}
                   onChangeText={onChange}
                   secureTextEntry
-                  icon={<Icons.Lock size={verticalScale(26)} color={colors.primary} weight="fill" />}
+                  icon={<Icons.Lock size={verticalScale(26)} color={colors.textSecondary} weight="fill" />}
                   error={errors.password?.message}
                 />
               )}
@@ -90,7 +90,7 @@ const Signup = () => {
                   value={value}
                   onChangeText={onChange}
                   secureTextEntry
-                  icon={<Icons.Lock size={verticalScale(26)} color={colors.primary} weight="fill" />}
+                  icon={<Icons.Lock size={verticalScale(26)} color={colors.textSecondary} weight="fill" />}
                   error={errors.confirmPassword?.message}
                 />
               )}
@@ -104,7 +104,7 @@ const Signup = () => {
                 height: verticalScale(52),
               }}
             >
-              <Typography size={18} fontWeight="600" color={colors.white}>
+              <Typography size={18} fontWeight="600" color={colors.text}>
                 Sign Up
               </Typography>
             </Button>
@@ -112,7 +112,7 @@ const Signup = () => {
 
           {/* Footer */}
           <Animated.View entering={FadeInDown.duration(500).delay(600)} style={styles.footer}>
-            <Typography size={15} color={colors.textLight}>
+            <Typography size={15} color={colors.textSecondary}>
               Already have an account?
             </Typography>
             <Pressable onPress={() => router.navigate('/(auth)/login')}>

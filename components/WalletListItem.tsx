@@ -43,7 +43,7 @@ const WalletListItem = ({
           style={[
             styles.imageContainer,
             {
-              borderColor: colors.neutral600,
+              borderColor: colors.border,
               borderRadius: 10,
             },
           ]}
@@ -63,7 +63,7 @@ const WalletListItem = ({
           ]}
         >
           <Typography size={16}>{item.name}</Typography>
-          <Typography size={14} color={colors.neutral400}>
+          <Typography size={14} color={colors.textSecondary}>
             {formatAmount(item?.amount || 0)}
           </Typography>
         </View>
@@ -71,7 +71,7 @@ const WalletListItem = ({
         <Icons.CaretRight
           size={verticalScale(20)}
           weight="bold"
-          color={colors.white}
+          color={colors.text}
         />
       </TouchableOpacity>
     </Animated.View>

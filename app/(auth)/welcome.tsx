@@ -10,7 +10,7 @@ import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import Animated, { FadeIn, FadeInDown } from 'react-native-reanimated';
 
 const Welcome = () => {
-  const { colors, spacing } = useTheme();
+  const { colors, spacing, isDark } = useTheme();
   const router = useRouter();
 
   const handleLogin = () => router.push('/(auth)/login');
@@ -20,11 +20,17 @@ const Welcome = () => {
   };
 
   return (
-    <ScreenWrapper>
-      <View style={styles.container}>
+    <ScreenWrapper style={{ backgroundColor: colors.background }}>
+      <View style={[styles.container, { backgroundColor: colors.background }]}>
         {/* Top: Sign In and Image */}
-        <Animated.View entering={FadeIn.duration(1000)} style={styles.topSection}>
-          <TouchableOpacity onPress={handleLogin} style={{ alignSelf: 'flex-end', marginRight: spacing.x._20 }}>
+        <Animated.View
+          entering={FadeIn.duration(1000)}
+          style={styles.topSection}
+        >
+          <TouchableOpacity
+            onPress={handleLogin}
+            style={{ alignSelf: 'flex-end', marginRight: spacing.x._20 }}
+          >
             <Typography fontWeight="600" size={16} color={colors.primary}>
               Sign In
             </Typography>
@@ -37,28 +43,51 @@ const Welcome = () => {
         </Animated.View>
 
         {/* Footer */}
-        <Animated.View style={[styles.footer, { backgroundColor: colors.card, borderTopLeftRadius: 40, borderTopRightRadius: 40 }]}>
-          <Animated.View entering={FadeInDown.duration(1000).springify().damping(12)} style={styles.textContainer}>
+        <Animated.View
+          style={[
+            styles.footer,
+            {
+              backgroundColor: colors.card,
+              borderTopLeftRadius: 40,
+              borderTopRightRadius: 40,
+              shadowColor: isDark ? colors.white : colors.black,
+            },
+          ]}
+        >
+          <Animated.View
+            entering={FadeInDown.duration(1000).springify().damping(12)}
+            style={styles.textContainer}
+          >
             <Typography size={32} fontWeight="800" style={styles.title}>
               Take Control of Your Finances
             </Typography>
           </Animated.View>
 
           <Animated.View
-            entering={FadeInDown.duration(1000).delay(100).springify().damping(12)}
+            entering={FadeInDown.duration(1000)
+              .delay(100)
+              .springify()
+              .damping(12)}
             style={styles.textContainer}
           >
-            <Typography size={16} color={colors.textLight} style={styles.subtitle}>
+            <Typography
+              size={16}
+              color={colors.textSecondary}
+              style={styles.subtitle}
+            >
               Organize your finances today for a better lifestyle tomorrow.
             </Typography>
           </Animated.View>
 
           <Animated.View
-            entering={FadeInDown.duration(1000).delay(200).springify().damping(12)}
+            entering={FadeInDown.duration(1000)
+              .delay(200)
+              .springify()
+              .damping(12)}
             style={{ width: '100%', paddingHorizontal: spacing.x._25 }}
           >
             <Button onPress={handleGetStarted} style={{ borderRadius: 25 }}>
-              <Typography size={18} fontWeight="600" color={colors.white}>
+              <Typography size={18} fontWeight="600" color={colors.text}>
                 Get Started
               </Typography>
             </Button>
@@ -75,7 +104,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: 'space-between',
-    backgroundColor: '#FDFDFF', // A light, clean background
+    // backgroundColor is set inline in the component
   },
   topSection: {
     paddingTop: verticalScale(50),

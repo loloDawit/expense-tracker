@@ -17,7 +17,7 @@ const ImageUpload = ({
   imageStyle,
   placeholder = '',
 }: ImageUploadProps) => {
-  const { colors, radius } = useTheme();
+  const { colors, radius, isDark } = useTheme();
 
   const pickImage = async () => {
     let result: ImagePicker.ImagePickerResult =
@@ -47,14 +47,14 @@ const ImageUpload = ({
               justifyContent: 'center',
               alignItems: 'center',
               borderWidth: 1,
-              borderColor: colors.neutral500,
+              borderColor: colors.border,
               borderStyle: 'dashed',
             },
             containerStyle,
           ]}
         >
-          <Icons.UploadSimple color={colors.neutral200} />
-          {placeholder && <Typography size={15}>{placeholder}</Typography>}
+          <Icons.UploadSimple color={colors.textSecondary} />
+          {placeholder && <Typography size={15} color={colors.textSecondary}>{placeholder}</Typography>}
         </TouchableOpacity>
       )}
 
@@ -83,14 +83,14 @@ const ImageUpload = ({
               position: 'absolute',
               top: scale(6),
               right: scale(6),
-              shadowColor: colors.black,
+              shadowColor: isDark ? colors.white : colors.black,
               shadowOffset: { width: 0, height: 5 },
               shadowOpacity: 1,
               shadowRadius: 10,
             }}
           >
             <Icons.XCircle
-              color={colors.white}
+              color={colors.text}
               size={verticalScale(24)}
               weight="fill"
             />

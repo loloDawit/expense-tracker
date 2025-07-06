@@ -357,7 +357,7 @@ const TransactionModal = () => {
               <Typography color={colors.textSecondary} size={16}>
                 Description
               </Typography>
-              <Typography color={colors.neutral500} size={14}>
+              <Typography color={colors.textSecondary} size={14}>
                 (optional)
               </Typography>
             </View>
@@ -383,7 +383,7 @@ const TransactionModal = () => {
               <Typography color={colors.textSecondary} size={16}>
                 Receipt
               </Typography>
-              <Typography color={colors.neutral500} size={14}>
+              <Typography color={colors.textSecondary} size={14}>
                 (optional)
               </Typography>
             </View>
@@ -404,7 +404,7 @@ const TransactionModal = () => {
           {
             paddingHorizontal: spacing.x._20,
             paddingTop: spacing.y._15,
-            borderTopColor: colors.neutral700,
+            borderTopColor: colors.border,
             marginBottom: spacing.y._5,
           },
         ]}
@@ -428,7 +428,7 @@ const TransactionModal = () => {
         )}
 
         <Button loading={loading} onPress={onSubmit} style={{ flex: 1 }}>
-          <Typography color={colors.black} size={20}>
+          <Typography color={colors.text} size={20}>
             {oldTransaction?.id ? 'Update' : 'Submit'}
           </Typography>
         </Button>

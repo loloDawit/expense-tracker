@@ -18,12 +18,12 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
   onPress,
 }) => {
   const { colors, spacing, radius, fontSize } = useTheme();
+  const styles = React.useMemo(() => createStyles(colors, spacing, radius, fontSize), [colors, spacing, radius, fontSize]);
 
   return (
     <TouchableOpacity
       style={[
         styles.cardContainer,
-        { backgroundColor: colors.card, borderRadius: radius.md },
         highlight && styles.highlightedCard,
       ]}
       onPress={onPress}
@@ -48,25 +48,28 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
   );
 };
 
-const styles = StyleSheet.create({
-  cardContainer: {
-    flex: 1,
-    minWidth: '48%',
-    padding: verticalScale(15),
-    marginBottom: verticalScale(10),
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 1,
+const createStyles = (colors: any, spacing: any, radius: any, fontSize: any) =>
+  StyleSheet.create({
+    cardContainer: {
+      flex: 1,
+      minWidth: '48%',
+      padding: verticalScale(15),
+      marginBottom: verticalScale(10),
+      shadowColor: colors.isDark ? colors.white : colors.black,
+      shadowOffset: {
+        width: 0,
+        height: 1,
+      },
+      shadowOpacity: 0.22,
+      shadowRadius: 2.22,
+      elevation: 3,
+      backgroundColor: colors.card,
+      borderRadius: radius.md,
     },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-    elevation: 3,
-  },
-  highlightedCard: {
-    borderWidth: 2,
-    borderColor: '#6366f1', // Example highlight color
-  },
-});
+    highlightedCard: {
+      borderWidth: 2,
+      borderColor: colors.primary, // Example highlight color
+    },
+  });
 
 export default SummaryCard;

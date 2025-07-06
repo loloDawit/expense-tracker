@@ -8,7 +8,7 @@ import { ModalWrapperProps } from '@/types';
 const isIos = Platform.OS === 'ios';
 
 const ModalWrapper = ({ style, children, bg }: ModalWrapperProps) => {
-  const { colors, spacing } = useTheme();
+  const { colors, spacing, isDark } = useTheme();
 
   return (
     <View
@@ -22,7 +22,7 @@ const ModalWrapper = ({ style, children, bg }: ModalWrapperProps) => {
         style,
       ]}
     >
-      <StatusBar style="light" />
+      <StatusBar style={isDark ? 'light' : 'dark'} />
       {children}
     </View>
   );

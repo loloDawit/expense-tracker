@@ -107,7 +107,7 @@ const CategoryModal = () => {
   const handleEdit = (category: CategoryType) => {
     setEditingCategory(category);
     setNewLabel(category.label);
-    setNewIcon(category.icon);
+    setNewIcon(category.icon as keyof typeof Icons);
     setNewColor(category.bgColor);
   };
 
@@ -144,13 +144,14 @@ const CategoryModal = () => {
           }}
         >
           {categories.map((item) => {
-            const IconComponent = (typeof Icons[item.icon] === 'function'
-              ? Icons[item.icon]
+            const iconKey = item.icon as keyof typeof Icons;
+            const IconComponent = (typeof Icons[iconKey] === 'function'
+              ? Icons[iconKey]
               : Icons.Tag) as React.ComponentType<{ size: number; color: string }>;
             return (
               <View
                 key={item.id || `${item.label}-${item.icon}`}
-                style={[styles.row, { borderBottomColor: colors.neutral700, marginBottom: spacing.y._10 }]}
+                style={[styles.row, { borderBottomColor: colors.border, marginBottom: spacing.y._10 }]}
               >
                 <View
                   style={[
@@ -161,7 +162,7 @@ const CategoryModal = () => {
                     },
                   ]}
                 >
-                  <IconComponent size={20} color={colors.white} />
+                  <IconComponent size={20} color={colors.text} />
                 </View>
                 <Typography style={[styles.label, { color: colors.text }]}>
                   {item.label}
@@ -218,7 +219,7 @@ const CategoryModal = () => {
                     {
                       backgroundColor: color,
                       borderWidth: newColor === color ? 2 : 0,
-                      borderColor: colors.white,
+                      borderColor: colors.text,
                     },
                   ]}
                 />
@@ -229,13 +230,13 @@ const CategoryModal = () => {
               {editingCategory && (
                 <Button
                   onPress={handleCancelEdit}
-                  style={{ ...styles.button, backgroundColor: colors.neutral500 }}
+                  style={{ ...styles.button, backgroundColor: colors.neutral400 }}
                 >
-                  <Typography color={colors.white}>Cancel</Typography>
+                  <Typography color={colors.text}>Cancel</Typography>
                 </Button>
               )}
               <Button onPress={handleAddCategory} style={styles.button}>
-                <Typography color={colors.black}>
+                <Typography color={colors.text}>
                   {editingCategory ? 'Save Category' : 'Add Category'}
                 </Typography>
               </Button>

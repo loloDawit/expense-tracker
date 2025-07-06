@@ -34,7 +34,7 @@ export default function IconPickerModal({
             Pick an Icon
           </Typography>
           <TouchableOpacity onPress={onClose}>
-            <Icons.X size={20} color={colors.neutral300} />
+            <Icons.X size={20} color={colors.textSecondary} />
           </TouchableOpacity>
         </View>
 
@@ -51,7 +51,7 @@ export default function IconPickerModal({
                   onSelect(item);
                   onClose();
                 }}
-                style={[styles.iconBox, { backgroundColor: colors.neutral800 }]}
+                style={[styles.iconBox, { backgroundColor: colors.card }]}
               >
                 <IconComponent size={26} color={colors.primary} />
               </TouchableOpacity>

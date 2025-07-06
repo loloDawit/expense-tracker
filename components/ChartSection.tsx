@@ -34,9 +34,9 @@ const ChartSection: React.FC<ChartSectionProps> = ({
           yAxisLabelWidth={
             [1, 2].includes(activeIndex) ? scale(38) : scale(35)
           }
-          yAxisTextStyle={{ color: colors.neutral350 }}
+          yAxisTextStyle={{ color: colors.textSecondary }}
           xAxisLabelTextStyle={{
-            color: colors.neutral350,
+            color: colors.textSecondary,
             fontSize: verticalScale(12),
           }}
           noOfSections={3}

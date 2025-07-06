@@ -11,14 +11,15 @@ import Animated, { FadeIn } from 'react-native-reanimated';
 import Loading from '@/components/Loading';
 
 const SearchModal = () => {
-  const { colors } = useTheme();
+  const { colors, isDark } = useTheme();
   const [isLoading, setIsLoading] = useState(true);
+  const styles = getStyles(colors, isDark);
 
   return (
     <ModalWrapper
       style={{
         backgroundColor: colors.card,
-        shadowColor: colors.text,
+        shadowColor: isDark ? colors.white : colors.black,
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4,
@@ -50,17 +51,17 @@ const SearchModal = () => {
 };
 
 export default SearchModal;
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: theme.spacing.x._20,
-  },
-  loadingOverlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
-    zIndex: 1,
-  },
-});
+const getStyles = (colors: Record<string, string>, isDark: boolean) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      paddingHorizontal: theme.spacing.x._20,
+    },
+    loadingOverlay: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: isDark ? 'rgba(255,255,255,0.5)' : 'rgba(0,0,0,0.5)',
+      justifyContent: 'center',
+      alignItems: 'center',
+      zIndex: 1,
+    },
+  });

@@ -30,7 +30,7 @@ import { authenticateBiometric } from '@/utils/auth';
 import { scale, verticalScale } from '@/utils/styling';
 
 const ProfileModal = () => {
-  const { colors, spacing } = useTheme();
+  const { colors, spacing, isDark } = useTheme();
   const { user, updateUserData } = useAuth();
   const router = useRouter();
 
@@ -122,8 +122,8 @@ const ProfileModal = () => {
         style={[
           styles.avatar,
           {
-            backgroundColor: colors.neutral300,
-            borderColor: colors.neutral500,
+            backgroundColor: colors.card,
+            borderColor: colors.border,
           },
         ]}
         source={getUserAvatar(
@@ -138,15 +138,15 @@ const ProfileModal = () => {
         style={[
           styles.editIcon,
           {
-            backgroundColor: colors.textSecondary,
+            backgroundColor: colors.primary,
             padding: spacing.y._7,
             borderRadius: 100,
-            shadowColor: colors.black,
+            shadowColor: isDark ? colors.white : colors.black,
           },
         ]}
         onPress={onPickImage}
       >
-        <Icons.Pencil size={verticalScale(20)} color={colors.neutral800} />
+        <Icons.Pencil size={verticalScale(20)} color={colors.text} />
       </TouchableOpacity>
     </View>
   );
@@ -176,8 +176,8 @@ const ProfileModal = () => {
               value={user?.email || ''}
               editable={false}
               style={{
-                backgroundColor: colors.background,
-                color: colors.neutral400,
+                backgroundColor: colors.card,
+                color: colors.textSecondary,
                 textAlign: 'left',
               }}
             />
@@ -232,10 +232,10 @@ const ProfileModal = () => {
                       field.onChange(val);
                     }}
                     trackColor={{
-                      false: colors.neutral300,
+                      false: colors.border,
                       true: colors.primary,
                     }}
-                    thumbColor={colors.white}
+                    thumbColor={colors.text}
                   />
                 )}
               />
@@ -309,7 +309,7 @@ const ProfileModal = () => {
           loading={loading}
           disabled={!isDirty && !photoChanged}
         >
-          <Typography color={colors.white} fontWeight="700" size={18}>
+          <Typography color={colors.text} fontWeight="700" size={18}>
             Update
           </Typography>
         </Button>

@@ -101,9 +101,9 @@ const VerifyEmailScreen = () => {
           disabled={checking}
         >
           {checking ? (
-            <ActivityIndicator color={colors.white} />
+            <ActivityIndicator color={colors.text} />
           ) : (
-            <Text style={[styles.buttonText, { color: colors.white }]}>
+            <Text style={[styles.buttonText, { color: colors.text }]}>
               I've Verified My Email
             </Text>
           )}
@@ -115,12 +115,12 @@ const VerifyEmailScreen = () => {
           disabled={resending}
         >
           {resending ? (
-            <ActivityIndicator color={isDark ? colors.white : colors.black} />
+            <ActivityIndicator color={colors.text} />
           ) : (
             <Text
               style={[
                 styles.secondaryButtonText,
-                { color: colors.primaryLight },
+                { color: colors.primary },
               ]}
             >
               Resend Verification Email

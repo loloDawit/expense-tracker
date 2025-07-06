@@ -35,7 +35,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
   iconField,
   bgColorField,
 }) => {
-  const { colors, spacing, radius } = useTheme();
+  const { colors, spacing, radius, isDark } = useTheme();
   const [modalVisible, setModalVisible] = useState(false);
 
   const getIconComponent = (iconName: string) => {
@@ -113,9 +113,9 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
     }
     return (
       <Typography
-        size={14}
-        color={colors.neutral500}
-      >
+          size={14}
+          color={colors.textSecondary}
+        >
         {placeholder || 'Select an item'}
       </Typography>
     );
@@ -127,7 +127,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
         style={[
           styles.dropdownButton,
           {
-            borderColor: colors.neutral300,
+            borderColor: colors.border,
             borderRadius: radius.sm,
             paddingHorizontal: spacing.x._15,
           },
@@ -137,7 +137,7 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
         {_renderSelected()}
         <Icons.CaretDown
           size={verticalScale(20)}
-          color={colors.neutral500}
+          color={colors.textSecondary}
         />
       </Pressable>
 
@@ -156,8 +156,8 @@ const CustomDropdown: React.FC<CustomDropdownProps> = ({
               {
                 backgroundColor: colors.background,
                 borderRadius: radius.md,
-                borderColor: colors.neutral500,
-                shadowColor: colors.black,
+                borderColor: colors.border,
+                shadowColor: isDark ? colors.white : colors.black,
               },
             ]}
           >

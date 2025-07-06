@@ -68,8 +68,8 @@ const SearchableList: React.FC<SearchableListProps> = ({
         <Input
           placeholder="shoes..."
           value={displaySearch}
-          placeholderTextColor={colors.neutral400}
-          containerStyle={{ backgroundColor: colors.neutral100 }}
+          placeholderTextColor={colors.textSecondary}
+          containerStyle={{ backgroundColor: colors.card }}
           onChangeText={(value) => {
             const trimmed = value.trimStart();
             setDisplaySearch(trimmed);
