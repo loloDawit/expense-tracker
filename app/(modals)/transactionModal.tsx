@@ -366,12 +366,9 @@ const TransactionModal = () => {
               placeholder="Salary"
               value={transaction.description}
               multiline
-              numberOfLines={2}
+              numberOfLines={4}
               containerStyle={{
-                flexDirection: 'row',
                 height: verticalScale(100),
-                alignItems: 'flex-start',
-                paddingVertical: 15,
               }}
               onChangeText={(value) =>
                 setTransaction({

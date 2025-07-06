@@ -21,6 +21,8 @@ const Input = forwardRef<TextInput, Props>((props, ref) => {
   const { colors, spacing, radius } = useTheme();
   const { icon, containerStyle, style, error, errorMessage, ...rest } = props;
 
+  const containerHeight = StyleSheet.flatten(containerStyle)?.height;
+
   return (
     <View style={containerStyle}>
       <View
@@ -31,7 +33,8 @@ const Input = forwardRef<TextInput, Props>((props, ref) => {
             borderRadius: radius.md,
             paddingHorizontal: spacing.x._15,
             gap: spacing.x._10,
-            height: verticalScale(54),
+            height: rest.multiline ? containerHeight : verticalScale(54),
+            alignItems: rest.multiline ? 'flex-start' : 'center',
           },
         ]}
       >
@@ -41,6 +44,7 @@ const Input = forwardRef<TextInput, Props>((props, ref) => {
           style={[
             styles.input,
             { color: colors.text, fontSize: verticalScale(14) }, // force visible text color
+            rest.multiline && { textAlignVertical: 'top' },
             style,
           ]}
           placeholderTextColor={colors.neutral400}

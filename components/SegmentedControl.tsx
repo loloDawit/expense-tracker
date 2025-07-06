@@ -26,7 +26,7 @@ const SegmentedControl: React.FC<SegmentedControlProps> = ({
       style={[
         styles.container,
         {
-          backgroundColor: colors.neutral800,
+          backgroundColor: colors.card,
           borderRadius: radius.md,
           padding: spacing.x._5,
         },
@@ -40,7 +40,7 @@ const SegmentedControl: React.FC<SegmentedControlProps> = ({
             {
               borderRadius: radius.sm,
               backgroundColor:
-                value === item.value ? colors.neutral700 : 'transparent',
+                value === item.value ? colors.background : 'transparent',
             },
           ]}
           onPress={() => onSelect(item.value)}
