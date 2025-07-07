@@ -1,3 +1,4 @@
+import { formatAmount } from '@/utils/helper';
 import { useTheme } from '@/contexts/ThemeContext';
 import { verticalScale } from '@/utils/styling';
 import React, { useState } from 'react';
@@ -75,7 +76,7 @@ const ExpensePieChart = ({ data, title = 'Breakdown' }: Props) => {
           return (
             <View style={styles.centerLabel}>
               <Text style={[styles.totalText, { color: colors.text }]}>
-                {selected ? `${selected.label}` : `$${total.toFixed(0)}`}
+                {selected ? `${selected.label}` : formatAmount(total)}
               </Text>
               <Text style={[styles.totalLabel, { color: colors.textSecondary }]}>
                 {selected ? `${selected.percent}%` : 'Total'}
@@ -90,7 +91,7 @@ const ExpensePieChart = ({ data, title = 'Breakdown' }: Props) => {
           <View key={index} style={styles.legendRow}>
             <View style={[styles.colorDot, { backgroundColor: item.color }]} />
             <Text style={[styles.legendText, { color: colors.text }]}>
-              {item.label} - ${item.value.toFixed(0)} ({item.percent}%)
+              {item.label} - {formatAmount(item.value)} ({item.percent}%)
             </Text>
           </View>
         ))}

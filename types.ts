@@ -168,6 +168,7 @@ export type WalletType = {
   image: any;
   uid?: string;
   created?: Date;
+  isDeleted?: boolean;
 };
 
 export type MetricsType = {

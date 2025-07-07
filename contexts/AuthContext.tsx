@@ -83,6 +83,8 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({
     try {
       const res = await signInWithEmailAndPassword(auth, email, password);
       await res.user.reload(); // Reload user to get latest emailVerified status
+      console.log('🔐 User logged in:', res.user);
+      
       const { uid, email: userEmail, displayName, photoURL, emailVerified } = res.user;
       setUser({
         uid,

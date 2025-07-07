@@ -4,6 +4,7 @@ import Typography from '@/components/Typography';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { getUserAvatar } from '@/services/imageServices';
+import { migrateWallets } from '@/services/walletService';
 import { accountOptionType } from '@/types';
 import { verticalScale } from '@/utils/styling';
 import Constants from 'expo-constants';
@@ -14,6 +15,7 @@ import * as Icons from 'phosphor-react-native';
 import React from 'react';
 import {
   ActivityIndicator,
+  Alert,
   Platform,
   ScrollView,
   StyleSheet,
@@ -126,6 +128,18 @@ const Settings = () => {
       bgColor: colors.neutral600,
       details: true,
     },
+    {
+      title: 'Fix Old Wallets',
+      icon: (
+        <Icons.Wrench
+          size={verticalScale(26)}
+          color={colors.white}
+          weight="fill"
+        />
+      ),
+      bgColor: colors.primary,
+      details: false,
+    },
   ];
 
   const logoutOption: accountOptionType[] = [
@@ -143,11 +157,14 @@ const Settings = () => {
     },
   ];
 
-  const handlePress = (item: accountOptionType) => {
+  const handlePress = async (item: accountOptionType) => {
     if (item.routeName) {
       router.push(item.routeName);
     } else if (item.title === 'Logout') {
       logout();
+    } else if (item.title === 'Fix Old Wallets') {
+      const res = await migrateWallets();
+      Alert.alert('Migration', res.msg);
     }
   };
 

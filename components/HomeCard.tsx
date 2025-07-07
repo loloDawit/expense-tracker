@@ -15,7 +15,7 @@ const HomeCard = () => {
   const { user } = useAuth();
   const walletConstraints = useMemo(() => {
     if (!user?.uid) return [];
-    return [where('uid', '==', user.uid), orderBy('created', 'desc')];
+    return [orderBy('created', 'desc')];
   }, [user?.uid]);
   const {
     data: wallets,
@@ -63,7 +63,7 @@ const HomeCard = () => {
           >
             {walletLoading
               ? '----'
-              : formatAmount(getTotals()?.balance?.toFixed(2))}
+              : formatAmount(getTotals()?.balance)}
           </Typography>
         </View>
 

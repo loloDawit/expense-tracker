@@ -19,10 +19,8 @@ const Wallet = () => {
   const router = useRouter();
   const { user } = useAuth();
   const walletConstraints = useMemo(() => {
-    console.log('[Wallet] walletConstraints:', user?.uid);
-
     if (!user?.uid) return [];
-    return [where('uid', '==', user.uid), orderBy('created', 'desc')];
+    return [orderBy('created', 'desc')];
   }, [user?.uid]);
 
   const {

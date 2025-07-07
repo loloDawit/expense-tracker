@@ -1,3 +1,4 @@
+import { formatAmount } from '@/utils/helper';
 import Typography from '@/components/Typography';
 import { useTheme } from '@/contexts/ThemeContext';
 import { verticalScale } from '@/utils/styling';
@@ -42,7 +43,7 @@ const SummaryCard: React.FC<SummaryCardProps> = ({
         fontWeight="700"
         style={{ marginTop: spacing.y._5 }}
       >
-        {typeof value === 'number' ? `$${value.toFixed(2)}` : value}
+        {typeof value === 'number' ? formatAmount(value) : value}
       </Typography>
     </TouchableOpacity>
   );

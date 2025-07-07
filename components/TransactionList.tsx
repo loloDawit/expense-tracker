@@ -10,16 +10,21 @@ import { expenseCategories, incomeCategory } from '@/constants/data';
 import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { fetchUserCategories } from '@/services/transactionService';
+import useFetchData from '@/hooks/useFetchData';
 import {
   CategoryType,
   TransactionItemProps,
   TransactionListType,
   TransactionType,
+  WalletType,
 } from '@/types';
 import { formatAmount } from '@/utils/helper';
 import { verticalScale } from '@/utils/styling';
 import Loading from './Loading';
 import Typography from './Typography';
+import { collection, doc, getDoc } from 'firebase/firestore';
+import { firestore } from '@/config/firebase';
+import { Image } from 'expo-image';
 
 function isValidCategory(obj: any): obj is CategoryType {
   return (
@@ -174,6 +179,24 @@ const TransactionItem = ({
   userCategories,
 }: TransactionItemProps & { userCategories: CategoryType[] }) => {
   const { colors, spacing, radius } = useTheme();
+  const [wallet, setWallet] = useState<WalletType | null>(null);
+
+  useEffect(() => {
+    const fetchWallet = async () => {
+      if (item.walletId) {
+        const walletRef = doc(firestore, 'wallets', item.walletId);
+        const walletSnap = await getDoc(walletRef);
+        if (walletSnap.exists()) {
+          setWallet(walletSnap.data() as WalletType);
+        } else {
+          setWallet(null); // Wallet not found
+        }
+      }
+    };
+    fetchWallet();
+  }, [item.walletId]);
+
+  const isWalletDeleted = wallet && wallet.isDeleted;
 
   const category = useMemo(
     () =>
@@ -218,18 +241,33 @@ const TransactionItem = ({
         <View
           style={[
             styles.icon,
-            { backgroundColor: category.bgColor, borderRadius: radius.sm },
+            {
+              backgroundColor: isWalletDeleted
+                ? colors.neutral300
+                : category.bgColor,
+              borderRadius: radius.sm,
+            },
           ]}
         >
-          <RenderedIcon
-            size={verticalScale(25)}
-            weight="fill"
-            color={colors.white}
-          />
+          {isWalletDeleted ? (
+            <Icons.Trash
+              size={verticalScale(25)}
+              weight="fill"
+              color={colors.neutral500}
+            />
+          ) : (
+            <RenderedIcon
+              size={verticalScale(25)}
+              weight="fill"
+              color={colors.white}
+            />
+          )}
         </View>
 
         <View style={styles.categoryDes}>
-          <Typography size={17}>{category.label}</Typography>
+          <Typography size={17}>
+            {isWalletDeleted ? 'Deleted Wallet' : category.label}
+          </Typography>
           <Typography
             size={12}
             color={colors.neutral400}
@@ -249,6 +287,9 @@ const TransactionItem = ({
             color={item.type === 'income' ? colors.primary : colors.rose}
           >
             {formatAmount(item.amount, item.type)}
+          </Typography>
+          <Typography size={12} color={colors.neutral400}>
+            {wallet?.name || 'N/A'}
           </Typography>
         </View>
       </TouchableOpacity>

@@ -16,7 +16,7 @@ import { limit, orderBy, where } from 'firebase/firestore';
 import * as Icons from 'phosphor-react-native';
 
 const Home = () => {
-  const { colors, spacing } = useTheme();
+  const { colors, spacing, isDark } = useTheme();
   const [refreshing, setRefreshing] = useState(false);
   const { user } = useAuth();
   const router = useRouter();
@@ -26,19 +26,18 @@ const Home = () => {
 
   const constraints = useMemo(() => {
     if (!user?.uid) return [];
-    return [where('uid', '==', user.uid), orderBy('date', 'desc'), limit(30)];
+    return [orderBy('date', 'desc'), limit(30)];
   }, [user?.uid]);
 
   const {
     data: recentTransactions,
     loading: transactionsLoading,
-    refetch,
   } = useFetchData<TransactionType>('transactions', constraints);
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
-    await refetch();
+    // Data is now real-time, no need to refetch manually
     setRefreshing(false);
-  }, [refetch]);
+  }, []);
   console.log('[Home] constraints:', constraints);
   console.log('[Home] handleRefresh:', handleRefresh);
   return (
@@ -76,14 +75,14 @@ const Home = () => {
             <TouchableOpacity
               onPress={() => router.push('/(modals)/searchModal')}
               style={{
-                backgroundColor: colors.neutral700,
+                backgroundColor: isDark ? colors.neutral700 : 'transparent',
                 padding: spacing.x._10,
                 borderRadius: 50,
               }}
             >
               <Icons.MagnifyingGlass
-                size={verticalScale(22)}
-                color={colors.neutral200}
+                size={verticalScale(20)}
+                color={colors.text}
                 weight="bold"
               />
             </TouchableOpacity>

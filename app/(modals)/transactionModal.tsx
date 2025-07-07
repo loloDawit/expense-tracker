@@ -25,10 +25,12 @@ import {
 } from '@/services/transactionService';
 import { CategoryType, TransactionType, WalletType } from '@/types';
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { orderBy, where } from 'firebase/firestore';
+import { collection, doc, getDoc, orderBy, where } from 'firebase/firestore';
+import { firestore } from '@/config/firebase';
+import { formatAmount } from '@/utils/helper';
 
 const TransactionModal = () => {
-  const { colors, spacing } = useTheme();
+  const { colors, spacing, radius } = useTheme();
   const { user } = useAuth();
   const router = useRouter();
   type paramType = {
@@ -44,6 +46,7 @@ const TransactionModal = () => {
   };
   const oldTransaction: paramType = useLocalSearchParams();
   const [allCategories, setAllCategories] = useState<CategoryType[]>([]);
+  const [originalWallet, setOriginalWallet] = useState<WalletType | null>(null);
 
   useEffect(() => {
     if (!user?.uid) return;
@@ -93,6 +96,19 @@ const TransactionModal = () => {
 
     fetch();
   }, [user?.uid]);
+
+  useEffect(() => {
+    const fetchOriginalWallet = async () => {
+      if (oldTransaction?.walletId) {
+        const walletRef = doc(firestore, 'wallets', oldTransaction.walletId);
+        const walletSnap = await getDoc(walletRef);
+        if (walletSnap.exists()) {
+          setOriginalWallet(walletSnap.data() as WalletType);
+        }
+      }
+    };
+    fetchOriginalWallet();
+  }, [oldTransaction?.walletId]);
   const walletConstraints = useMemo(() => {
     if (!user?.uid) return [];
     return [where('uid', '==', user.uid), orderBy('created', 'desc')];
@@ -114,6 +130,8 @@ const TransactionModal = () => {
     image: null,
   });
 
+  const [displayAmount, setDisplayAmount] = useState('');
+
   useEffect(() => {
     if (oldTransaction?.id) {
       setTransaction({
@@ -128,6 +146,11 @@ const TransactionModal = () => {
         walletId: oldTransaction.walletId,
         image: oldTransaction?.image || null,
       });
+      // Initialize displayAmount with formatted value for existing transaction
+      setDisplayAmount(formatAmount(Number(oldTransaction.amount) || 0));
+    } else {
+      // Initialize displayAmount for new transaction
+      setDisplayAmount(formatAmount(0));
     }
   }, [
     oldTransaction.amount,
@@ -139,6 +162,13 @@ const TransactionModal = () => {
     oldTransaction.type,
     oldTransaction.walletId,
   ]);
+
+  // Update displayAmount when transaction.amount changes internally
+  useEffect(() => {
+    if (!oldTransaction?.id) {
+      setDisplayAmount(formatAmount(transaction.amount || 0));
+    }
+  }, [transaction.amount, oldTransaction?.id]);
 
   const onSelectImage = (file: any) => {
     if (file) setTransaction({ ...transaction, image: file });
@@ -281,17 +311,29 @@ const TransactionModal = () => {
             >
               Wallet
             </Typography>
-            {wallets.length === 0 ? (
+            {wallets.length === 0 && !originalWallet ? (
               <Typography color={colors.textSecondary} size={14}>
                 No wallets found. Please add a wallet first.
               </Typography>
             ) : (
               <CustomDropdown
-                data={wallets.map((wallet) => ({
-                  label: `${wallet?.name} (${wallet.amount})`,
-                  value: wallet?.id,
-                  image: wallet?.image,
-                }))}
+                data={[
+                  ...(originalWallet && originalWallet.isDeleted
+                    ? [
+                        {
+                          label: 'Deleted Wallet',
+                          value: originalWallet.id,
+                          image: null,
+                          isDeleted: true,
+                        },
+                      ]
+                    : []),
+                  ...wallets.map((wallet) => ({
+                    label: `${wallet?.name} (${formatAmount(wallet.amount || 0)})`,
+                    value: wallet?.id,
+                    image: wallet?.image,
+                  })),
+                ]}
                 labelField="label"
                 valueField="value"
                 value={transaction.walletId}
@@ -301,13 +343,21 @@ const TransactionModal = () => {
                 placeholder="Select wallet"
                 renderItem={(item) => (
                   <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.x._10 }}>
-                    {item.image && (
-                      <Image
-                        source={item.image}
-                        style={{ width: verticalScale(30), height: verticalScale(30), borderRadius: radius.sm }}
+                    {item.isDeleted ? (
+                      <Icons.Trash
+                        size={verticalScale(30)}
+                        weight="fill"
+                        color={colors.neutral400}
                       />
+                    ) : (
+                      item.image && (
+                        <Image
+                          source={item.image}
+                          style={{ width: verticalScale(30), height: verticalScale(30), borderRadius: radius.sm }}
+                        />
+                      )
                     )}
-                    <Typography size={16} color={colors.text}>
+                    <Typography size={16} color={item.isDeleted ? colors.neutral400 : colors.text}>
                       {item.label}
                     </Typography>
                   </View>
@@ -366,14 +416,21 @@ const TransactionModal = () => {
             </Typography>
             <Input
               keyboardType="numeric"
-              // placeholder="Salary"
-              value={transaction.amount?.toString()}
-              onChangeText={(value) =>
+              value={displayAmount}
+              onChangeText={(value) => {
+                setDisplayAmount(value);
+                const numericValue = parseFloat(value.replace(/[^0-9.]/g, ''));
                 setTransaction({
                   ...transaction,
-                  amount: Number(value.replace(/[^0-9]/g, '')),
-                })
-              }
+                  amount: isNaN(numericValue) ? 0 : numericValue,
+                });
+              }}
+              onFocus={() => {
+                setDisplayAmount(transaction.amount?.toString() || '');
+              }}
+              onBlur={() => {
+                setDisplayAmount(formatAmount(transaction.amount || 0));
+              }}
             />
           </View>
           {/* description */}

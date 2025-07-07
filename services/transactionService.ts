@@ -7,6 +7,7 @@ import {
   WalletType,
 } from '@/types';
 import { getLast12Months, getLast7Days, getYearsRange } from '@/utils/common';
+import logger from '@/utils/logger';
 import { scale } from '@/utils/styling';
 import {
   collection,
@@ -20,10 +21,11 @@ import {
   Timestamp,
   updateDoc,
   where,
+  writeBatch,
 } from 'firebase/firestore';
 
 import { getCloudinaryPath, uploadFileToCloudinary } from './imageServices';
-import { createOrUpdateWallet } from './walletService';
+import { createOrUpdateWallet, permanentlyDeleteWallet } from './walletService';
 
 export const sendPushNotification = async (
   expoPushToken: string,
@@ -38,21 +40,32 @@ export const sendPushNotification = async (
     data: { someData: 'goes here' },
   };
 
-  const response = await fetch('https://exp.host/--/api/v2/push/send', {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Accept-encoding': 'gzip, deflate',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(message),
-  });
+  try {
+    logger.info('[sendPushNotification] Sending push notification...');
+    const response = await fetch('https://exp.host/--/api/v2/push/send', {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Accept-encoding': 'gzip, deflate',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(message),
+    });
 
-  const data = await response.json();
-  console.log('Push notification response:', data);
+    const data = await response.json();
+    logger.info('[sendPushNotification] Push notification response:', data);
+  } catch (error) {
+    logger.error('[sendPushNotification] Failed to send push notification', {
+      error,
+      expoPushToken,
+    });
+  }
 };
 
-export const fetchUserCategories = async (uid: string) => {
+export const fetchUserCategories = async (
+  uid: string,
+): Promise<ResponseType> => {
+  logger.info(`[fetchUserCategories] Fetching categories for uid: ${uid}`);
   try {
     const snapshot = await getDocs(
       query(
@@ -66,16 +79,27 @@ export const fetchUserCategories = async (uid: string) => {
       ...doc.data(),
     }));
 
+    logger.info(
+      `[fetchUserCategories] Found ${categories.length} categories.`,
+    );
     return { success: true, data: categories };
   } catch (error) {
-    console.error('Error fetching categories:', error);
+    logger.error('[fetchUserCategories] Error fetching categories:', {
+      error,
+      uid,
+    });
     return { success: false, msg: 'Failed to fetch categories' };
   }
 };
+
 export const createOrUpdateCategory = async (
   uid: string,
   category: Partial<CategoryType> & { id?: string },
-) => {
+): Promise<ResponseType> => {
+  logger.info(
+    `[createOrUpdateCategory] Attempting to save category for uid: ${uid}`,
+    { categoryId: category.id },
+  );
   try {
     if (
       !category.label ||
@@ -83,6 +107,9 @@ export const createOrUpdateCategory = async (
       !category.icon ||
       !category.bgColor
     ) {
+      logger.warn('[createOrUpdateCategory] Missing required category fields', {
+        category,
+      });
       return { success: false, msg: 'Missing required category fields' };
     }
 
@@ -99,118 +126,240 @@ export const createOrUpdateCategory = async (
       { merge: true },
     );
 
+    logger.info(
+      `[createOrUpdateCategory] Successfully saved category: ${ref.id}`,
+    );
     return { success: true, data: { ...category, id: ref.id } };
   } catch (error) {
-    console.error('Error saving category:', error);
+    logger.error('[createOrUpdateCategory] Error saving category:', {
+      error,
+      uid,
+      categoryId: category.id,
+    });
     return { success: false, msg: 'Failed to save category' };
   }
 };
-export const deleteCategory = async (uid: string, categoryId: string) => {
+
+export const deleteCategory = async (
+  uid: string,
+  categoryId: string,
+): Promise<ResponseType> => {
+  logger.info(
+    `[deleteCategory] Attempting to delete category: ${categoryId} for uid: ${uid}`,
+  );
   try {
     const ref = doc(firestore, `users/${uid}/categories/${categoryId}`);
     await deleteDoc(ref);
+    logger.info(`[deleteCategory] Successfully deleted category: ${categoryId}`);
     return { success: true };
   } catch (error) {
-    console.error('Error deleting category:', error);
+    logger.error('[deleteCategory] Error deleting category:', {
+      error,
+      uid,
+      categoryId,
+    });
     return { success: false, msg: 'Failed to delete category' };
   }
 };
 
 export const createOrUpdateTransaction = async (
   transactionData: Partial<TransactionType>,
-) => {
-  try {
-    const { id, type, amount, walletId, image } = transactionData;
+): Promise<ResponseType> => {
+  const { id, type, amount, walletId, image } = transactionData;
+  const uid = auth.currentUser?.uid;
 
-    if (!amount || amount <= 0 || !type) {
+  logger.info(
+    `[createOrUpdateTransaction] Starting transaction save for user: ${uid}`,
+    { transactionId: id, type, amount, walletId },
+  );
+
+  if (!uid) {
+    logger.error('[createOrUpdateTransaction] User not authenticated.');
+    return { success: false, msg: 'User not authenticated' };
+  }
+
+  if (!amount || amount <= 0 || !type || !walletId) {
+    logger.warn('[createOrUpdateTransaction] Invalid transaction data.', {
+      transactionData,
+    });
+    return { success: false, msg: 'Invalid transaction data!' };
+  }
+
+  const batch = writeBatch(firestore);
+
+  try {
+    const walletRef = doc(firestore, 'wallets', walletId);
+    let originalTransaction: TransactionType | null = null;
+
+    // Handle updates
+    if (id) {
+      const oldTransactionRef = doc(firestore, 'transactions', id);
+      const oldTransactionSnap = await getDoc(oldTransactionRef);
+      if (oldTransactionSnap.exists()) {
+        originalTransaction =
+          oldTransactionSnap.data() as TransactionType;
+        logger.info('[createOrUpdateTransaction] Found existing transaction.', {
+          originalTransaction,
+        });
+      }
+    }
+
+    // Revert old transaction amount if wallet, type or amount changed
+    if (
+      originalTransaction &&
+      (originalTransaction.walletId !== walletId ||
+        originalTransaction.type !== type ||
+        originalTransaction.amount !== amount)
+    ) {
+      logger.info(
+        '[createOrUpdateTransaction] Reverting old transaction values from original wallet.',
+      );
+      const originalWalletRef = doc(
+        firestore,
+        'wallets',
+        originalTransaction.walletId,
+      );
+      const originalWalletSnap = await getDoc(originalWalletRef);
+
+      if (originalWalletSnap.exists()) {
+        const originalWalletData = originalWalletSnap.data() as WalletType;
+        const amountToRevert =
+          originalTransaction.type === 'income'
+            ? -originalTransaction.amount
+            : originalTransaction.amount;
+        const incomeToRevert =
+          originalTransaction.type === 'income'
+            ? -originalTransaction.amount
+            : 0;
+        const expenseToRevert =
+          originalTransaction.type === 'expense'
+            ? -originalTransaction.amount
+            : 0;
+
+        batch.update(originalWalletRef, {
+          amount: (originalWalletData.amount ?? 0) + amountToRevert,
+          totalIncome: (originalWalletData.totalIncome || 0) + incomeToRevert,
+          totalExpenses:
+            (originalWalletData.totalExpenses || 0) + expenseToRevert,
+        });
+        logger.info(
+          '[createOrUpdateTransaction] Batched revert on original wallet.',
+          { walletId: originalTransaction.walletId, amountToRevert },
+        );
+      } else {
+        logger.warn(
+          '[createOrUpdateTransaction] Original wallet not found for revert.',
+          { walletId: originalTransaction.walletId },
+        );
+      }
+    }
+
+    // Apply new transaction amount
+    const newWalletSnap = await getDoc(walletRef);
+    if (!newWalletSnap.exists()) {
+      logger.error('[createOrUpdateTransaction] Target wallet not found.', {
+        walletId,
+      });
+      return { success: false, msg: 'Wallet not found!' };
+    }
+
+    const newWalletData = newWalletSnap.data() as WalletType;
+    if (newWalletData.isDeleted) {
+      logger.warn(
+        '[createOrUpdateTransaction] Attempted to add transaction to a soft-deleted wallet.',
+        { walletId },
+      );
       return {
         success: false,
-        msg: 'Invalid transaction data!',
+        msg: 'This wallet has been deleted and cannot accept new transactions.',
+      };
+    }
+    const amountToAdd = type === 'income' ? amount : -amount;
+    const incomeToAdd = type === 'income' ? amount : 0;
+    const expenseToAdd = type === 'expense' ? amount : 0;
+
+    if (type === 'expense' && ((newWalletData.amount ?? 0) - amount < 0)) {
+      logger.warn(
+        "[createOrUpdateTransaction] Insufficient funds for expense.",
+        {
+          walletAmount: newWalletData.amount ?? 0,
+          expenseAmount: amount,
+        },
+      );
+      return {
+        success: false,
+        msg: "Selected wallet doesn't have enough balance",
       };
     }
 
-    // do this while updating: Fetch the original transaction if updating
-    if (id) {
-      // Fetch the old transaction data
-      const oldTransactionSnapshot = await getDoc(
-        doc(firestore, 'transactions', id),
-      );
-      const oldTransaction = oldTransactionSnapshot.data() as TransactionType;
-
-      const shouldRevertOriginal =
-        oldTransaction.type !== type ||
-        oldTransaction.amount !== amount ||
-        oldTransaction.walletId !== walletId;
-
-      if (shouldRevertOriginal) {
-        // Check if we need to revert the original transaction (type, amount, or wallet changed)
-        let res = await revertAndUpdateWallets(
-          oldTransaction, // Old transaction
-          Number(amount!), // New transaction amount
-          type, // New transaction type ('income' or 'expense')
-          walletId!, // New wallet ID
-        );
-
-        if (!res.success) return res;
-      }
-    } else {
-      // Handle wallet updates for new transactions
-      let res = await updateWalletForNewTransaction(
-        walletId!,
-        Number(amount!),
-        type,
-      );
-      if (!res.success) return res;
-    }
+    batch.update(walletRef, {
+      amount: (newWalletData.amount ?? 0) + amountToAdd,
+      totalIncome: (newWalletData.totalIncome || 0) + incomeToAdd,
+      totalExpenses: (newWalletData.totalExpenses || 0) + expenseToAdd,
+    });
+    logger.info('[createOrUpdateTransaction] Batched update on new wallet.', {
+      walletId,
+      amountToAdd,
+    });
 
     // Upload image if provided
-    const folderPath = getCloudinaryPath('transactions');
     if (image) {
+      logger.info('[createOrUpdateTransaction] Uploading image.');
+      const folderPath = getCloudinaryPath('transactions');
       const imageUploadResponse = await uploadFileToCloudinary(
         image,
         folderPath,
       );
       if (!imageUploadResponse.success) {
+        logger.error('[createOrUpdateTransaction] Image upload failed.', {
+          msg: imageUploadResponse.msg,
+        });
         return {
           success: false,
           msg: imageUploadResponse.msg || 'Failed to upload image',
         };
       }
       transactionData.image = imageUploadResponse.data;
+      logger.info('[createOrUpdateTransaction] Image uploaded successfully.');
     }
 
     // Create or update the transaction
     const transactionRef = id
       ? doc(firestore, 'transactions', id)
       : doc(collection(firestore, 'transactions'));
-    await setDoc(
+    batch.set(
       transactionRef,
       {
         ...transactionData,
-        uid: auth.currentUser?.uid,
+        uid,
+        updatedAt: Timestamp.now(),
+        ...(id ? {} : { createdAt: Timestamp.now() }),
       },
       { merge: true },
     );
+    logger.info('[createOrUpdateTransaction] Batched transaction save.');
 
-    if (auth.currentUser) {
-      const userDocRef = doc(firestore, 'users', auth.currentUser.uid);
-      const userDoc = await getDoc(userDocRef);
-      if (userDoc.exists()) {
-        const userData = userDoc.data();
-        const userPushToken = userData.expoPushToken;
-        const notificationsEnabled = userData.notificationsEnabled;
+    // Commit all batched writes
+    await batch.commit();
+    logger.info(
+      '[createOrUpdateTransaction] Batch commit successful. Transaction saved.',
+    );
 
-        if (userPushToken && notificationsEnabled) {
-          const notificationTitle = id
-            ? 'Transaction Updated!'
-            : 'New Transaction Added!';
-          const notificationBody = `Amount: ${amount}, Type: ${type}`;
-          await sendPushNotification(
-            userPushToken,
-            notificationTitle,
-            notificationBody,
-          );
-        }
+    // Send push notification
+    const userDocRef = doc(firestore, 'users', uid);
+    const userDoc = await getDoc(userDocRef);
+    if (userDoc.exists()) {
+      const { expoPushToken, notificationsEnabled } = userDoc.data();
+      if (expoPushToken && notificationsEnabled) {
+        const notificationTitle = id
+          ? 'Transaction Updated!'
+          : 'New Transaction Added!';
+        const notificationBody = `Amount: ${amount}, Type: ${type}`;
+        await sendPushNotification(
+          expoPushToken,
+          notificationTitle,
+          notificationBody,
+        );
       }
     }
 
@@ -219,174 +368,139 @@ export const createOrUpdateTransaction = async (
       data: { ...transactionData, id: transactionRef.id },
     };
   } catch (error: any) {
-    console.error('Error creating or updating transaction:', error);
+    logger.error('[createOrUpdateTransaction] Error saving transaction:', {
+      error,
+      errorMessage: error.message,
+    });
     return { success: false, msg: error.message };
-  }
-};
-
-export const updateWalletForNewTransaction = async (
-  walletId: string,
-  amount: number,
-  type: string,
-) => {
-  try {
-    // Fetch the wallet
-    const walletRef = doc(firestore, 'wallets', walletId);
-    const walletSnapshot = await getDoc(walletRef);
-
-    if (!walletSnapshot.exists()) {
-      console.error('Wallet not found');
-      return { success: false, msg: 'Wallet not found!' };
-    }
-
-    const walletData = walletSnapshot.data() as WalletType;
-
-    if (type === 'expense' && walletData.amount! - amount < 0) {
-      return {
-        success: false,
-        msg: "Selected wallet don't have enough balance",
-      };
-    }
-
-    // Adjust wallet balance and totals based on the transaction type
-    const updatedWalletAmount =
-      type === 'income'
-        ? Number(walletData.amount!) + amount // Add income to wallet balance
-        : Number(walletData.amount!) - amount; // Subtract expense from wallet balance
-
-    const updateType = type === 'income' ? 'totalIncome' : 'totalExpenses';
-    const updatedTotals =
-      type === 'income'
-        ? Number(walletData.totalIncome!) + amount
-        : Number(walletData.totalExpenses!) + amount;
-
-    // Update the wallet
-    await updateDoc(walletRef, {
-      amount: updatedWalletAmount,
-      [updateType]: updatedTotals,
-    });
-    return { success: true };
-  } catch (error) {
-    console.error('Error updating wallet for new transaction:', error);
-    return { success: false, msg: 'Could not update the wallet!' };
-  }
-};
-
-export const revertAndUpdateWallets = async (
-  oldTransaction: TransactionType,
-  newTransactionAmount: number,
-  newTransactionType: string,
-  newWalletId: string,
-) => {
-  try {
-    // Revert original wallet values
-    const originalWalletSnapshot = await getDoc(
-      doc(firestore, 'wallets', oldTransaction.walletId),
-    );
-    const originalWallet = originalWalletSnapshot.data() as WalletType;
-
-    const revertType =
-      oldTransaction.type === 'income' ? 'totalIncome' : 'totalExpenses';
-
-    const revertIncomeExpense =
-      oldTransaction.type === 'income'
-        ? -Number(oldTransaction.amount!)
-        : Number(oldTransaction.amount!);
-
-    const revertedWalletAmount =
-      Number(originalWallet.amount!) + revertIncomeExpense;
-    const revertedIncomeExpenseAmount =
-      Number(originalWallet[revertType]!) - Number(oldTransaction.amount!);
-
-    await createOrUpdateWallet({
-      id: oldTransaction.walletId,
-      amount: revertedWalletAmount,
-      [revertType]: revertedIncomeExpenseAmount,
-    });
-
-    // Fetch new wallet again (in case it's the same as old one)
-    const newWalletSnapshot = await getDoc(
-      doc(firestore, 'wallets', newWalletId),
-    );
-    const newWallet = newWalletSnapshot.data() as WalletType;
-
-    const updateType =
-      newTransactionType === 'income' ? 'totalIncome' : 'totalExpenses';
-    const updateWalletAmount =
-      newTransactionType === 'income'
-        ? Number(newTransactionAmount)
-        : -Number(newTransactionAmount);
-
-    const newWalletAmount = Number(newWallet.amount!) + updateWalletAmount;
-    const newIncomeExpenseAmount =
-      Number(newWallet[updateType]!) + Number(newTransactionAmount);
-
-    await createOrUpdateWallet({
-      id: newWalletId,
-      amount: newWalletAmount,
-      [updateType]: newIncomeExpenseAmount,
-    });
-
-    return { success: true };
-  } catch (error) {
-    console.error('Error updating wallets:', error);
-    return { success: false, msg: 'Could not update the wallet!' };
   }
 };
 
 export const deleteTransaction = async (
   transactionId: string,
-  walletId: string,
-) => {
-  try {
-    // Step 1: Fetch the transaction to retrieve its details
-    const transactionRef = doc(firestore, 'transactions', transactionId);
-    const transactionSnapshot = await getDoc(transactionRef);
+): Promise<ResponseType> => {
+  const uid = auth.currentUser?.uid;
+  logger.info(
+    `[deleteTransaction] Start — User: ${uid}, Transaction: ${transactionId}`,
+  );
 
-    if (!transactionSnapshot.exists()) {
+  if (!uid) {
+    logger.error('[deleteTransaction] User not authenticated.');
+    return { success: false, msg: 'User not authenticated' };
+  }
+
+  const transactionRef = doc(firestore, 'transactions', transactionId);
+
+  try {
+    // Step 1: Fetch transaction to be deleted
+    const transactionSnap = await getDoc(transactionRef);
+    if (!transactionSnap.exists()) {
+      logger.warn(`[deleteTransaction] Transaction not found: ${transactionId}`);
       return { success: false, msg: 'Transaction not found' };
     }
+    const transaction = transactionSnap.data() as TransactionType;
+    logger.info('[deleteTransaction] Fetched transaction:', { transaction });
 
-    const transactionData = transactionSnapshot.data();
-    const transactionType = transactionData?.type;
-    const transactionAmount = Number(transactionData?.amount);
-
-    // Step 2: Fetch the wallet data to update the totalIncome or totalExpenses
-    const walletRef = doc(firestore, 'wallets', walletId);
-    const walletSnapshot = await getDoc(walletRef);
-
-    if (!walletSnapshot.exists()) {
-      return { success: false, msg: 'Wallet not found' };
+    if (transaction.uid !== uid) {
+      logger.error(
+        `[deleteTransaction] User ${uid} does not have permission to delete transaction ${transactionId} owned by ${transaction.uid}.`,
+      );
+      return {
+        success: false,
+        msg: 'You do not have permission to delete this transaction.',
+      };
     }
 
-    const walletData = walletSnapshot.data();
+    // Step 2: Fetch associated wallet
+    const walletRef = doc(firestore, 'wallets', transaction.walletId);
+    const walletSnap = await getDoc(walletRef);
 
-    // Determine the field to update based on transaction type
-    const updateType =
-      transactionType === 'income' ? 'totalIncome' : 'totalExpenses';
-    const newWalletAmount =
-      walletData?.amount! -
-      (transactionType === 'income' ? transactionAmount : -transactionAmount);
-    const updatedTotals = walletData[updateType] - transactionAmount;
-
-    // if its income and the wallet amount can go below zero
-    if (transactionType === 'income' && newWalletAmount < 0) {
-      return { success: false, msg: 'You cannot delete this transaction' };
+    if (!walletSnap.exists()) {
+      logger.warn(
+        `[deleteTransaction] Wallet not found: ${transaction.walletId}. Deleting transaction anyway.`,
+      );
+      await deleteDoc(transactionRef);
+      return { success: true, msg: 'Transaction deleted, wallet not found' };
     }
 
-    // Step 3: Update the wallet with the new totals
-    await createOrUpdateWallet({
-      id: walletId,
-      amount: newWalletAmount,
-      [updateType]: updatedTotals,
-    });
+    const wallet = walletSnap.data() as WalletType;
+    logger.info('[deleteTransaction] Fetched wallet:', { wallet });
 
-    // Step 4: Delete the transaction from Firestore
-    await deleteDoc(transactionRef);
+    // Step 3: Handle wallet update and transaction deletion
+    if (wallet.isDeleted) {
+      // If wallet is already soft-deleted, just delete the transaction
+      logger.warn(
+        `[deleteTransaction] Wallet ${transaction.walletId} is soft-deleted. Deleting transaction only.`,
+      );
+      await deleteDoc(transactionRef);
+    } else {
+      // Otherwise, update wallet balance and delete transaction in a batch
+      const batch = writeBatch(firestore);
+      const amountToRevert =
+        transaction.type === 'income'
+          ? -transaction.amount
+          : transaction.amount;
+      const incomeToRevert =
+        transaction.type === 'income' ? -transaction.amount : 0;
+      const expenseToRevert =
+        transaction.type === 'expense' ? -transaction.amount : 0;
+
+      batch.update(walletRef, {
+        amount: (wallet.amount ?? 0) + amountToRevert,
+        totalIncome: (wallet.totalIncome || 0) + incomeToRevert,
+        totalExpenses: (wallet.totalExpenses || 0) + expenseToRevert,
+      });
+      logger.info('[deleteTransaction] Batched wallet update.', {
+        walletId: transaction.walletId,
+        amountToRevert,
+      });
+
+      batch.delete(transactionRef);
+      logger.info(
+        `[deleteTransaction] Batched transaction deletion: ${transactionId}`,
+      );
+
+      await batch.commit();
+    }
+
+    logger.info('[deleteTransaction] Deletion process completed successfully.');
+
+    // Step 4: Post-delete orphan check
+    const remainingTransactionsQuery = query(
+      collection(firestore, 'transactions'),
+      where('walletId', '==', transaction.walletId),
+      where('uid', '==', uid), // Ensure we only query the user's transactions
+    );
+    const remainingTransactionsSnap = await getDocs(remainingTransactionsQuery);
+
+    logger.info(
+      `[deleteTransaction] Found ${remainingTransactionsSnap.size} remaining transactions for wallet ${transaction.walletId}.`,
+    );
+
+    if (remainingTransactionsSnap.empty) {
+      const refreshedWalletSnap = await getDoc(walletRef);
+      if (
+        refreshedWalletSnap.exists() &&
+        refreshedWalletSnap.data()?.isDeleted
+      ) {
+        logger.info(
+          `[deleteTransaction] Wallet ${transaction.walletId} is orphaned and soft-deleted. Permanently deleting.`,
+        );
+        await permanentlyDeleteWallet(transaction.walletId);
+      } else {
+        logger.info(
+          `[deleteTransaction] Wallet ${transaction.walletId} is orphaned but not soft-deleted. Keeping.`,
+        );
+      }
+    }
 
     return { success: true, msg: 'Transaction deleted and wallet updated' };
-  } catch (error) {
-    console.error('Error deleting transaction and updating wallet:', error);
+  } catch (error: any) {
+    logger.error('[deleteTransaction] Error during transaction deletion:', {
+      error,
+      errorMessage: error.message,
+      transactionId,
+    });
     return {
       success: false,
       msg: 'Failed to delete transaction or update wallet',
@@ -397,13 +511,13 @@ export const deleteTransaction = async (
 /// statistics
 
 export const fetchWeeklyStats = async (uid: string): Promise<ResponseType> => {
+  logger.info(`[fetchWeeklyStats] Fetching for user: ${uid}`);
   try {
     const db = firestore;
     const today = new Date();
     const sevenDaysAgo = new Date(today);
     sevenDaysAgo.setDate(today.getDate() - 7);
 
-    // Fetch transactions within the last 7 days for the specified user
     const transactionsQuery = query(
       collection(db, 'transactions'),
       where('date', '>=', Timestamp.fromDate(sevenDaysAgo)),
@@ -416,16 +530,14 @@ export const fetchWeeklyStats = async (uid: string): Promise<ResponseType> => {
     const weeklyData = getLast7Days();
     const transactions: TransactionType[] = [];
 
-    // Map transactions to the correct day in weeklyData and build the transactions array
     querySnapshot.forEach((doc) => {
-      const transaction = doc.data() as TransactionType;
-      transaction.id = doc.id; // Include document ID in the transaction data
+      const transaction = { id: doc.id, ...doc.data() } as TransactionType;
       transactions.push(transaction);
 
       const transactionDate = (transaction.date as Timestamp)
         .toDate()
         .toISOString()
-        .split('T')[0]; // as Mon, Tue
+        .split('T')[0];
       const dayData = weeklyData.find((day) => day.date === transactionDate);
 
       if (dayData) {
@@ -435,9 +547,6 @@ export const fetchWeeklyStats = async (uid: string): Promise<ResponseType> => {
       }
     });
 
-    // flatMap takes each day’s data and creates two entries
-    // — one for income and one for expense
-    // — then flattens these entries into a single array
     const stats = weeklyData.flatMap((day) => [
       {
         value: day.income,
@@ -446,36 +555,30 @@ export const fetchWeeklyStats = async (uid: string): Promise<ResponseType> => {
         labelWidth: scale(30),
         frontColor: colors.primary,
       },
-      {
-        value: day.expense,
-        frontColor: colors.rose,
-      },
+      { value: day.expense, frontColor: colors.rose },
     ]);
 
-    return {
-      success: true,
-      data: {
-        stats,
-        transactions, // Include all transaction details
-      },
-    };
+    logger.info(
+      `[fetchWeeklyStats] Successfully fetched ${transactions.length} transactions.`,
+    );
+    return { success: true, data: { stats, transactions } };
   } catch (error) {
-    console.error('Error fetching weekly transactions:', error);
-    return {
-      success: false,
-      msg: 'Failed to fetch weekly transactions',
-    };
+    logger.error('[fetchWeeklyStats] Error fetching weekly transactions:', {
+      error,
+      uid,
+    });
+    return { success: false, msg: 'Failed to fetch weekly transactions' };
   }
 };
 
 export const fetchMonthlyStats = async (uid: string): Promise<ResponseType> => {
+  logger.info(`[fetchMonthlyStats] Fetching for user: ${uid}`);
   try {
     const db = firestore;
     const today = new Date();
     const twelveMonthsAgo = new Date(today);
     twelveMonthsAgo.setMonth(today.getMonth() - 12);
 
-    // Define query to fetch transactions in the last 12 months
     const transactionsQuery = query(
       collection(db, 'transactions'),
       where('date', '>=', Timestamp.fromDate(twelveMonthsAgo)),
@@ -488,10 +591,8 @@ export const fetchMonthlyStats = async (uid: string): Promise<ResponseType> => {
     const monthlyData = getLast12Months();
     const transactions: TransactionType[] = [];
 
-    // Process transactions to calculate income and expense for each month
     querySnapshot.forEach((doc) => {
-      const transaction = doc.data() as TransactionType;
-      transaction.id = doc.id; // Include document ID in transaction data
+      const transaction = { id: doc.id, ...doc.data() } as TransactionType;
       transactions.push(transaction);
 
       const transactionDate = (transaction.date as Timestamp).toDate();
@@ -504,50 +605,41 @@ export const fetchMonthlyStats = async (uid: string): Promise<ResponseType> => {
       );
 
       if (monthData) {
-        if (transaction.type === 'income') {
+        if (transaction.type === 'income')
           monthData.income += transaction.amount;
-        } else if (transaction.type === 'expense') {
+        else if (transaction.type === 'expense')
           monthData.expense += transaction.amount;
-        }
       }
     });
 
-    // Reformat monthlyData for the bar chart with income and expense entries for each month
     const stats = monthlyData.flatMap((month) => [
       {
         value: month.income,
         label: month.month,
         spacing: scale(4),
         labelWidth: scale(46),
-        frontColor: colors.primary, // Income bar color
+        frontColor: colors.primary,
       },
-      {
-        value: month.expense,
-        frontColor: colors.rose, // Expense bar color
-      },
+      { value: month.expense, frontColor: colors.rose },
     ]);
 
-    return {
-      success: true,
-      data: {
-        stats,
-        transactions, // Include all transaction details
-      },
-    };
+    logger.info(
+      `[fetchMonthlyStats] Successfully fetched ${transactions.length} transactions.`,
+    );
+    return { success: true, data: { stats, transactions } };
   } catch (error) {
-    console.error('Error fetching monthly transactions:', error);
-    return {
-      success: false,
-      msg: 'Failed to fetch monthly transactions',
-    };
+    logger.error('[fetchMonthlyStats] Error fetching monthly transactions:', {
+      error,
+      uid,
+    });
+    return { success: false, msg: 'Failed to fetch monthly transactions' };
   }
 };
 
 export const fetchYearlyStats = async (uid: string): Promise<ResponseType> => {
+  logger.info(`[fetchYearlyStats] Fetching for user: ${uid}`);
   try {
     const db = firestore;
-
-    // Fetch all transactions for the specified user
     const transactionsQuery = query(
       collection(db, 'transactions'),
       orderBy('date', 'desc'),
@@ -557,22 +649,25 @@ export const fetchYearlyStats = async (uid: string): Promise<ResponseType> => {
     const querySnapshot = await getDocs(transactionsQuery);
     const transactions: TransactionType[] = [];
 
-    // Find the first and last year from transactions
-    const firstTransaction = querySnapshot.docs.reduce((earliest, doc) => {
-      const transactionDate = doc.data().date.toDate();
-      return transactionDate < earliest ? transactionDate : earliest;
-    }, new Date());
+    if (querySnapshot.empty) {
+      logger.info('[fetchYearlyStats] No transactions found for user.');
+      return {
+        success: true,
+        data: { stats: [], transactions: [] },
+      };
+    }
 
-    const firstYear = firstTransaction.getFullYear();
+    const firstTransactionDate = querySnapshot.docs[
+      querySnapshot.docs.length - 1
+    ]
+      .data()
+      .date.toDate();
+    const firstYear = firstTransactionDate.getFullYear();
     const currentYear = new Date().getFullYear();
-
-    // Initialize yearly data range
     const yearlyData = getYearsRange(firstYear, currentYear);
 
-    // Process transactions to calculate income and expense for each year
     querySnapshot.forEach((doc) => {
-      const transaction = doc.data() as TransactionType;
-      transaction.id = doc.id; // Include document ID in transaction data
+      const transaction = { id: doc.id, ...doc.data() } as TransactionType;
       transactions.push(transaction);
 
       const transactionYear = (transaction.date as Timestamp)
@@ -583,41 +678,33 @@ export const fetchYearlyStats = async (uid: string): Promise<ResponseType> => {
       );
 
       if (yearData) {
-        if (transaction.type === 'income') {
+        if (transaction.type === 'income')
           yearData.income += transaction.amount;
-        } else if (transaction.type === 'expense') {
+        else if (transaction.type === 'expense')
           yearData.expense += transaction.amount;
-        }
       }
     });
 
-    // Reformat yearlyData for the bar chart with income and expense entries for each year
     const stats = yearlyData.flatMap((year: any) => [
       {
         value: year.income,
         label: year.year,
         spacing: scale(4),
         labelWidth: scale(35),
-        frontColor: colors.primary, // Income bar color
+        frontColor: colors.primary,
       },
-      {
-        value: year.expense,
-        frontColor: colors.rose, // Expense bar color
-      },
+      { value: year.expense, frontColor: colors.rose },
     ]);
 
-    return {
-      success: true,
-      data: {
-        stats,
-        transactions, // Include all transaction details
-      },
-    };
+    logger.info(
+      `[fetchYearlyStats] Successfully fetched ${transactions.length} transactions.`,
+    );
+    return { success: true, data: { stats, transactions } };
   } catch (error) {
-    console.error('Error fetching yearly transactions:', error);
-    return {
-      success: false,
-      msg: 'Failed to fetch yearly transactions',
-    };
+    logger.error('[fetchYearlyStats] Error fetching yearly transactions:', {
+      error,
+      uid,
+    });
+    return { success: false, msg: 'Failed to fetch yearly transactions' };
   }
 };
