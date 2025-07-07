@@ -327,7 +327,7 @@ const AccountOptionItem = ({
       >
         {item.icon}
       </View>
-      <Typography size={14} style={{ flex: 1 }}>
+      <Typography size={14} style={{ flex: 1 }} color={item.bgColor === colors.primary ? colors.white : colors.text}>
         {item.title}
       </Typography>
       {item.value !== undefined ? (

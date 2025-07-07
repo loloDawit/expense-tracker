@@ -232,11 +232,11 @@ const CategoryModal = () => {
                   onPress={handleCancelEdit}
                   style={{ ...styles.button, backgroundColor: colors.neutral400 }}
                 >
-                  <Typography color={colors.text}>Cancel</Typography>
+                  <Typography color={colors.white}>Cancel</Typography>
                 </Button>
               )}
               <Button onPress={handleAddCategory} style={styles.button}>
-                <Typography color={colors.text}>
+                <Typography color={colors.white}>
                   {editingCategory ? 'Save Category' : 'Add Category'}
                 </Typography>
               </Button>

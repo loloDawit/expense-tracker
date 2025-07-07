@@ -111,7 +111,7 @@ const Home = () => {
         }}
       >
         <Icons.Plus
-          color={colors.black}
+          color={colors.white}
           weight="bold"
           size={verticalScale(24)}
         />

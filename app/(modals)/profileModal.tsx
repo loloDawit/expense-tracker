@@ -232,10 +232,10 @@ const ProfileModal = () => {
                       field.onChange(val);
                     }}
                     trackColor={{
-                      false: colors.border,
+                      false: colors.neutral400,
                       true: colors.primary,
                     }}
-                    thumbColor={colors.text}
+                    thumbColor={colors.white}
                   />
                 )}
               />
@@ -309,7 +309,7 @@ const ProfileModal = () => {
           loading={loading}
           disabled={!isDirty && !photoChanged}
         >
-          <Typography color={colors.text} fontWeight="700" size={18}>
+          <Typography color={colors.white} fontWeight="700" size={18}>
             Update
           </Typography>
         </Button>

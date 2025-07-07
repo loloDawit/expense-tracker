@@ -510,7 +510,7 @@ const TransactionModal = () => {
         )}
 
         <Button loading={loading} onPress={onSubmit} style={{ flex: 1 }}>
-          <Typography color={colors.text} size={20}>
+          <Typography color={colors.white} size={20}>
             {oldTransaction?.id ? 'Update' : 'Submit'}
           </Typography>
         </Button>

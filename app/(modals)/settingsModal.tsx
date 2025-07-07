@@ -90,8 +90,8 @@ const SettingItem: React.FC<SettingItemProps> = ({
         <Switch
           value={value}
           onValueChange={onValueChange}
-          trackColor={{ false: colors.border, true: colors.primary }}
-          thumbColor={colors.text}
+          trackColor={{ false: colors.neutral400, true: colors.primary }}
+          thumbColor={colors.white}
         />
       )}
     </TouchableOpacity>

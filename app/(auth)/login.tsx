@@ -83,7 +83,7 @@ const Login = () => {
                 height: verticalScale(52),
               }}
             >
-              <Typography size={18} fontWeight="600" color={colors.text}>
+              <Typography size={18} fontWeight="600" color={colors.white}>
                 Login
               </Typography>
             </Button>

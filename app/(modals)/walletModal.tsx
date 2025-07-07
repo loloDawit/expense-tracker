@@ -241,7 +241,7 @@ const WalletModal = () => {
           </Button>
         )}
         <Button onPress={onSubmit} loading={loading} style={{ flex: 1 }}>
-          <Typography color={colors.text} fontWeight="700" size={18}>
+          <Typography color={colors.white} fontWeight="700" size={18}>
             {oldWallet?.id ? 'Update Wallet' : 'Add Wallet'}
           </Typography>
         </Button>
