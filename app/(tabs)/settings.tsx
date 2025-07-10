@@ -88,7 +88,7 @@ const Settings = () => {
       details: true,
     },
     {
-      title: 'Exepnse Categories',
+      title: 'Expense Categories',
       icon: (
         <Icons.SquaresFour
           size={verticalScale(26)}
