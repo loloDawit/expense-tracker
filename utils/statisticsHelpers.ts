@@ -1,5 +1,5 @@
 import { MetricsType, TransactionType } from '@/types';
-import { Timestamp } from 'firebase/firestore';
+import { normalizeDate } from './helper';
 
 /**
  * Compute all analytics metrics from raw transactions.
@@ -24,7 +24,7 @@ export const computeSummaryMetrics = (
 
   const dailySpendMap = new Map<string, number>();
   expenses.forEach((t) => {
-    const date = (t.date as Timestamp).toDate().toISOString().split('T')[0];
+    const date = normalizeDate(t.date).toISOString().split('T')[0];
     dailySpendMap.set(date, (dailySpendMap.get(date) || 0) + t.amount);
   });
 
@@ -37,7 +37,7 @@ export const computeSummaryMetrics = (
   const mostActiveDay =
     [
       ...transactions.reduce((map, t) => {
-        const date = (t.date as Timestamp).toDate().toISOString().split('T')[0];
+        const date = normalizeDate(t.date).toISOString().split('T')[0];
         map.set(date, (map.get(date) || 0) + 1);
         return map;
       }, new Map<string, number>()),

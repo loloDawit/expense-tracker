@@ -1,6 +1,5 @@
 import { FlashList } from '@shopify/flash-list';
 import { useRouter } from 'expo-router';
-import { Timestamp } from 'firebase/firestore';
 import { Icons } from '@/constants/icons';
 import React, { useEffect, useMemo, useState } from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -11,6 +10,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useTheme } from '@/contexts/ThemeContext';
 import { fetchUserCategories } from '@/services/transactionService';
 import useFetchData from '@/hooks/useFetchData';
+import { normalizeDate } from '@/utils/helper';
 import {
   CategoryType,
   TransactionItemProps,
@@ -83,9 +83,8 @@ function getCategory(
   const groupedTransactions = useMemo(() => {
     const map: Record<string, TransactionType[]> = {};
     data.forEach((item) => {
-      const dateStr = (item.date as Timestamp)
-        ?.toDate()
-        ?.toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
+      const dateStr = normalizeDate(item.date)
+        .toLocaleDateString('en-GB', { day: '2-digit', month: 'short' });
       if (!map[dateStr]) map[dateStr] = [];
       map[dateStr].push(item);
     });
@@ -103,7 +102,7 @@ function getCategory(
         type: item.type,
         amount: item.amount.toString(),
         category: item.category,
-        date: (item.date as Timestamp)?.toDate()?.toISOString(),
+        date: normalizeDate(item.date).toISOString(),
         description: item.description,
         image: item?.image,
         uid: item.uid,

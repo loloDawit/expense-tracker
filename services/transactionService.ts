@@ -9,6 +9,7 @@ import {
 import { getLast12Months, getLast7Days, getYearsRange } from '@/utils/common';
 import logger from '@/utils/logger';
 import { scale } from '@/utils/styling';
+import { normalizeDate } from '@/utils/helper';
 import {
   collection,
   deleteDoc,
@@ -534,8 +535,7 @@ export const fetchWeeklyStats = async (uid: string): Promise<ResponseType> => {
       const transaction = { id: doc.id, ...doc.data() } as TransactionType;
       transactions.push(transaction);
 
-      const transactionDate = (transaction.date as Timestamp)
-        .toDate()
+      const transactionDate = normalizeDate(transaction.date)
         .toISOString()
         .split('T')[0];
       const dayData = weeklyData.find((day) => day.date === transactionDate);
@@ -595,7 +595,7 @@ export const fetchMonthlyStats = async (uid: string): Promise<ResponseType> => {
       const transaction = { id: doc.id, ...doc.data() } as TransactionType;
       transactions.push(transaction);
 
-      const transactionDate = (transaction.date as Timestamp).toDate();
+      const transactionDate = normalizeDate(transaction.date);
       const monthName = transactionDate.toLocaleString('default', {
         month: 'short',
       });
@@ -670,9 +670,7 @@ export const fetchYearlyStats = async (uid: string): Promise<ResponseType> => {
       const transaction = { id: doc.id, ...doc.data() } as TransactionType;
       transactions.push(transaction);
 
-      const transactionYear = (transaction.date as Timestamp)
-        .toDate()
-        .getFullYear();
+      const transactionYear = normalizeDate(transaction.date).getFullYear();
       const yearData = yearlyData.find(
         (item: any) => item.year === transactionYear.toString(),
       );
