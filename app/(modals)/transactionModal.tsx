@@ -111,7 +111,7 @@ const TransactionModal = () => {
   }, [oldTransaction?.walletId]);
   const walletConstraints = useMemo(() => {
     if (!user?.uid) return [];
-    return [where('uid', '==', user.uid), orderBy('created', 'desc')];
+    return [orderBy('created', 'desc')];
   }, [user?.uid]);
   const { data: wallets } = useFetchData<WalletType>(
     'wallets',

@@ -37,7 +37,7 @@ const SearchableList: React.FC<SearchableListProps> = ({
 
   const constraints = useMemo(() => {
     if (!user?.uid) return [];
-    return [where('uid', '==', user.uid), orderBy('date', 'desc')];
+    return [orderBy('date', 'desc')];
   }, [user?.uid]);
 
   const {
